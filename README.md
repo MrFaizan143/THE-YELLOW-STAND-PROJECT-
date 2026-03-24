@@ -6,17 +6,21 @@ A lightweight, zero-dependency fan app for **The Yellow Stand** — CSK's unoffi
 
 ```
 tys-2026/
-├── index.html              # Single HTML entry point
+├── index.html              # Hub page — countdown to next match
+├── schedule.html           # Map page — pre-rendered fixture list
+├── squad.html              # Pride page — pre-rendered squad & staff
+├── robots.txt              # Crawler instructions
+├── sitemap.xml             # XML sitemap for search engines
 └── src/
     ├── css/
     │   └── main.css        # All styles, themed via CSS custom properties
     ├── data/
     │   └── team.js         # ★ THE DATABASE — edit this to update fixtures/squad
     └── js/
-        ├── render.js       # View layer — builds DOM from DATA
-        ├── router.js       # Client-side page navigation
+        ├── render.js       # View layer — builds DOM from DATA (legacy SPA helper)
+        ├── router.js       # Client-side page navigation (legacy SPA helper)
         ├── countdown.js    # Live countdown timer
-        └── app.js          # Entry point — bootstraps all modules
+        └── app.js          # Entry point — bootstraps Hub page modules
 ```
 
 ## How to Run
@@ -40,14 +44,25 @@ All app content lives in **`src/data/team.js`**. Edit the `DATA` object:
 - **`DATA.squad`** — players grouped by category on Pride page
 - **`DATA.staff`** — support staff shown on Pride page
 
-No other files need to change for content updates.
+After editing `team.js`, copy the updated data into the pre-rendered HTML in `schedule.html` and `squad.html` to keep them in sync.
 
 ## Architecture Notes
 
 | Module | Responsibility |
 |---|---|
+| `index.html` | Hub page — static HTML with countdown |
+| `schedule.html` | Map page — pre-rendered fixtures, Google-indexable |
+| `squad.html` | Pride page — pre-rendered squad, Google-indexable |
 | `team.js` | Data only — no logic |
-| `render.js` | DOM construction — no routing or timers |
-| `router.js` | Navigation — lazy-renders pages on first visit |
 | `countdown.js` | Timer only — reads `DATA.nextMatch.date` |
-| `app.js` | Wires everything together on `DOMContentLoaded` |
+| `app.js` | Wires Hub page modules on `DOMContentLoaded` |
+
+## SEO
+
+Each page includes:
+- Unique `<title>` and `<meta name="description">`
+- `<link rel="canonical">` URL
+- Open Graph and Twitter Card meta tags
+- JSON-LD structured data (SportsTeam / SportsEvent schemas)
+- `robots.txt` allowing all crawlers
+- `sitemap.xml` listing all three pages

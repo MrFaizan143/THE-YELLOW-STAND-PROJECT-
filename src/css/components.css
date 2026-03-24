@@ -41,6 +41,8 @@ nav {
     transition: background var(--transition-base), color var(--transition-base);
     font-family: var(--font-sans);
     letter-spacing: 0.5px;
+    text-decoration: none;
+    display: block;
 }
 
 /* Nav item — active state */

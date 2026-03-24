@@ -5,7 +5,6 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    Router.init();       // Bind nav button click handlers
     Countdown.start();   // Start the Hub countdown timer
 
     // Update the next-match label in the Hub from data

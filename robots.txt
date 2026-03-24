@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mrfaizan143.github.io/THE-YELLOW-STAND-PROJECT-/sitemap.xml

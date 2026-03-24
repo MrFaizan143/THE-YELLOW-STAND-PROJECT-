@@ -3,7 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>T Y S | 2026 Engine</title>
+
+    <!-- Primary SEO -->
+    <title>The Yellow Stand | CSK Fan Hub 2026</title>
+    <meta name="description" content="The Yellow Stand – the unofficial Chennai Super Kings fan hub for IPL 2026. Live countdown to the next match, full fixture schedule, and complete squad.">
+    <link rel="canonical" href="https://mrfaizan143.github.io/THE-YELLOW-STAND-PROJECT-/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="The Yellow Stand">
+    <meta property="og:title" content="The Yellow Stand | CSK Fan Hub 2026">
+    <meta property="og:description" content="The unofficial Chennai Super Kings fan hub for IPL 2026. Live countdown, full schedule, and complete squad.">
+    <meta property="og:url" content="https://mrfaizan143.github.io/THE-YELLOW-STAND-PROJECT-/">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="The Yellow Stand | CSK Fan Hub 2026">
+    <meta name="twitter:description" content="The unofficial Chennai Super Kings fan hub for IPL 2026. Live countdown, full schedule, and complete squad.">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SportsTeam",
+      "name": "Chennai Super Kings",
+      "alternateName": "CSK",
+      "sport": "Cricket",
+      "url": "https://mrfaizan143.github.io/THE-YELLOW-STAND-PROJECT-/"
+    }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;800&family=Space+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/css/main.css">
@@ -15,16 +44,14 @@
 
     <!-- Bottom Navigation -->
     <nav id="main-nav" role="navigation" aria-label="Main navigation">
-        <button class="n-i active" data-page="h" aria-current="page">Hub</button>
-        <button class="n-i" data-page="m">Map</button>
-        <button class="n-i" data-page="p">Pride</button>
+        <a class="n-i active" href="index.html" aria-current="page">Hub</a>
+        <a class="n-i" href="schedule.html">Map</a>
+        <a class="n-i" href="squad.html">Pride</a>
     </nav>
 
-    <!-- Pages -->
+    <!-- Hub Page -->
     <main>
-
-        <!-- Hub Page -->
-        <section id="h" class="page active" aria-label="Hub">
+        <section class="page active" aria-label="Hub">
             <span class="tag">System 2026</span>
             <h1>T Y S.</h1>
             <div class="countdown-card">
@@ -32,27 +59,10 @@
                 <p class="tag" style="margin-top: 10px;">March 30 vs RR</p>
             </div>
         </section>
-
-        <!-- Map (Schedule) Page -->
-        <section id="m" class="page" aria-label="Match Schedule">
-            <span class="tag">Schedule</span>
-            <h1>MAP.</h1>
-            <div id="fixture-list" role="list"></div>
-        </section>
-
-        <!-- Pride (Squad) Page -->
-        <section id="p" class="page" aria-label="Squad and Staff">
-            <span class="tag">Squad &amp; Staff</span>
-            <h1>PRIDE.</h1>
-            <div id="squad-content"></div>
-        </section>
-
     </main>
 
-    <!-- Scripts (data first, then logic, then app init) -->
+    <!-- Scripts -->
     <script src="src/data/team.js"></script>
-    <script src="src/js/render.js"></script>
-    <script src="src/js/router.js"></script>
     <script src="src/js/countdown.js"></script>
     <script src="src/js/app.js"></script>
 </body>
