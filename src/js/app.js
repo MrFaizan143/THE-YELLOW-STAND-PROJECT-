@@ -5,6 +5,8 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    Analytics.init();    // Start analytics & crash reporting (fires app_started + initial page_view)
+
     Router.init();       // Bind nav button click handlers
     Countdown.start();   // Start the Hub countdown timer
 

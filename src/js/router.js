@@ -43,6 +43,8 @@ const Router = (() => {
             if (pageId === 'p') Render.squad();
         }
 
+        Analytics.page(pageId);
+
         window.scrollTo(0, 0);
     }
 
