@@ -1,0 +1,197 @@
+/* ==========================================================================
+   TYS Realtime — Live Feed & Leaderboard Styles
+   Depends on: tokens.css, base.css
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   Live status indicator
+   Pulsing dot + label shown at the top of the Live page.
+-------------------------------------------------------------------------- */
+.live-status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    padding: var(--space-2) var(--space-4);
+    margin-bottom: var(--space-8);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-text-muted);
+    flex-shrink: 0;
+    transition: background var(--transition-base);
+}
+
+/* Connecting */
+.live-status[data-status="connecting"] .live-dot {
+    background: var(--color-yellow);
+    animation: pulse 1.2s ease-in-out infinite;
+}
+
+/* Live */
+.live-status[data-status="live"] .live-dot {
+    background: #22c55e;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Error / Offline */
+.live-status[data-status="error"] .live-dot,
+.live-status[data-status="offline"] .live-dot {
+    background: #ef4444;
+    animation: none;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.8); }
+}
+
+
+/* --------------------------------------------------------------------------
+   Live section wrapper
+   Used to group feed and leaderboard blocks.
+-------------------------------------------------------------------------- */
+.live-section {
+    margin-bottom: var(--space-8);
+}
+
+
+/* --------------------------------------------------------------------------
+   Feed list
+   Scrollable list of live match updates.
+-------------------------------------------------------------------------- */
+.live-feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.feed-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-5);
+    font-size: var(--text-base);
+    transition: opacity var(--transition-fast);
+}
+
+/* New item entrance animation */
+.feed-item--new {
+    animation: feedSlideIn var(--transition-slow) ease;
+}
+
+@keyframes feedSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Type accent — left border colour */
+.feed-type-boundary { border-left: 3px solid var(--color-yellow); }
+.feed-type-six      { border-left: 3px solid #a855f7; }
+.feed-type-wicket   { border-left: 3px solid #ef4444; }
+.feed-type-update   { border-left: 3px solid var(--color-border-lt); }
+.feed-type-info     { border-left: 3px solid #3b82f6; }
+
+.feed-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.feed-message {
+    flex: 1;
+    line-height: 1.5;
+}
+
+.feed-time {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+    align-self: center;
+}
+
+
+/* --------------------------------------------------------------------------
+   Leaderboard list
+-------------------------------------------------------------------------- */
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.board-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-5);
+}
+
+/* Highlight top 3 positions */
+.board-item:nth-child(1) { border-left: 3px solid var(--color-yellow); }
+.board-item:nth-child(2) { border-left: 3px solid #c0c0c0; }
+.board-item:nth-child(3) { border-left: 3px solid #cd7f32; }
+
+.board-rank {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    min-width: 1.4rem;
+    text-align: right;
+}
+
+.board-badge {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.board-name {
+    flex: 1;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-md);
+    text-transform: uppercase;
+}
+
+.board-points {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-yellow);
+    font-weight: var(--font-weight-bold);
+}
+
+
+/* --------------------------------------------------------------------------
+   Empty / error state placeholder
+-------------------------------------------------------------------------- */
+.live-empty {
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+    padding: var(--space-5) 0;
+}
+
+.live-error {
+    color: #ef4444;
+}
