@@ -12,4 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update the next-match label in the Hub from data
     const matchLabel = document.querySelector('.countdown-card .tag');
     if (matchLabel) matchLabel.textContent = DATA.nextMatch.label;
+
+    // Register service worker for PWA install + offline support
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(err => {
+            console.warn('Service worker registration failed:', err);
+        });
+    }
 });
