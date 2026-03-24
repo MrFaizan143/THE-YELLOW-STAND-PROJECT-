@@ -198,6 +198,25 @@ h1 {
     font-family: var(--font-mono);
 }
 
+.fixture-meta {
+    text-align: right;
+    flex-shrink: 0;
+    margin-left: var(--space-4);
+}
+
+.fixture-item .time {
+    font-size: var(--text-xxs);
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+}
+
+.fixture-item .broadcast {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+}
+
 
 /* --------------------------------------------------------------------------
    Squad Category Title

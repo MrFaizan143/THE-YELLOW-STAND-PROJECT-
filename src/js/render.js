@@ -16,8 +16,12 @@ const Render = (() => {
                 <div>
                     <p class="opponent">${f.o}</p>
                     <p class="venue">${f.v}</p>
+                    <p class="broadcast">${f.b}</p>
                 </div>
-                <p class="date">${f.d}</p>
+                <div class="fixture-meta">
+                    <p class="date">${f.d}</p>
+                    <p class="time">${f.t} IST</p>
+                </div>
             </div>
         `).join('');
     }
