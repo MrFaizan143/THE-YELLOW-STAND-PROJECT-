@@ -185,3 +185,122 @@ const FanProfile = (() => {
     return { init, render };
 
 })();
+
+/* ==========================================================================
+   FanPoll — Weekly poll widget on the Fan page.
+   Votes are stored in localStorage, keyed by DATA.poll.id so that changing
+   the id in team.js resets voting without touching any other data.
+   ========================================================================== */
+
+const FanPoll = (() => {
+
+    function storageKey() {
+        return `tys_poll_${DATA.poll.id}`;
+    }
+
+    /** Return the saved vote index (0-based), or null if not yet voted */
+    function loadVote() {
+        try {
+            const v = localStorage.getItem(storageKey());
+            return v !== null ? parseInt(v, 10) : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    /** Return saved vote counts array, same length as options */
+    function loadCounts() {
+        try {
+            const raw = localStorage.getItem(storageKey() + '_counts');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length === DATA.poll.options.length) {
+                    return parsed;
+                }
+            }
+        } catch (_) { /* fall through */ }
+        return new Array(DATA.poll.options.length).fill(0);
+    }
+
+    function saveCounts(counts) {
+        localStorage.setItem(storageKey() + '_counts', JSON.stringify(counts));
+    }
+
+    function saveVote(idx) {
+        localStorage.setItem(storageKey(), String(idx));
+    }
+
+    function totalVotes(counts) {
+        return counts.reduce((a, b) => a + b, 0);
+    }
+
+    function render() {
+        const container = document.getElementById('poll-content');
+        if (!container) return;
+
+        const voted  = loadVote();
+        const counts = loadCounts();
+        const total  = totalVotes(counts);
+
+        if (voted !== null) {
+            renderResults(container, counts, total, voted);
+        } else {
+            renderOptions(container);
+        }
+    }
+
+    function renderOptions(container) {
+        const btns = DATA.poll.options.map((opt, i) => `
+            <button class="poll-option" data-idx="${i}" aria-label="${opt}">
+                ${opt}
+            </button>`).join('');
+
+        container.innerHTML = `
+            <div class="poll-card" aria-label="Fan poll">
+                <p class="tag">Fan Poll</p>
+                <p class="poll-question">${DATA.poll.question}</p>
+                <div class="poll-options">${btns}</div>
+            </div>`;
+
+        container.querySelectorAll('.poll-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx    = parseInt(btn.dataset.idx, 10);
+                const counts = loadCounts();
+                counts[idx]++;
+                saveCounts(counts);
+                saveVote(idx);
+                renderResults(container, counts, totalVotes(counts), idx);
+            });
+        });
+    }
+
+    function renderResults(container, counts, total, voted) {
+        const bars = DATA.poll.options.map((opt, i) => {
+            const pct    = total > 0 ? Math.round((counts[i] / total) * 100) : 0;
+            const isVote = i === voted;
+            return `
+            <div class="poll-result${isVote ? ' poll-result--voted' : ''}"
+                 aria-label="${opt}: ${pct}%">
+                <div class="poll-result-label">
+                    <span>${opt}</span>
+                    <span class="poll-pct">${pct}%</span>
+                </div>
+                <div class="poll-bar-track" role="progressbar" aria-valuenow="${pct}"
+                     aria-valuemin="0" aria-valuemax="100">
+                    <div class="poll-bar-fill" style="width:${pct}%"></div>
+                </div>
+            </div>`;
+        }).join('');
+
+        container.innerHTML = `
+            <div class="poll-card" aria-label="Fan poll results">
+                <p class="tag">Fan Poll</p>
+                <p class="poll-question">${DATA.poll.question}</p>
+                <div class="poll-results">${bars}</div>
+                <p class="poll-total">${total} vote${total !== 1 ? 's' : ''}</p>
+            </div>`;
+    }
+
+    return { render };
+
+})();

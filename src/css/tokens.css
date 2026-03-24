@@ -107,3 +107,25 @@
     --border:     var(--color-border);
     --border-lt:  var(--color-border-lt);
 }
+
+/* ==========================================================================
+   Light Theme Overrides
+   Applied when <html data-theme="light">.
+   All component styles use the tokens above, so only the tokens need updating.
+   ========================================================================== */
+
+[data-theme="light"] {
+    --color-bg:           #f5f5f0;
+    --color-surface:      #ffffff;
+    --color-surface-mid:  #fefefe;
+    --color-surface-deep: #ececec;
+
+    --color-text:         #0a0a0a;
+    --color-text-muted:   #888888;
+
+    --color-border:       #e0e0e0;
+    --color-border-lt:    #d0d0d0;
+
+    --color-overlay-nav:  rgba(245, 245, 240, 0.85);
+    --color-overlay-nav-border: rgba(0, 0, 0, 0.12);
+}
