@@ -1,0 +1,2 @@
+# Supabase project credentials — never commit real values
+src/data/realtime-config.js

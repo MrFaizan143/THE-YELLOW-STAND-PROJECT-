@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;800&family=Space+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/css/main.css">
+    <link rel="stylesheet" href="src/css/realtime.css">
 </head>
 <body>
 
@@ -18,6 +19,7 @@
         <button class="n-i active" data-page="h" aria-current="page">Hub</button>
         <button class="n-i" data-page="m">Map</button>
         <button class="n-i" data-page="p">Pride</button>
+        <button class="n-i" data-page="l">Live</button>
     </nav>
 
     <!-- Pages -->
@@ -47,13 +49,48 @@
             <div id="squad-content"></div>
         </section>
 
+        <!-- Live Page -->
+        <section id="l" class="page" aria-label="Live Feed and Leaderboard">
+            <span class="tag">Live Now</span>
+            <h1>LIVE.</h1>
+
+            <div class="live-status" id="live-status" data-status="offline">
+                <span class="live-dot" id="live-dot" aria-hidden="true"></span>
+                <span id="live-label">Offline</span>
+            </div>
+
+            <!-- Match Feed -->
+            <div class="live-section">
+                <h2 class="squad-category-title">Match Feed</h2>
+                <div id="live-feed" class="live-feed-list" role="list">
+                    <p class="live-empty">Waiting for match updates…</p>
+                </div>
+            </div>
+
+            <!-- Fan Leaderboard -->
+            <div class="live-section">
+                <h2 class="squad-category-title">Fan Leaderboard</h2>
+                <div id="leaderboard" class="leaderboard-list" role="list">
+                    <p class="live-empty">Loading leaderboard…</p>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- Scripts (data first, then logic, then app init) -->
+    <!-- Supabase Realtime SDK (UMD build, pinned version with Subresource Integrity) -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.100.0/dist/umd/supabase.min.js"
+        integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb"
+        crossorigin="anonymous"></script>
     <script src="src/data/team.js"></script>
+    <!-- Supabase credentials (copy realtime-config.example.js → realtime-config.js and fill in values) -->
+    <script src="src/data/realtime-config.js"></script>
     <script src="src/js/render.js"></script>
     <script src="src/js/router.js"></script>
     <script src="src/js/countdown.js"></script>
+    <script src="src/js/realtime.js"></script>
     <script src="src/js/app.js"></script>
 </body>
 </html>
