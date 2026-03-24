@@ -1,0 +1,109 @@
+/* ==========================================================================
+   TYS Design Tokens
+   Single source of truth for all visual values.
+   Import this file first in any stylesheet that needs TYS styling.
+   ========================================================================== */
+
+:root {
+
+    /* -----------------------------------------------------------------------
+       Brand Colors
+    ----------------------------------------------------------------------- */
+    --color-yellow:       #FDB913;   /* Primary brand accent */
+    --color-black:        #000000;
+    --color-white:        #ffffff;
+
+    /* -----------------------------------------------------------------------
+       Background / Surface Scale
+       Light → dark: surface-mid → surface → surface-deep → bg
+    ----------------------------------------------------------------------- */
+    --color-bg:           #050505;   /* Page background (near-black) */
+    --color-surface:      #0e0e0e;   /* Card / raised surface */
+    --color-surface-mid:  #111111;   /* Slightly lighter surface (countdown) */
+    --color-surface-deep: #080808;   /* Deeper surface (staff items) */
+
+    /* -----------------------------------------------------------------------
+       Text
+    ----------------------------------------------------------------------- */
+    --color-text:         #ffffff;
+    --color-text-muted:   #555555;
+
+    /* -----------------------------------------------------------------------
+       Borders
+    ----------------------------------------------------------------------- */
+    --color-border:       #1a1a1a;
+    --color-border-lt:    #222222;
+
+    /* -----------------------------------------------------------------------
+       Transparent overlays (used by nav glass)
+    ----------------------------------------------------------------------- */
+    --color-overlay-nav:  rgba(10, 10, 10, 0.8);
+    --color-overlay-nav-border: rgba(255, 255, 255, 0.1);
+
+    /* -----------------------------------------------------------------------
+       Typography
+    ----------------------------------------------------------------------- */
+    --font-sans:           'Plus Jakarta Sans', sans-serif;
+    --font-mono:           'Space Mono', monospace;
+
+    --font-weight-light:   200;
+    --font-weight-regular: 400;
+    --font-weight-bold:    800;
+
+    /* -----------------------------------------------------------------------
+       Font Sizes
+    ----------------------------------------------------------------------- */
+    --text-xxs:   0.6rem;    /* tags, roles, small labels */
+    --text-xs:    0.65rem;   /* nav items */
+    --text-sm:    0.7rem;    /* squad category titles */
+    --text-base:  0.8rem;    /* staff names */
+    --text-md:    0.85rem;   /* player card names */
+    --text-lg:    2rem;      /* countdown display */
+    --text-hero:  clamp(3rem, 12vw, 7rem);
+
+    /* -----------------------------------------------------------------------
+       Spacing Scale  (based on a 4px base unit)
+    ----------------------------------------------------------------------- */
+    --space-1:   0.25rem;    /*  4px */
+    --space-2:   0.5rem;     /*  8px */
+    --space-3:   0.75rem;    /* 12px */
+    --space-4:   1rem;       /* 16px */
+    --space-5:   1.2rem;     /* ~19px — card / fixture padding */
+    --space-6:   1.5rem;     /* 24px */
+    --space-8:   2rem;       /* 32px — section padding */
+
+    /* -----------------------------------------------------------------------
+       Border Radius
+    ----------------------------------------------------------------------- */
+    --radius-sm:   10px;
+    --radius-md:   12px;
+    --radius-lg:   16px;
+    --radius-xl:   24px;
+    --radius-pill: 50px;
+    --radius-full: 100px;
+
+    /* -----------------------------------------------------------------------
+       Z-Index
+    ----------------------------------------------------------------------- */
+    --z-watermark: -2;
+    --z-nav:       1000;
+
+    /* -----------------------------------------------------------------------
+       Transitions
+    ----------------------------------------------------------------------- */
+    --transition-fast: 0.2s;
+    --transition-base: 0.3s;
+    --transition-slow: 0.4s;
+
+    /* -----------------------------------------------------------------------
+       Backward-compatible aliases
+       These map the original short names to the new token system so that
+       any existing inline styles or overrides continue to work unchanged.
+    ----------------------------------------------------------------------- */
+    --yellow:     var(--color-yellow);
+    --bg:         var(--color-bg);
+    --card:       var(--color-surface);
+    --muted:      var(--color-text-muted);
+    --border:     var(--color-border);
+    --border-lt:  var(--color-border-lt);
+}

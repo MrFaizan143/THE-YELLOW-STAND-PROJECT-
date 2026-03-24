@@ -1,0 +1,234 @@
+/* ==========================================================================
+   TYS Component Library
+   Reusable UI components styled exclusively via design tokens.
+   Depends on: tokens.css, base.css
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   Navigation
+   Bottom-docked pill nav with glassmorphism treatment.
+-------------------------------------------------------------------------- */
+nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    background: var(--color-overlay-nav);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--color-overlay-nav-border);
+    border-radius: var(--radius-full);
+    padding: 6px;
+    display: flex;
+    z-index: var(--z-nav);
+}
+
+/* Nav item */
+.n-i {
+    flex: 1;
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 12px 0;
+    border-radius: var(--radius-pill);
+    border: none;
+    background: transparent;
+    transition: background var(--transition-base), color var(--transition-base);
+    font-family: var(--font-sans);
+    letter-spacing: 0.5px;
+}
+
+/* Nav item — active state */
+.n-i.active {
+    color: var(--color-black);
+    background: var(--color-yellow);
+}
+
+
+/* --------------------------------------------------------------------------
+   Page
+   Full-page sections with fade-up entrance animation.
+-------------------------------------------------------------------------- */
+.page {
+    display: none;
+    padding: var(--space-8) 5% calc(var(--space-8) * 1.5);
+    max-width: 1100px;
+    margin: 0 auto;
+    animation: fadeUp var(--transition-slow) ease;
+}
+
+.page.active {
+    display: block;
+}
+
+
+/* --------------------------------------------------------------------------
+   Watermark
+   Fixed decorative background text.
+-------------------------------------------------------------------------- */
+.wm {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-watermark);
+    pointer-events: none;
+    opacity: 0.015;
+    font-size: 20vw;
+    font-weight: var(--font-weight-bold);
+    transform: rotate(-15deg);
+    white-space: nowrap;
+    user-select: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   Tag
+   Small uppercase label in brand yellow (Space Mono).
+-------------------------------------------------------------------------- */
+.tag {
+    font-family: var(--font-mono);
+    color: var(--color-yellow);
+    font-size: var(--text-xxs);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: var(--space-4);
+    display: block;
+}
+
+
+/* --------------------------------------------------------------------------
+   Hero heading
+-------------------------------------------------------------------------- */
+h1 {
+    font-size: var(--text-hero);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -4px;
+    line-height: 0.85;
+    margin-bottom: var(--space-8);
+}
+
+
+/* --------------------------------------------------------------------------
+   Grid
+   Auto-fill responsive card grid.
+-------------------------------------------------------------------------- */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+}
+
+
+/* --------------------------------------------------------------------------
+   Card
+   Generic content card used for squad player tiles.
+-------------------------------------------------------------------------- */
+.card {
+    background: var(--color-surface);
+    padding: var(--space-5);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.card .name {
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+}
+
+.card .role {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+}
+
+
+/* --------------------------------------------------------------------------
+   Countdown Card
+   Hub-page countdown display.
+-------------------------------------------------------------------------- */
+.countdown-card {
+    background: var(--color-surface-mid);
+    padding: var(--space-8);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border-lt);
+}
+
+.countdown-display {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-bold);
+}
+
+
+/* --------------------------------------------------------------------------
+   Fixture Item
+   Single match row on the Map page.
+-------------------------------------------------------------------------- */
+.fixture-item {
+    background: var(--color-surface);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--color-border);
+}
+
+.fixture-item .opponent {
+    font-weight: var(--font-weight-bold);
+}
+
+.fixture-item .venue {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+}
+
+.fixture-item .date {
+    color: var(--color-yellow);
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-mono);
+}
+
+
+/* --------------------------------------------------------------------------
+   Squad Category Title
+   Section header on the Pride page (Space Mono).
+-------------------------------------------------------------------------- */
+.squad-category-title {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin: var(--space-8) 0 var(--space-4);
+    text-transform: uppercase;
+}
+
+
+/* --------------------------------------------------------------------------
+   Staff Item
+   Support staff row on the Pride page.
+-------------------------------------------------------------------------- */
+.staff-item {
+    background: var(--color-surface-deep);
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+    font-size: var(--text-base);
+    border-left: 2px solid var(--color-border-lt);
+}
+
+.staff-item .staff-role {
+    color: var(--color-text-muted);
+    font-size: var(--text-xxs);
+    font-family: var(--font-mono);
+}

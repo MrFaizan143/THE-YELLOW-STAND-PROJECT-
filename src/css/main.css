@@ -1,0 +1,11 @@
+/* ==========================================================================
+   TYS 2026 — Main Stylesheet
+   Imports the design system layers in dependency order:
+     1. tokens     — CSS custom properties (colors, typography, spacing…)
+     2. base       — reset, body, keyframes
+     3. components — UI component library
+   ========================================================================== */
+
+@import url('tokens.css');
+@import url('base.css');
+@import url('components.css');
