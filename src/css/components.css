@@ -169,9 +169,30 @@ h1 {
 
 
 /* --------------------------------------------------------------------------
-   Fixture Item
-   Single match row on the Map page.
+   Live Score
+   Live badge and score detail shown during an active CSK match.
 -------------------------------------------------------------------------- */
+.live-badge {
+    display: inline-block;
+    color: var(--color-yellow);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+#live-detail {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin-top: var(--space-3);
+    letter-spacing: 0.5px;
+    /* Reserve one line of height to prevent layout shift when content toggles */
+    min-height: 1.2em;
+    line-height: 1.6;
+}
 .fixture-item {
     background: var(--color-surface);
     padding: var(--space-5);

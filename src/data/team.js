@@ -6,6 +6,16 @@
 
 const DATA = {
 
+    /**
+     * Live-score API configuration.
+     * Set cricApiKey to your free CricAPI key from https://cricapi.com/
+     * Leave it empty to fall back to the static countdown display.
+     */
+    config: {
+        cricApiKey: "",              // ← paste your CricAPI key here
+        teamName:   "Chennai Super Kings"
+    },
+
     /** Next match details (used by countdown) */
     nextMatch: {
         date: "March 30, 2026 19:30:00",
