@@ -7,6 +7,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     Router.init();       // Bind nav button click handlers
     Countdown.start();   // Start the Hub countdown timer
+    MoodWall.init();     // Render the Fan Mood Wall
 
     // Update the next-match label in the Hub from data
     const matchLabel = document.querySelector('.countdown-card .tag');
