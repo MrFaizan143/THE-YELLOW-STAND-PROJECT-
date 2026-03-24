@@ -25,6 +25,7 @@
         <button class="n-i active" data-page="h" aria-current="page">Hub</button>
         <button class="n-i" data-page="m">Map</button>
         <button class="n-i" data-page="p">Pride</button>
+        <button class="n-i" data-page="n">News</button>
         <button class="n-i" data-page="f">Fan</button>
     </nav>
 
@@ -39,10 +40,19 @@
                 <p id="timer" class="countdown-display">Loading Countdown...</p>
                 <p class="tag" style="margin-top: 10px;">March 30 vs RR</p>
             </div>
+            <div class="hub-info-row">
+                <!-- Last Result Card -->
+                <div class="hub-info-card" id="hub-last-result" aria-label="Last result"></div>
+                <!-- Venue Card -->
+                <div class="hub-info-card" id="hub-venue" aria-label="Next match venue"></div>
+            </div>
             <div class="hub-record-wrap" aria-label="Season record">
                 <span class="tag" style="margin-bottom: var(--space-2);">2026 Season Record</span>
                 <p id="hub-record" class="hub-record">0W · 0L</p>
             </div>
+            <button id="share-btn" class="share-btn" aria-label="Share match info">
+                <span class="share-icon">↑</span> Share
+            </button>
         </section>
 
         <!-- Map (Schedule) Page -->
@@ -59,6 +69,13 @@
             <span class="tag">Squad &amp; Staff</span>
             <h1>PRIDE.</h1>
             <div id="squad-content"></div>
+        </section>
+
+        <!-- News Page -->
+        <section id="n" class="page" aria-label="News and Updates">
+            <span class="tag">Updates</span>
+            <h1>NEWS.</h1>
+            <div id="news-list"></div>
         </section>
 
         <!-- Fan Profile Page -->
@@ -79,6 +96,7 @@
     <script src="src/js/router.js"></script>
     <script src="src/js/countdown.js"></script>
     <script src="src/js/profile.js"></script>
+    <script src="src/js/news.js"></script>
     <script src="src/js/app.js"></script>
 </body>
 </html>

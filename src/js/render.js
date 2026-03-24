@@ -39,6 +39,7 @@ const Render = (() => {
         container.innerHTML = fixtureSource.map((f, i) => {
             const result  = savedResults[i];
             const isNext  = i === nextIdx;
+            const isHome  = f.home === true;
             const classes = ['fixture-item',
                 isNext         ? 'fixture-next'   : '',
                 result === 'W' ? 'result-win'      : '',
@@ -54,11 +55,22 @@ const Render = (() => {
                                 result === 'L' ? 'Loss' :
                                 result === 'N' ? 'No Result' : 'Tap to record result';
 
+            const homeBadge = `<span class="fixture-badge fixture-badge--${isHome ? 'home' : 'away'}"
+                                     aria-label="${isHome ? 'Home' : 'Away'}">${isHome ? 'HOME' : 'AWAY'}</span>`;
+
+            const calBtn = f.iso
+                ? `<a class="cal-btn" href="${buildICS(f)}" download="csk-vs-${f.o.replace(/\s+/g, '-').toLowerCase()}.ics"
+                      aria-label="Add to calendar" title="Add to calendar">📅</a>`
+                : '';
+
             return `
             <div class="${classes}" role="listitem" data-idx="${i}">
                 ${isNext ? '<span class="next-badge">NEXT</span>' : ''}
                 <div class="fixture-info">
-                    <p class="opponent">${f.o}</p>
+                    <div class="fixture-title-row">
+                        <p class="opponent">${f.o}</p>
+                        ${homeBadge}
+                    </div>
                     <p class="venue">${f.v}</p>
                     <p class="broadcast">${f.b}</p>
                 </div>
@@ -66,6 +78,7 @@ const Render = (() => {
                     <div class="fixture-meta">
                         <p class="date">${f.d}</p>
                         <p class="time">${f.t} IST</p>
+                        ${calBtn}
                     </div>
                     <button class="result-btn${result ? ' has-result' : ''}"
                             aria-label="${resultTitle}"
@@ -84,6 +97,37 @@ const Render = (() => {
                 updateHubRecord();
             });
         });
+    }
+
+    /** Duration to add when generating .ics DTEND (3.5 hours in ms) */
+    const MATCH_DURATION_MS = 3.5 * 3_600_000;
+
+    /**
+     * Builds an .ics calendar file content as a data: URI for a fixture.
+     * @param {Object} f — fixture object with iso, o, v, b fields.
+     * @returns {string} data: URI string.
+     */
+    function buildICS(f) {
+        const start = new Date(f.iso);
+        const end   = new Date(start.getTime() + MATCH_DURATION_MS);
+
+        const fmt = d => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+        const ics = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//The Yellow Stand//TYS 2026//EN',
+            'BEGIN:VEVENT',
+            `DTSTART:${fmt(start)}`,
+            `DTEND:${fmt(end)}`,
+            `SUMMARY:CSK vs ${f.o}`,
+            `LOCATION:${f.v}`,
+            `DESCRIPTION:IPL 2026 — CSK vs ${f.o} at ${f.v}. Watch on ${f.b}.`,
+            'END:VEVENT',
+            'END:VCALENDAR'
+        ].join('\r\n');
+
+        return 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
     }
 
     /** Re-renders a single fixture row's result state without full re-render */
@@ -116,6 +160,40 @@ const Render = (() => {
         el.textContent = N > 0 ? `${W}W · ${L}L · ${N}NR` : `${W}W · ${L}L`;
     }
 
+    /** Renders the last result card into #hub-last-result */
+    function lastResult() {
+        const container = document.getElementById('hub-last-result');
+        if (!container) return;
+
+        const lr = DATA.lastResult;
+        const resultClass = lr.result === 'W' ? 'hub-info-result--w'  :
+                            lr.result === 'L' ? 'hub-info-result--l' :
+                            lr.result === 'N' ? 'hub-info-result--n'   : '';
+        const resultLabel = lr.result === 'W' ? 'WIN'         :
+                            lr.result === 'L' ? 'LOSS'        :
+                            lr.result === 'N' ? 'NO RESULT'   : '—';
+
+        container.innerHTML = `
+            <span class="tag">Last Result</span>
+            <p class="hub-info-label${resultClass ? ' ' + resultClass : ''}">${resultLabel}</p>
+            <p class="hub-info-meta">${lr.opponent !== '—' ? 'vs ' + lr.opponent : '—'}</p>
+            <p class="hub-info-score">${lr.score}</p>`;
+    }
+
+    /** Renders the next-match venue info card into #hub-venue */
+    function venueInfo() {
+        const container = document.getElementById('hub-venue');
+        if (!container) return;
+
+        const nm = DATA.nextMatch;
+        container.innerHTML = `
+            <span class="tag">Next Venue</span>
+            <p class="hub-info-label">${nm.venue}</p>
+            <p class="hub-info-meta">${nm.city}</p>
+            <p class="hub-info-score">${nm.pitch}</p>
+            <p class="hub-info-score">${nm.weather}</p>`;
+    }
+
     /** Renders squad grid + staff list into #squad-content */
     function squad() {
         const container = document.getElementById('squad-content');
@@ -128,14 +206,52 @@ const Render = (() => {
             html += `<h2 class="squad-category-title">${category}</h2>`;
             html += `<div class="grid">`;
             html += players.map(player => {
-                const details = (DATA.playerDetails && DATA.playerDetails[player]) || {};
-                const natBadge = details.nat
+                const details   = (DATA.playerDetails && DATA.playerDetails[player]) || {};
+                const isCaptain = /\(C\)/.test(player);
+                const isVC      = details.vc === true;
+
+                const cardClasses = ['card',
+                    isCaptain ? 'card--captain' : '',
+                    isVC      ? 'card--vc'      : ''
+                ].filter(Boolean).join(' ');
+
+                const flagBadge = details.flag
+                    ? `<span class="player-flag" aria-label="${details.nat || ''}">${details.flag}</span>`
+                    : '';
+                const natBadge  = details.nat && !details.flag
                     ? `<span class="player-nat" aria-label="${details.nat}">${details.nat}</span>`
                     : '';
+                const roleBadge = details.role
+                    ? `<span class="player-role">${details.role}</span>`
+                    : '';
+                const captainBadge = isCaptain
+                    ? '<span class="player-captain-badge" aria-label="Captain">C</span>'
+                    : isVC
+                    ? '<span class="player-vc-badge" aria-label="Vice-captain">VC</span>'
+                    : '';
+
+                // Expanded profile section (hidden by default)
+                const expandLines = [];
+                if (details.jersey != null) expandLines.push(`<span>#${details.jersey}</span>`);
+                if (details.age    != null) expandLines.push(`<span>Age ${details.age}</span>`);
+                if (details.bat)            expandLines.push(`<span>${details.bat}</span>`);
+                if (details.bowl)           expandLines.push(`<span>${details.bowl}</span>`);
+
+                const expandSection = expandLines.length > 0
+                    ? `<div class="player-expand">${expandLines.join('')}</div>`
+                    : '';
+
                 return `
-                <div class="card">
-                    <p class="name">${player}</p>
-                    ${natBadge}
+                <div class="${cardClasses}" role="button" tabindex="0"
+                     aria-expanded="false" aria-label="View profile of ${player}">
+                    <div class="card-header">
+                        <p class="name">${player}</p>
+                        ${captainBadge}
+                    </div>
+                    <div class="card-badges">
+                        ${flagBadge}${natBadge}${roleBadge}
+                    </div>
+                    ${expandSection}
                 </div>`;
             }).join('');
             html += `</div>`;
@@ -151,6 +267,19 @@ const Render = (() => {
         `).join('');
 
         container.innerHTML = html;
+
+        // Bind tap-to-expand on player cards
+        container.querySelectorAll('.card[aria-expanded]').forEach(card => {
+            const toggle = () => {
+                const expanded = card.getAttribute('aria-expanded') === 'true';
+                card.setAttribute('aria-expanded', String(!expanded));
+                card.classList.toggle('card--expanded', !expanded);
+            };
+            card.addEventListener('click', toggle);
+            card.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+            });
+        });
     }
 
     /** Renders the IPL 2026 points table into #standings-list */
@@ -188,6 +317,8 @@ const Render = (() => {
     }
 
     /** Public API */
-    return { fixtures, fixturesLoading, fixturesError, squad, standings, updateHubRecord };
+    return { fixtures, fixturesLoading, fixturesError, squad, standings,
+             lastResult, venueInfo, updateHubRecord };
 
 })();
+

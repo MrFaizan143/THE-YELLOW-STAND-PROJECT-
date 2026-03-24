@@ -801,3 +801,311 @@ h1 {
     text-align: right;
     letter-spacing: 1px;
 }
+
+
+/* --------------------------------------------------------------------------
+   Hub Info Row
+   Two-column card row on the Hub page (last result + venue info).
+-------------------------------------------------------------------------- */
+.hub-info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+}
+
+.hub-info-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    min-height: 100px;
+}
+
+.hub-info-card .tag {
+    margin-bottom: var(--space-2);
+}
+
+.hub-info-label {
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-mono);
+    line-height: 1.2;
+    margin-bottom: var(--space-1);
+}
+
+.hub-info-result--w { color: #4ade80; }
+.hub-info-result--l { color: #f87171; }
+.hub-info-result--n { color: var(--color-text-muted); }
+
+.hub-info-meta {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    margin-bottom: var(--space-1);
+}
+
+.hub-info-score {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+    line-height: 1.4;
+}
+
+
+/* --------------------------------------------------------------------------
+   Share Button
+   Inline pill button below the Hub record.
+-------------------------------------------------------------------------- */
+.share-btn {
+    margin-top: var(--space-6);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-pill);
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: var(--space-3) var(--space-5);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast),
+                border-color var(--transition-fast);
+}
+
+.share-btn:hover {
+    background: var(--color-yellow);
+    color: var(--color-black);
+    border-color: var(--color-yellow);
+}
+
+.share-btn:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
+.share-icon {
+    font-style: normal;
+    font-size: 0.75rem;
+}
+
+
+/* --------------------------------------------------------------------------
+   Fixture Badge
+   Home / Away pill on each fixture row.
+-------------------------------------------------------------------------- */
+.fixture-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.fixture-badge {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border-radius: var(--radius-pill);
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.fixture-badge--home {
+    background: rgba(253, 185, 19, 0.15);
+    color: var(--color-yellow);
+    border: 1px solid rgba(253, 185, 19, 0.35);
+}
+
+.fixture-badge--away {
+    background: var(--color-surface-deep);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+}
+
+
+/* --------------------------------------------------------------------------
+   Add-to-Calendar Link
+   Small emoji link beneath the time on each fixture.
+-------------------------------------------------------------------------- */
+.cal-btn {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: 0.75rem;
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+    text-align: right;
+}
+
+.cal-btn:hover {
+    opacity: 1;
+}
+
+
+/* --------------------------------------------------------------------------
+   Player Card Enhancements
+   Flag emoji, role badge, captain/VC accent, tap-to-expand.
+-------------------------------------------------------------------------- */
+
+/* Card header row: name + captain/VC badge */
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+/* Badges row below name */
+.card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+}
+
+/* Flag emoji badge */
+.player-flag {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+/* Role sub-label badge */
+.player-role {
+    display: inline-block;
+    padding: 2px 6px;
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Captain badge */
+.player-captain-badge {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    font-weight: var(--font-weight-bold);
+    background: var(--color-yellow);
+    color: var(--color-black);
+    padding: 2px 5px;
+    border-radius: var(--radius-pill);
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+}
+
+/* Vice-captain badge */
+.player-vc-badge {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    font-weight: var(--font-weight-bold);
+    background: transparent;
+    color: var(--color-yellow);
+    border: 1px solid var(--color-yellow);
+    padding: 2px 5px;
+    border-radius: var(--radius-pill);
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+}
+
+/* Captain card gold accent */
+.card--captain {
+    border-color: var(--color-yellow);
+    box-shadow: 0 0 0 1px var(--color-yellow);
+}
+
+/* VC card subtle gold tint */
+.card--vc {
+    border-color: rgba(253, 185, 19, 0.5);
+}
+
+/* Expandable profile section (hidden by default) */
+.player-expand {
+    display: none;
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.player-expand span {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    padding: 2px 8px;
+    display: inline-block;
+}
+
+/* Show expanded section when card has .card--expanded */
+.card--expanded .player-expand {
+    display: flex;
+}
+
+/* Pointer cursor and hover effect for expandable cards */
+.card[aria-expanded] {
+    cursor: pointer;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card[aria-expanded]:hover:not(.card--captain):not(.card--vc) {
+    border-color: var(--color-border-lt);
+}
+
+.card[aria-expanded]:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
+
+/* --------------------------------------------------------------------------
+   News Items
+   Article cards on the News page.
+-------------------------------------------------------------------------- */
+.news-item {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    margin-bottom: var(--space-4);
+    border-left: 3px solid var(--color-yellow);
+}
+
+.news-item .tag {
+    margin-bottom: var(--space-2);
+}
+
+.news-headline {
+    font-size: 0.95rem;
+    font-weight: var(--font-weight-bold);
+    line-height: 1.4;
+    margin-bottom: var(--space-3);
+}
+
+.news-body {
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+}
+
+.news-empty {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    letter-spacing: 1px;
+    padding: var(--space-8) 0;
+    text-transform: uppercase;
+}
+
