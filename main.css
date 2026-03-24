@@ -1,0 +1,220 @@
+/* ==========================================================================
+   TYS 2026 — Main Stylesheet
+   ========================================================================== */
+
+/* --- Custom Properties --- */
+:root {
+    --yellow:   #FDB913;
+    --bg:       #050505;
+    --card:     #0e0e0e;
+    --muted:    #555;
+    --border:   #1a1a1a;
+    --border-lt: #222;
+}
+
+/* --- Reset & Base --- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg);
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow-x: hidden;
+}
+
+/* --- Navigation --- */
+nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    padding: 6px;
+    display: flex;
+    z-index: 1000;
+}
+
+.n-i {
+    flex: 1;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 12px 0;
+    border-radius: 50px;
+    border: none;
+    background: transparent;
+    transition: background 0.3s, color 0.3s;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.n-i.active {
+    color: #000;
+    background: var(--yellow);
+}
+
+/* --- Pages --- */
+.page {
+    display: none;
+    padding: 60px 5% 120px;
+    max-width: 1100px;
+    margin: 0 auto;
+    animation: fadeUp 0.4s ease;
+}
+
+.page.active {
+    display: block;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Watermark --- */
+.wm {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: -2;
+    pointer-events: none;
+    opacity: 0.015;
+    font-size: 20vw;
+    font-weight: 900;
+    transform: rotate(-15deg);
+    white-space: nowrap;
+    user-select: none;
+}
+
+/* --- Typography --- */
+.tag {
+    font-family: 'Space Mono', monospace;
+    color: var(--yellow);
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+h1 {
+    font-size: clamp(3rem, 12vw, 7rem);
+    font-weight: 800;
+    letter-spacing: -4px;
+    line-height: 0.85;
+    margin-bottom: 2rem;
+}
+
+/* --- Cards & Grid --- */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.card {
+    background: var(--card);
+    padding: 1.2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.card .name {
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.card .role {
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+/* --- Countdown Card (Hub Page) --- */
+.countdown-card {
+    background: #111;
+    padding: 2rem;
+    border-radius: 24px;
+    border: 1px solid var(--border-lt);
+}
+
+.countdown-display {
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+/* --- Fixture Item (Map Page) --- */
+.fixture-item {
+    background: var(--card);
+    padding: 1.2rem;
+    border-radius: 16px;
+    margin-bottom: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border);
+}
+
+.fixture-item .opponent {
+    font-weight: 800;
+}
+
+.fixture-item .venue {
+    font-size: 0.6rem;
+    color: var(--muted);
+}
+
+.fixture-item .date {
+    color: var(--yellow);
+    font-weight: 800;
+    font-family: 'Space Mono', monospace;
+}
+
+/* --- Squad Section Headers (Pride Page) --- */
+.squad-category-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin: 2rem 0 1rem;
+    text-transform: uppercase;
+}
+
+/* --- Staff Item (Pride Page) --- */
+.staff-item {
+    background: #080808;
+    padding: 1rem;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+    border-left: 2px solid var(--border-lt);
+}
+
+.staff-item .staff-role {
+    color: var(--muted);
+    font-size: 0.6rem;
+    font-family: 'Space Mono', monospace;
+}
