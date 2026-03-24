@@ -31,6 +31,35 @@ python3 -m http.server 8080
 npx serve .
 ```
 
+## Deployment (CDN)
+
+The project ships ready-to-deploy configs for both major edge networks.
+
+### Vercel Edge
+Push the repo and import it as a **Static Site** in the Vercel dashboard (no framework preset, no build command).  
+`vercel.json` sets long-lived cache headers for assets and security headers for all routes.
+
+```bash
+npx vercel --prod
+```
+
+### Cloudflare Pages
+Connect the repo in the **Cloudflare Pages** dashboard (no build command, output directory `.`).  
+`_headers` applies the same cache strategy and security headers at the edge.
+
+#### Cache strategy at a glance
+
+| Path          | Cache-Control                                   | Rationale                              |
+|---------------|-------------------------------------------------|----------------------------------------|
+| `src/css/*`   | `public, max-age=31536000, immutable`           | Styles don't change between deploys    |
+| `src/js/*`    | `public, max-age=31536000, immutable`           | Scripts don't change between deploys   |
+| `src/data/*`  | `public, max-age=3600, stale-while-revalidate`  | Data may change; serves stale quickly  |
+| `index.html`  | `public, max-age=0, must-revalidate`            | Always fetch latest HTML on each visit |
+
+> **Cache busting:** when you update a CSS or JS file, rename it with a version suffix  
+> (e.g. `main.v2.css`) or rely on Vercel/Cloudflare's built-in asset fingerprinting so  
+> the browser picks up the new file despite the long TTL.
+
 ## How to Update Data
 
 All app content lives in **`src/data/team.js`**. Edit the `DATA` object:
