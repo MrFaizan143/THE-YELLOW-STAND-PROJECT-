@@ -232,3 +232,100 @@ h1 {
     font-size: var(--text-xxs);
     font-family: var(--font-mono);
 }
+
+
+/* --------------------------------------------------------------------------
+   H2H Card
+   Head-to-head record card on the Rivals page.
+-------------------------------------------------------------------------- */
+.h2h-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    margin-bottom: var(--space-4);
+}
+
+.h2h-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: var(--space-4);
+}
+
+.h2h-team {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-md);
+    text-transform: uppercase;
+}
+
+.h2h-short {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-yellow);
+    letter-spacing: 1px;
+}
+
+.h2h-stats {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-3);
+}
+
+.h2h-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.h2h-stat-value {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-md);
+}
+
+.h2h-stat-label {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    margin-top: var(--space-1);
+    text-transform: uppercase;
+}
+
+.h2h-win .h2h-stat-value  { color: var(--color-yellow); }
+.h2h-loss .h2h-stat-value { color: var(--color-text-muted); }
+
+/* Win-rate progress bar */
+.h2h-bar-track {
+    height: 3px;
+    background: var(--color-border-lt);
+    border-radius: var(--radius-pill);
+    margin-bottom: var(--space-3);
+    overflow: hidden;
+}
+
+.h2h-bar-fill {
+    height: 100%;
+    background: var(--color-yellow);
+    border-radius: var(--radius-pill);
+    transition: width var(--transition-slow) ease;
+}
+
+/* Key moment blurb */
+.h2h-moment {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    line-height: 1.6;
+    border-left: 2px solid var(--color-border-lt);
+    padding-left: var(--space-3);
+}
+
+/* Defunct teams section divider */
+.h2h-section-title {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin: var(--space-8) 0 var(--space-4);
+    text-transform: uppercase;
+}

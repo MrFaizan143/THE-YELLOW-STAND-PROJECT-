@@ -41,6 +41,7 @@ const Router = (() => {
             visited.add(pageId);
             if (pageId === 'm') Render.fixtures();
             if (pageId === 'p') Render.squad();
+            if (pageId === 'r') Render.h2h();
         }
 
         window.scrollTo(0, 0);
