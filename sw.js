@@ -7,7 +7,7 @@
  *   • Navigation requests   → network-first with cached index.html fallback
  */
 
-const CACHE_VERSION = 'tys-v1';
+const CACHE_VERSION = 'tys-v2';
 const FONT_CACHE    = 'tys-fonts-v1';
 
 /** All local assets that make up the app shell */
@@ -20,9 +20,11 @@ const SHELL_ASSETS = [
     '/src/css/base.css',
     '/src/css/components.css',
     '/src/data/team.js',
+    '/src/js/results.js',
     '/src/js/render.js',
     '/src/js/router.js',
     '/src/js/countdown.js',
+    '/src/js/profile.js',
     '/src/js/app.js',
     '/icons/icon-192.svg',
     '/icons/icon-512.svg',
