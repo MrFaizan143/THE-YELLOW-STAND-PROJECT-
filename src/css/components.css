@@ -11,7 +11,7 @@
 -------------------------------------------------------------------------- */
 nav {
     position: fixed;
-    bottom: 20px;
+    bottom: calc(20px + env(safe-area-inset-bottom));
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
@@ -35,12 +35,14 @@ nav {
     text-transform: uppercase;
     cursor: pointer;
     padding: 12px 0;
+    min-height: 44px;
     border-radius: var(--radius-pill);
     border: none;
     background: transparent;
     transition: background var(--transition-base), color var(--transition-base);
     font-family: var(--font-sans);
     letter-spacing: 0.5px;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* Nav item — active state */
@@ -56,7 +58,7 @@ nav {
 -------------------------------------------------------------------------- */
 .page {
     display: none;
-    padding: var(--space-8) 5% calc(var(--space-8) * 1.5);
+    padding: var(--space-8) 5% calc(var(--space-8) * 1.5 + 90px + env(safe-area-inset-bottom));
     max-width: 1100px;
     margin: 0 auto;
     animation: fadeUp var(--transition-slow) ease;
@@ -231,4 +233,32 @@ h1 {
     color: var(--color-text-muted);
     font-size: var(--text-xxs);
     font-family: var(--font-mono);
+}
+
+
+/* --------------------------------------------------------------------------
+   Reduced Motion
+   Respect the OS "reduce motion" preference.
+-------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .page {
+        animation: none;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   Small screens  (≤ 360px — older / budget Android & 1st-gen iPhone SE)
+   Relax tight letter-spacing that crushes at small clamp minimums.
+-------------------------------------------------------------------------- */
+@media (max-width: 360px) {
+    h1 {
+        letter-spacing: -2px;
+    }
+
+    .fixture-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-2);
+    }
 }
