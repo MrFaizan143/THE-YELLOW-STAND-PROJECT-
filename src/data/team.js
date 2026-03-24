@@ -80,5 +80,69 @@ const DATA = {
         ["Fielding Coach",  "James Foster"],
         ["Team Manager",    "R. Radhakrishnan"],
         ["Doctor",          "Dr. Thottapillil"]
-    ]
+    ],
+
+    /**
+     * Extra player details keyed by the exact name strings used in squad above.
+     * nat: 3-letter country code displayed as a flag badge.
+     */
+    playerDetails: {
+        "Ruturaj Gaikwad (C)": { nat: "IND" },
+        "Sarfaraz Khan":        { nat: "IND" },
+        "Dewald Brevis":        { nat: "RSA" },
+        "Ayush Mhatre":         { nat: "IND" },
+        "MS Dhoni":             { nat: "IND" },
+        "Sanju Samson":         { nat: "IND" },
+        "Urvil Patel":          { nat: "IND" },
+        "Kartik Sharma":        { nat: "IND" },
+        "Shivam Dube":          { nat: "IND" },
+        "Jamie Overton":        { nat: "ENG" },
+        "Matthew Short":        { nat: "AUS" },
+        "Aman Hakim Khan":      { nat: "IND" },
+        "Prashant Veer":        { nat: "IND" },
+        "R. Ghosh":             { nat: "IND" },
+        "Zakary Foulkes":       { nat: "ENG" },
+        "Khaleel Ahmed":        { nat: "IND" },
+        "M. Choudhary":         { nat: "IND" },
+        "Nathan Ellis":         { nat: "AUS" },
+        "Matt Henry":           { nat: "NZ"  },
+        "Anshul Kamboj":        { nat: "IND" },
+        "Gurjapneet Singh":     { nat: "IND" },
+        "Noor Ahmad":           { nat: "AFG" },
+        "Rahul Chahar":         { nat: "IND" },
+        "Akeal Hosein":         { nat: "WIN" },
+        "Shreyas Gopal":        { nat: "IND" }
+    },
+
+    /**
+     * IPL 2026 points table — update as the season progresses.
+     * Columns: team, played, won, lost, nr (no result), pts, nrr.
+     * CSK is listed first so it is always visible at the top of the card.
+     */
+    standings: [
+        { team: "CSK",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
+        { team: "MI",   played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
+        { team: "RCB",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
+        { team: "KKR",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
+        { team: "DC",   played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
+        { team: "RR",   played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
+        { team: "PBKS", played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
+        { team: "SRH",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
+        { team: "GT",   played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
+        { team: "LSG",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" }
+    ],
+
+    /**
+     * Weekly fan poll — update question & options each week.
+     * Votes are stored in localStorage; clearing the key resets voting.
+     */
+    poll: {
+        id:       "poll_2026_w1",   /* change this string to reset all votes */
+        question: "Will CSK win their 6th IPL title in 2026?",
+        options:  [
+            "Yes! Whistle Podu!",
+            "It'll be a tough season",
+            "Too early to say"
+        ]
+    }
 };

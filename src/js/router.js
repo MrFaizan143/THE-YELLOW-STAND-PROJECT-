@@ -48,9 +48,10 @@ const Router = (() => {
                 } else {
                     Render.fixtures();
                 }
+                Render.standings();
             }
             if (pageId === 'p') Render.squad();
-            if (pageId === 'f') FanProfile.render();
+            if (pageId === 'f') { FanProfile.render(); FanPoll.render(); }
         }
 
         window.scrollTo(0, 0);

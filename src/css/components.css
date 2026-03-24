@@ -49,6 +49,11 @@ nav {
     background: var(--color-yellow);
 }
 
+.n-i:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
 
 /* --------------------------------------------------------------------------
    Page
@@ -315,6 +320,11 @@ h1 {
     color: var(--color-yellow);
 }
 
+.result-btn:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
 /* Win */
 .fixture-item.result-win .result-btn.has-result {
     background: #4ade80;
@@ -536,4 +546,258 @@ h1 {
     color: var(--color-yellow);
     min-width: 3ch;
     text-align: center;
+}
+
+
+/* --------------------------------------------------------------------------
+   Theme Toggle
+   Fixed top-right button for dark / light mode switching.
+-------------------------------------------------------------------------- */
+.theme-toggle {
+    position: fixed;
+    top: var(--space-4);
+    right: var(--space-4);
+    z-index: var(--z-nav);
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border-lt);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition-fast), color var(--transition-fast),
+                border-color var(--transition-fast);
+}
+
+.theme-toggle:hover {
+    background: var(--color-yellow);
+    color: var(--color-black);
+    border-color: var(--color-yellow);
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Player Nationality Badge
+   Small tag inside squad cards showing a 2-3 letter country code.
+-------------------------------------------------------------------------- */
+.player-nat {
+    display: inline-block;
+    margin-top: var(--space-2);
+    padding: 2px 6px;
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+
+/* --------------------------------------------------------------------------
+   Section Heading
+   Reusable h2 divider used between fixture list and standings table.
+-------------------------------------------------------------------------- */
+.section-heading {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: var(--space-8) 0 var(--space-4);
+}
+
+
+/* --------------------------------------------------------------------------
+   Points Table (Standings)
+   Tabular IPL standings on the Map page.
+-------------------------------------------------------------------------- */
+.standings-table {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.standing-row {
+    display: grid;
+    grid-template-columns: 28px 56px repeat(4, 1fr) 52px;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--text-xxs);
+    font-family: var(--font-mono);
+    transition: background var(--transition-fast);
+}
+
+.standing-row:last-child {
+    border-bottom: none;
+}
+
+.standing-header {
+    background: var(--color-surface-deep);
+    color: var(--color-text-muted);
+    font-size: 0.55rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.standing-row:not(.standing-header) {
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+/* Highlight CSK row */
+.standing-row--csk {
+    border-left: 3px solid var(--color-yellow);
+    background: var(--color-surface-mid) !important;
+}
+
+.standing-pos {
+    color: var(--color-text-muted);
+}
+
+.standing-team {
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.standing-row--csk .standing-team {
+    color: var(--color-yellow);
+}
+
+.standing-num {
+    text-align: center;
+}
+
+.standing-pts {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+}
+
+.standing-nrr {
+    text-align: right;
+    color: var(--color-text-muted);
+}
+
+
+/* --------------------------------------------------------------------------
+   Fan Poll
+   Weekly poll card on the Fan page.
+-------------------------------------------------------------------------- */
+.poll-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    margin-bottom: var(--space-8);
+}
+
+.poll-question {
+    font-size: 0.95rem;
+    font-weight: var(--font-weight-bold);
+    line-height: 1.4;
+    margin-bottom: var(--space-6);
+}
+
+.poll-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.poll-option {
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-regular);
+    padding: var(--space-4);
+    cursor: pointer;
+    text-align: left;
+    transition: background var(--transition-fast), border-color var(--transition-fast),
+                color var(--transition-fast);
+}
+
+.poll-option:hover {
+    background: var(--color-yellow);
+    border-color: var(--color-yellow);
+    color: var(--color-black);
+}
+
+.poll-option:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
+.poll-results {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.poll-result {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.poll-result-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--text-md);
+}
+
+.poll-result--voted .poll-result-label {
+    color: var(--color-yellow);
+    font-weight: var(--font-weight-bold);
+}
+
+.poll-pct {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+}
+
+.poll-result--voted .poll-pct {
+    color: var(--color-yellow);
+}
+
+.poll-bar-track {
+    height: 6px;
+    background: var(--color-surface-deep);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.poll-bar-fill {
+    height: 100%;
+    background: var(--color-text-muted);
+    border-radius: var(--radius-full);
+    transition: width 0.5s ease;
+}
+
+.poll-result--voted .poll-bar-fill {
+    background: var(--color-yellow);
+}
+
+.poll-total {
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-align: right;
+    letter-spacing: 1px;
 }

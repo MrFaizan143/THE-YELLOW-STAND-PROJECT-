@@ -127,11 +127,17 @@ const Render = (() => {
         for (const [category, players] of Object.entries(DATA.squad)) {
             html += `<h2 class="squad-category-title">${category}</h2>`;
             html += `<div class="grid">`;
-            html += players.map(player => `
+            html += players.map(player => {
+                const details = (DATA.playerDetails && DATA.playerDetails[player]) || {};
+                const natBadge = details.nat
+                    ? `<span class="player-nat" aria-label="${details.nat}">${details.nat}</span>`
+                    : '';
+                return `
                 <div class="card">
                     <p class="name">${player}</p>
-                </div>
-            `).join('');
+                    ${natBadge}
+                </div>`;
+            }).join('');
             html += `</div>`;
         }
 
@@ -147,7 +153,41 @@ const Render = (() => {
         container.innerHTML = html;
     }
 
+    /** Renders the IPL 2026 points table into #standings-list */
+    function standings() {
+        const container = document.getElementById('standings-list');
+        if (!container) return;
+
+        const header = `
+        <div class="standing-row standing-header" role="row">
+            <span class="standing-pos">#</span>
+            <span class="standing-team">Team</span>
+            <span class="standing-num">P</span>
+            <span class="standing-num">W</span>
+            <span class="standing-num">L</span>
+            <span class="standing-num">Pts</span>
+            <span class="standing-nrr">NRR</span>
+        </div>`;
+
+        const rows = DATA.standings.map((s, i) => {
+            const isCsk = s.team === 'CSK';
+            return `
+            <div class="standing-row${isCsk ? ' standing-row--csk' : ''}" role="row"
+                 aria-label="${s.team}: ${s.pts} points">
+                <span class="standing-pos">${i + 1}</span>
+                <span class="standing-team">${s.team}</span>
+                <span class="standing-num">${s.played}</span>
+                <span class="standing-num">${s.won}</span>
+                <span class="standing-num">${s.lost}</span>
+                <span class="standing-num standing-pts">${s.pts}</span>
+                <span class="standing-nrr">${s.nrr}</span>
+            </div>`;
+        }).join('');
+
+        container.innerHTML = header + rows;
+    }
+
     /** Public API */
-    return { fixtures, fixturesLoading, fixturesError, squad, updateHubRecord };
+    return { fixtures, fixturesLoading, fixturesError, squad, standings, updateHubRecord };
 
 })();
