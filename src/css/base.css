@@ -1,0 +1,32 @@
+/* ==========================================================================
+   TYS Base Styles
+   Reset, body defaults, and shared animation keyframes.
+   Depends on: tokens.css
+   ========================================================================== */
+
+/* --- Reset --- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* --- Body --- */
+body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+}
+
+/* --- Animations --- */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
