@@ -14,6 +14,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const matchLabel = document.querySelector('.countdown-card .tag');
     if (matchLabel) matchLabel.textContent = DATA.nextMatch.label;
 
+    // Render Hub info cards (last result + next venue)
+    Render.lastResult();
+    Render.venueInfo();
+
+    // -------------------------------------------------------------------------
+    // Share button — Web Share API with clipboard copy fallback
+    // -------------------------------------------------------------------------
+    const shareBtn = document.getElementById('share-btn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', async () => {
+            const shareData = {
+                title: 'The Yellow Stand',
+                text:  `Next CSK match: ${DATA.nextMatch.label}. Whistle Podu! 🦁`,
+                url:   window.location.href
+            };
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else if (navigator.clipboard) {
+                    await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+                    shareBtn.textContent = '✓ Copied!';
+                    setTimeout(() => {
+                        shareBtn.innerHTML = '<span class="share-icon">↑</span> Share';
+                    }, 2000);
+                }
+            } catch (_) { /* user cancelled share or browser denied */ }
+        });
+    }
+
     // -------------------------------------------------------------------------
     // Dark / Light theme toggle
     // -------------------------------------------------------------------------
@@ -47,3 +76,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+

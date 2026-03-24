@@ -51,6 +51,7 @@ const Router = (() => {
                 Render.standings();
             }
             if (pageId === 'p') Render.squad();
+            if (pageId === 'n') News.render();
             if (pageId === 'f') { FanProfile.render(); FanPoll.render(); }
         }
 

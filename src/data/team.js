@@ -6,11 +6,26 @@
 
 const DATA = {
 
-    /** Next match details (used by countdown) */
+    /** Next match details (used by countdown and Hub venue card) */
     nextMatch: {
         date: "March 30, 2026 19:30:00",
         opponent: "RR",
-        label: "March 30 vs RR"
+        label: "March 30 vs RR",
+        venue: "Barsapara Cricket Stadium",
+        city: "Guwahati",
+        pitch: "Expected to be a batting-friendly surface",
+        weather: "Partly cloudy, ~28 °C"
+    },
+
+    /**
+     * Most recently played result — update after each match.
+     * result: 'W' | 'L' | 'N' | null (null = no games played yet)
+     */
+    lastResult: {
+        opponent: "—",
+        date: "—",
+        result: null,
+        score: "Season yet to begin"
     },
 
     /**
@@ -19,20 +34,20 @@ const DATA = {
      * iso: ISO-8601 match start in IST (UTC+5:30) used for auto-detecting the next match
      */
     fixtures: [
-        { d: "30 MAR", t: "7:30 PM",  o: "Rajasthan Royals",           v: "Barsapara, Guwahati",        b: "Star Sports / JioCinema", iso: "2026-03-30T14:00:00Z" },
-        { d: "03 APR", t: "7:30 PM",  o: "Punjab Kings",                v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-04-03T14:00:00Z" },
-        { d: "05 APR", t: "3:30 PM",  o: "Royal Challengers Bengaluru", v: "Chinnaswamy, Bengaluru",     b: "Star Sports / JioCinema", iso: "2026-04-05T10:00:00Z" },
-        { d: "11 APR", t: "7:30 PM",  o: "Delhi Capitals",              v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-04-11T14:00:00Z" },
-        { d: "14 APR", t: "7:30 PM",  o: "Gujarat Titans",              v: "Narendra Modi, Ahmedabad",   b: "Star Sports / JioCinema", iso: "2026-04-14T14:00:00Z" },
-        { d: "17 APR", t: "7:30 PM",  o: "Sunrisers Hyderabad",         v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-04-17T14:00:00Z" },
-        { d: "20 APR", t: "3:30 PM",  o: "Mumbai Indians",              v: "Wankhede, Mumbai",           b: "Star Sports / JioCinema", iso: "2026-04-20T10:00:00Z" },
-        { d: "26 APR", t: "7:30 PM",  o: "Kolkata Knight Riders",       v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-04-26T14:00:00Z" },
-        { d: "29 APR", t: "7:30 PM",  o: "Lucknow Super Giants",        v: "Ekana, Lucknow",             b: "Star Sports / JioCinema", iso: "2026-04-29T14:00:00Z" },
-        { d: "03 MAY", t: "3:30 PM",  o: "Rajasthan Royals",            v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-05-03T10:00:00Z" },
-        { d: "07 MAY", t: "7:30 PM",  o: "Punjab Kings",                v: "New PCA, Mullanpur",         b: "Star Sports / JioCinema", iso: "2026-05-07T14:00:00Z" },
-        { d: "11 MAY", t: "7:30 PM",  o: "Delhi Capitals",              v: "Arun Jaitley, Delhi",        b: "Star Sports / JioCinema", iso: "2026-05-11T14:00:00Z" },
-        { d: "15 MAY", t: "7:30 PM",  o: "Gujarat Titans",              v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-05-15T14:00:00Z" },
-        { d: "18 MAY", t: "7:30 PM",  o: "Sunrisers Hyderabad",         v: "Rajiv Gandhi, Hyderabad",    b: "Star Sports / JioCinema", iso: "2026-05-18T14:00:00Z" }
+        { d: "30 MAR", t: "7:30 PM",  o: "Rajasthan Royals",           v: "Barsapara, Guwahati",        b: "Star Sports / JioCinema", iso: "2026-03-30T14:00:00Z", home: false },
+        { d: "03 APR", t: "7:30 PM",  o: "Punjab Kings",                v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-04-03T14:00:00Z", home: true  },
+        { d: "05 APR", t: "3:30 PM",  o: "Royal Challengers Bengaluru", v: "Chinnaswamy, Bengaluru",     b: "Star Sports / JioCinema", iso: "2026-04-05T10:00:00Z", home: false },
+        { d: "11 APR", t: "7:30 PM",  o: "Delhi Capitals",              v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-04-11T14:00:00Z", home: true  },
+        { d: "14 APR", t: "7:30 PM",  o: "Gujarat Titans",              v: "Narendra Modi, Ahmedabad",   b: "Star Sports / JioCinema", iso: "2026-04-14T14:00:00Z", home: false },
+        { d: "17 APR", t: "7:30 PM",  o: "Sunrisers Hyderabad",         v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-04-17T14:00:00Z", home: true  },
+        { d: "20 APR", t: "3:30 PM",  o: "Mumbai Indians",              v: "Wankhede, Mumbai",           b: "Star Sports / JioCinema", iso: "2026-04-20T10:00:00Z", home: false },
+        { d: "26 APR", t: "7:30 PM",  o: "Kolkata Knight Riders",       v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-04-26T14:00:00Z", home: true  },
+        { d: "29 APR", t: "7:30 PM",  o: "Lucknow Super Giants",        v: "Ekana, Lucknow",             b: "Star Sports / JioCinema", iso: "2026-04-29T14:00:00Z", home: false },
+        { d: "03 MAY", t: "3:30 PM",  o: "Rajasthan Royals",            v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-05-03T10:00:00Z", home: true  },
+        { d: "07 MAY", t: "7:30 PM",  o: "Punjab Kings",                v: "New PCA, Mullanpur",         b: "Star Sports / JioCinema", iso: "2026-05-07T14:00:00Z", home: false },
+        { d: "11 MAY", t: "7:30 PM",  o: "Delhi Capitals",              v: "Arun Jaitley, Delhi",        b: "Star Sports / JioCinema", iso: "2026-05-11T14:00:00Z", home: false },
+        { d: "15 MAY", t: "7:30 PM",  o: "Gujarat Titans",              v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-05-15T14:00:00Z", home: true  },
+        { d: "18 MAY", t: "7:30 PM",  o: "Sunrisers Hyderabad",         v: "Rajiv Gandhi, Hyderabad",    b: "Star Sports / JioCinema", iso: "2026-05-18T14:00:00Z", home: false }
     ],
 
     /** Squad organised by category */
@@ -85,33 +100,40 @@ const DATA = {
     /**
      * Extra player details keyed by the exact name strings used in squad above.
      * nat: 3-letter country code displayed as a flag badge.
+     * flag: Unicode emoji flag.
+     * role: descriptive role label shown as a sub-badge on the player card.
+     * jersey: squad number.
+     * age: age during the 2026 season.
+     * bat: batting hand/style.
+     * bowl: bowling style.
+     * vc: true if the player is the vice-captain.
      */
     playerDetails: {
-        "Ruturaj Gaikwad (C)": { nat: "IND" },
-        "Sarfaraz Khan":        { nat: "IND" },
-        "Dewald Brevis":        { nat: "RSA" },
-        "Ayush Mhatre":         { nat: "IND" },
-        "MS Dhoni":             { nat: "IND" },
-        "Sanju Samson":         { nat: "IND" },
-        "Urvil Patel":          { nat: "IND" },
-        "Kartik Sharma":        { nat: "IND" },
-        "Shivam Dube":          { nat: "IND" },
-        "Jamie Overton":        { nat: "ENG" },
-        "Matthew Short":        { nat: "AUS" },
-        "Aman Hakim Khan":      { nat: "IND" },
-        "Prashant Veer":        { nat: "IND" },
-        "R. Ghosh":             { nat: "IND" },
-        "Zakary Foulkes":       { nat: "ENG" },
-        "Khaleel Ahmed":        { nat: "IND" },
-        "M. Choudhary":         { nat: "IND" },
-        "Nathan Ellis":         { nat: "AUS" },
-        "Matt Henry":           { nat: "NZ"  },
-        "Anshul Kamboj":        { nat: "IND" },
-        "Gurjapneet Singh":     { nat: "IND" },
-        "Noor Ahmad":           { nat: "AFG" },
-        "Rahul Chahar":         { nat: "IND" },
-        "Akeal Hosein":         { nat: "WIN" },
-        "Shreyas Gopal":        { nat: "IND" }
+        "Ruturaj Gaikwad (C)": { nat: "IND", flag: "🇮🇳", role: "Top order",       jersey: 31, age: 27, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
+        "Sarfaraz Khan":        { nat: "IND", flag: "🇮🇳", role: "Middle order",    jersey: 45, age: 27, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
+        "Dewald Brevis":        { nat: "RSA", flag: "🇿🇦", role: "Top order",       jersey: 52, age: 21, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
+        "Ayush Mhatre":         { nat: "IND", flag: "🇮🇳", role: "Top order",       jersey: 83, age: 18, bat: "Right-hand",  bowl: "Right-arm medium",        vc: false },
+        "MS Dhoni":             { nat: "IND", flag: "🇮🇳", role: "Wicket-keeper",   jersey:  7, age: 44, bat: "Right-hand",  bowl: "Right-arm medium",        vc: false },
+        "Sanju Samson":         { nat: "IND", flag: "🇮🇳", role: "Wicket-keeper",   jersey:  8, age: 31, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
+        "Urvil Patel":          { nat: "IND", flag: "🇮🇳", role: "Wicket-keeper",   jersey: 95, age: 23, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
+        "Kartik Sharma":        { nat: "IND", flag: "🇮🇳", role: "Wicket-keeper",   jersey: 62, age: 21, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
+        "Shivam Dube":          { nat: "IND", flag: "🇮🇳", role: "Finisher",        jersey: 21, age: 31, bat: "Left-hand",   bowl: "Right-arm medium-fast",   vc: true  },
+        "Jamie Overton":        { nat: "ENG", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", role: "All-rounder",    jersey: 14, age: 29, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
+        "Matthew Short":        { nat: "AUS", flag: "🇦🇺", role: "All-rounder",     jersey: 59, age: 27, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
+        "Aman Hakim Khan":      { nat: "IND", flag: "🇮🇳", role: "All-rounder",     jersey: 77, age: 22, bat: "Right-hand",  bowl: "Right-arm medium",        vc: false },
+        "Prashant Veer":        { nat: "IND", flag: "🇮🇳", role: "All-rounder",     jersey: 66, age: 22, bat: "Right-hand",  bowl: "Right-arm medium-fast",   vc: false },
+        "R. Ghosh":             { nat: "IND", flag: "🇮🇳", role: "All-rounder",     jersey: 48, age: 20, bat: "Left-hand",   bowl: "Left-arm orthodox",       vc: false },
+        "Zakary Foulkes":       { nat: "ENG", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", role: "Pace",          jersey: 88, age: 22, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
+        "Khaleel Ahmed":        { nat: "IND", flag: "🇮🇳", role: "Pace",            jersey: 10, age: 27, bat: "Left-hand",   bowl: "Left-arm fast-medium",    vc: false },
+        "M. Choudhary":         { nat: "IND", flag: "🇮🇳", role: "Pace",            jersey: 23, age: 29, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
+        "Nathan Ellis":         { nat: "AUS", flag: "🇦🇺", role: "Pace",            jersey: 35, age: 29, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
+        "Matt Henry":           { nat: "NZ",  flag: "🇳🇿", role: "Pace",            jersey: 29, age: 32, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
+        "Anshul Kamboj":        { nat: "IND", flag: "🇮🇳", role: "Pace",            jersey: 71, age: 22, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
+        "Gurjapneet Singh":     { nat: "IND", flag: "🇮🇳", role: "Pace",            jersey: 90, age: 24, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
+        "Noor Ahmad":           { nat: "AFG", flag: "🇦🇫", role: "Spin",            jersey: 18, age: 20, bat: "Right-hand",  bowl: "Left-arm wrist spin",     vc: false },
+        "Rahul Chahar":         { nat: "IND", flag: "🇮🇳", role: "Spin",            jersey: 40, age: 25, bat: "Right-hand",  bowl: "Right-arm leg-break",     vc: false },
+        "Akeal Hosein":         { nat: "WIN", flag: "🇹🇹", role: "Spin",            jersey: 55, age: 30, bat: "Left-hand",   bowl: "Left-arm orthodox",       vc: false },
+        "Shreyas Gopal":        { nat: "IND", flag: "🇮🇳", role: "Spin",            jersey: 16, age: 31, bat: "Right-hand",  bowl: "Right-arm leg-break",     vc: false }
     },
 
     /**
@@ -144,5 +166,32 @@ const DATA = {
             "It'll be a tough season",
             "Too early to say"
         ]
-    }
+    },
+
+    /**
+     * Static news / update entries — latest first.
+     * Update this array to add new headlines throughout the season.
+     */
+    news: [
+        {
+            date: "MAR 2026",
+            headline: "CSK kick off 2026 campaign away at Guwahati vs RR",
+            body: "Chennai Super Kings open their IPL 2026 season against Rajasthan Royals at the Barsapara Cricket Stadium on March 30. The Lions will be looking to start strong away from home."
+        },
+        {
+            date: "MAR 2026",
+            headline: "Ruturaj Gaikwad confirmed as CSK captain for IPL 2026",
+            body: "Ruturaj Gaikwad will lead the Yellow Army into a new season as captain of Chennai Super Kings, backed by a strong squad assembled at the IPL 2025 mega auction."
+        },
+        {
+            date: "FEB 2026",
+            headline: "CSK squad finalised — Sanju Samson joins the Yellow Army",
+            body: "Chennai Super Kings secured Sanju Samson in the IPL mega auction, adding firepower behind the stumps alongside MS Dhoni. Dewald Brevis and Matt Henry also joined the squad."
+        },
+        {
+            date: "JAN 2026",
+            headline: "IPL 2026 schedule released — CSK host 7 home games at Chidambaram",
+            body: "The BCCI released the IPL 2026 schedule, with Chennai Super Kings playing seven home matches at the MA Chidambaram Stadium. The season runs from March 22 to June 2026."
+        }
+    ]
 };
