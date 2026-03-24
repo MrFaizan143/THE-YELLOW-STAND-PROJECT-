@@ -232,3 +232,320 @@ h1 {
     font-size: var(--text-xxs);
     font-family: var(--font-mono);
 }
+
+
+/* --------------------------------------------------------------------------
+   Nav Live Dot
+   Pulsing red indicator on the "Live" nav button.
+-------------------------------------------------------------------------- */
+.nav-live-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #ff4444;
+    margin-right: 4px;
+    vertical-align: middle;
+    animation: livePulse 1.4s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+    0%, 100% { opacity: 1;   transform: scale(1);   }
+    50%       { opacity: 0.3; transform: scale(0.7); }
+}
+
+
+/* --------------------------------------------------------------------------
+   Match Centre
+   Live scorecard, ball-by-ball timeline, and wagon wheel shot chart.
+-------------------------------------------------------------------------- */
+
+/* Live badge */
+.mc-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    letter-spacing: 2px;
+    color: #ff4444;
+    margin-bottom: var(--space-3);
+}
+
+.mc-live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ff4444;
+    animation: livePulse 1.4s ease-in-out infinite;
+}
+
+/* Header card */
+.mc-header {
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    margin-bottom: var(--space-4);
+}
+
+.mc-match-info {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 1px;
+    margin-bottom: var(--space-3);
+}
+
+.mc-score-block {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+}
+
+.mc-team {
+    font-family: var(--font-mono);
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+}
+
+.mc-score {
+    font-size: 2.4rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -2px;
+    color: var(--color-yellow);
+}
+
+.mc-overs {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 1px;
+}
+
+.mc-target {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-yellow);
+    letter-spacing: 1px;
+    margin-top: var(--space-2);
+}
+
+/* Current batters */
+.mc-batters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.mc-batter-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+}
+
+.mc-batter-name {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: var(--space-1);
+}
+
+.mc-batter-runs {
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -1px;
+}
+
+.mc-batter-balls {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-regular);
+    margin-left: 2px;
+}
+
+.mc-batter-detail {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+}
+
+/* Section titles */
+.mc-section-title {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: var(--space-6) 0 var(--space-3);
+}
+
+/* Ball-by-ball */
+.mc-bbb {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.mc-over-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.mc-over-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    min-width: 36px;
+}
+
+.mc-balls {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.mc-ball {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    cursor: default;
+    transition: transform var(--transition-fast);
+}
+
+.mc-ball:hover { transform: scale(1.15); }
+
+.mc-ball--four    { background: var(--color-yellow); color: var(--color-black); border-color: var(--color-yellow); }
+.mc-ball--six     { background: #ff6b35; color: #fff; border-color: #ff6b35; }
+.mc-ball--wicket  { background: #e03c3c; color: #fff; border-color: #e03c3c; }
+.mc-ball--run     { border-color: var(--color-border-lt); color: var(--color-text); }
+
+/* Wagon wheel */
+.mc-wagon-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+}
+
+.mc-wagon-svg {
+    width: 100%;
+    max-width: 260px;
+}
+
+.mc-wagon-legend {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.mc-legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+}
+
+.mc-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Scorecard / Bowling tables */
+.mc-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: var(--space-4);
+}
+
+.mc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-xxs);
+}
+
+.mc-table thead th {
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+}
+
+.mc-table th:not(:first-child),
+.mc-table td:not(:first-child) {
+    text-align: right;
+}
+
+.mc-table tbody tr {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.mc-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.mc-table tbody td {
+    padding: var(--space-3);
+    vertical-align: top;
+}
+
+.mc-batter-tname {
+    font-weight: var(--font-weight-bold);
+    display: block;
+    font-size: var(--text-sm);
+}
+
+.mc-dismissal {
+    display: block;
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    margin-top: 2px;
+}
+
+.mc-row-active .mc-batter-tname {
+    color: var(--color-yellow);
+}
+
+.mc-num {
+    font-family: var(--font-mono);
+    font-weight: var(--font-weight-bold);
+    white-space: nowrap;
+}
+
+.mc-muted {
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-regular);
+}
+
+.mc-wicket-highlight {
+    color: var(--color-yellow);
+}
