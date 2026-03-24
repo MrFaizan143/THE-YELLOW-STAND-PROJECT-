@@ -232,3 +232,244 @@ h1 {
     font-size: var(--text-xxs);
     font-family: var(--font-mono);
 }
+
+
+/* --------------------------------------------------------------------------
+   Match-Day Banner
+   Highlighted strip shown on the Feed page during match days.
+-------------------------------------------------------------------------- */
+.match-day-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    background: var(--color-yellow);
+    color: var(--color-black);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-5);
+    margin-bottom: var(--space-6);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.match-day-banner[hidden] { display: none; }
+
+.match-day-banner .mdb-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-black);
+    animation: pulse 1.2s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1;   transform: scale(1);    }
+    50%       { opacity: 0.4; transform: scale(0.75); }
+}
+
+
+/* --------------------------------------------------------------------------
+   Compose Form
+   Post creation area at the top of the Feed page.
+-------------------------------------------------------------------------- */
+.compose-form {
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    margin-bottom: var(--space-6);
+}
+
+.compose-author {
+    width: 100%;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-3);
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.compose-author:focus {
+    border-color: var(--color-yellow);
+}
+
+.compose-author::placeholder {
+    color: var(--color-text-muted);
+}
+
+.compose-textarea {
+    width: 100%;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    padding: var(--space-3) var(--space-4);
+    resize: none;
+    min-height: 80px;
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.compose-textarea:focus {
+    border-color: var(--color-yellow);
+}
+
+.compose-textarea::placeholder {
+    color: var(--color-text-muted);
+}
+
+.compose-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-3);
+    gap: var(--space-3);
+}
+
+.char-counter {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+}
+
+.char-counter.over {
+    color: #e05c5c;
+}
+
+.compose-submit {
+    background: var(--color-yellow);
+    color: var(--color-black);
+    border: none;
+    border-radius: var(--radius-pill);
+    padding: var(--space-2) var(--space-6);
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: opacity var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.compose-submit:hover {
+    opacity: 0.85;
+}
+
+.compose-error {
+    font-size: var(--text-xxs);
+    color: #e05c5c;
+    font-family: var(--font-mono);
+    margin-top: var(--space-2);
+}
+
+.compose-error[hidden] { display: none; }
+
+
+/* --------------------------------------------------------------------------
+   Post Card
+   Individual fan post in the community feed.
+-------------------------------------------------------------------------- */
+.post-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    margin-bottom: var(--space-3);
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.post-author {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-base);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.feed-match-badge {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-black);
+    background: var(--color-yellow);
+    border-radius: var(--radius-pill);
+    padding: 2px var(--space-2);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.post-time {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    margin-left: auto;
+}
+
+.post-text {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+    word-break: break-word;
+}
+
+.post-reactions {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+
+/* --------------------------------------------------------------------------
+   Reaction Button
+   Emoji + count pill on each post.
+-------------------------------------------------------------------------- */
+.reaction-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    padding: var(--space-1) var(--space-3);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+    font-family: var(--font-mono);
+}
+
+.reaction-btn:hover {
+    border-color: var(--color-yellow);
+    background: var(--color-surface);
+}
+
+.reaction-btn.reacted {
+    border-color: var(--color-yellow);
+    background: rgba(253, 185, 19, 0.08);
+}
+
+.r-emoji {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.r-count {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    min-width: 1.2ch;
+}

@@ -18,6 +18,7 @@
         <button class="n-i active" data-page="h" aria-current="page">Hub</button>
         <button class="n-i" data-page="m">Map</button>
         <button class="n-i" data-page="p">Pride</button>
+        <button class="n-i" data-page="f">Feed</button>
     </nav>
 
     <!-- Pages -->
@@ -47,13 +48,54 @@
             <div id="squad-content"></div>
         </section>
 
+        <!-- Feed (Community) Page -->
+        <section id="f" class="page" aria-label="Community Feed">
+            <span class="tag">Community</span>
+            <h1>FEED.</h1>
+
+            <!-- Match-day live banner (hidden until match day) -->
+            <div id="match-day-banner" class="match-day-banner" hidden aria-live="polite">
+                <span class="mdb-dot" aria-hidden="true"></span>
+                Match day — live chat active
+            </div>
+
+            <!-- Compose form -->
+            <form id="feed-compose" class="compose-form" novalidate>
+                <input
+                    class="compose-author"
+                    type="text"
+                    placeholder="Your name (optional)"
+                    maxlength="30"
+                    aria-label="Display name"
+                    autocomplete="off"
+                >
+                <textarea
+                    class="compose-textarea"
+                    placeholder="Share your thoughts on CSK…"
+                    maxlength="280"
+                    aria-label="Post message"
+                    required
+                ></textarea>
+                <div class="compose-footer">
+                    <span class="char-counter" aria-live="polite">0 / 280</span>
+                    <button type="submit" class="compose-submit">Post</button>
+                </div>
+                <p class="compose-error" hidden role="alert"></p>
+            </form>
+
+            <!-- Post list -->
+            <div id="feed-list" role="feed" aria-label="Community posts"></div>
+        </section>
+
     </main>
 
     <!-- Scripts (data first, then logic, then app init) -->
     <script src="src/data/team.js"></script>
+    <script src="src/data/feed.js"></script>
     <script src="src/js/render.js"></script>
     <script src="src/js/router.js"></script>
     <script src="src/js/countdown.js"></script>
+    <script src="src/js/feed.js"></script>
     <script src="src/js/app.js"></script>
 </body>
 </html>

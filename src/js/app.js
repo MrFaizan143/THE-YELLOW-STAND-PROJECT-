@@ -7,6 +7,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     Router.init();       // Bind nav button click handlers
     Countdown.start();   // Start the Hub countdown timer
+    Feed.init();         // Bind community feed compose form
 
     // Update the next-match label in the Hub from data
     const matchLabel = document.querySelector('.countdown-card .tag');
