@@ -7,6 +7,8 @@ const Countdown = (() => {
 
     let intervalId = null;
 
+    const pad = n => String(n).padStart(2, '0');
+
     function tick() {
         const el = document.getElementById('timer');
         if (!el) return;
@@ -24,7 +26,7 @@ const Countdown = (() => {
         const mins  = Math.floor((gap % 3_600_000) / 60_000);
         const secs  = Math.floor((gap % 60_000) / 1_000);
 
-        el.textContent = `${days}d ${hours}h ${mins}m ${secs}s`;
+        el.textContent = `${days}d ${pad(hours)}h ${pad(mins)}m ${pad(secs)}s`;
     }
 
     function start() {
