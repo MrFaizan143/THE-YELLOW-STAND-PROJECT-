@@ -6,15 +6,37 @@
 
 const Render = (() => {
 
-    /** Renders the fixture list into #fixture-list with result tracking */
-    function fixtures() {
+    /** Show a loading placeholder in #fixture-list */
+    function fixturesLoading() {
         const container = document.getElementById('fixture-list');
         if (!container) return;
+        container.innerHTML = '<p class="fixtures-status">Loading live fixtures…</p>';
+    }
+
+    /** Show an error notice in #fixture-list */
+    function fixturesError(message) {
+        const container = document.getElementById('fixture-list');
+        if (!container) return;
+        container.innerHTML = `<p class="fixtures-status fixtures-status--error">${message}</p>`;
+    }
+
+    /**
+     * Renders the fixture list into #fixture-list with result tracking.
+     * @param {Array} [liveData] — normalised fixtures from CricketAPI; falls back
+     *                             to the static DATA.fixtures when omitted or empty.
+     */
+    function fixtures(liveData) {
+        const container = document.getElementById('fixture-list');
+        if (!container) return;
+
+        const fixtureSource = (Array.isArray(liveData) && liveData.length > 0)
+            ? liveData
+            : DATA.fixtures;
 
         const savedResults = Results.load();
         const nextIdx      = Results.nextFixtureIndex();
 
-        container.innerHTML = DATA.fixtures.map((f, i) => {
+        container.innerHTML = fixtureSource.map((f, i) => {
             const result  = savedResults[i];
             const isNext  = i === nextIdx;
             const classes = ['fixture-item',
@@ -126,6 +148,6 @@ const Render = (() => {
     }
 
     /** Public API */
-    return { fixtures, squad, updateHubRecord };
+    return { fixtures, fixturesLoading, fixturesError, squad, updateHubRecord };
 
 })();

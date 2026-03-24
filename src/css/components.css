@@ -338,6 +338,25 @@ h1 {
 
 
 /* --------------------------------------------------------------------------
+   Fixture Status
+   Loading / error message shown inside #fixture-list while fetching live data.
+-------------------------------------------------------------------------- */
+.fixtures-status {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    letter-spacing: 1px;
+    padding: var(--space-8) 0;
+    text-transform: uppercase;
+}
+
+.fixtures-status--error {
+    color: #f87171;
+}
+
+
+/* --------------------------------------------------------------------------
    Squad Category Title
    Section header on the Pride page (Space Mono).
 -------------------------------------------------------------------------- */
