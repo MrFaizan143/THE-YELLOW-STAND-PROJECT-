@@ -13,12 +13,22 @@ const DATA = {
         label: "March 30 vs RR"
     },
 
-    /** Full fixture list */
+    /** Full fixture list -- d: date, t: time (IST), o: opponent, v: venue, b: broadcast */
     fixtures: [
-        { d: "30 MAR", o: "Rajasthan Royals",  v: "Guwahati" },
-        { d: "03 APR", o: "Punjab Kings",       v: "Chennai"  },
-        { d: "05 APR", o: "RCB",                v: "Bengaluru" },
-        { d: "11 APR", o: "Delhi Capitals",     v: "Chennai"  }
+        { d: "30 MAR", t: "7:30 PM", o: "Rajasthan Royals",          v: "Barsapara, Guwahati",        b: "Star Sports / JioCinema" },
+        { d: "03 APR", t: "7:30 PM", o: "Punjab Kings",               v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema" },
+        { d: "05 APR", t: "3:30 PM", o: "Royal Challengers Bengaluru",v: "Chinnaswamy, Bengaluru",     b: "Star Sports / JioCinema" },
+        { d: "11 APR", t: "7:30 PM", o: "Delhi Capitals",             v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema" },
+        { d: "14 APR", t: "7:30 PM", o: "Gujarat Titans",             v: "Narendra Modi, Ahmedabad",   b: "Star Sports / JioCinema" },
+        { d: "17 APR", t: "7:30 PM", o: "Sunrisers Hyderabad",        v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema" },
+        { d: "20 APR", t: "3:30 PM", o: "Mumbai Indians",             v: "Wankhede, Mumbai",           b: "Star Sports / JioCinema" },
+        { d: "26 APR", t: "7:30 PM", o: "Kolkata Knight Riders",      v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema" },
+        { d: "29 APR", t: "7:30 PM", o: "Lucknow Super Giants",       v: "Ekana, Lucknow",             b: "Star Sports / JioCinema" },
+        { d: "03 MAY", t: "3:30 PM", o: "Rajasthan Royals",           v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema" },
+        { d: "07 MAY", t: "7:30 PM", o: "Punjab Kings",               v: "New PCA, Mullanpur",         b: "Star Sports / JioCinema" },
+        { d: "11 MAY", t: "7:30 PM", o: "Delhi Capitals",             v: "Arun Jaitley, Delhi",        b: "Star Sports / JioCinema" },
+        { d: "15 MAY", t: "7:30 PM", o: "Gujarat Titans",             v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema" },
+        { d: "18 MAY", t: "7:30 PM", o: "Sunrisers Hyderabad",        v: "Rajiv Gandhi, Hyderabad",    b: "Star Sports / JioCinema" }
     ],
 
     /** Squad organised by category */
