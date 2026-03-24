@@ -39,7 +39,16 @@ const Router = (() => {
         // Lazy-render page content on first visit
         if (!visited.has(pageId)) {
             visited.add(pageId);
-            if (pageId === 'm') Render.fixtures();
+            if (pageId === 'm') {
+                if (CricketAPI.isConfigured()) {
+                    Render.fixturesLoading();
+                    CricketAPI.fetchCSKFixtures()
+                        .then(live => { Render.fixtures(live); })
+                        .catch(() => { Render.fixtures(); });
+                } else {
+                    Render.fixtures();
+                }
+            }
             if (pageId === 'p') Render.squad();
             if (pageId === 'f') FanProfile.render();
         }
