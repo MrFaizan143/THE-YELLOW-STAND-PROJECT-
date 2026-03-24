@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     Router.init();       // Bind nav button click handlers
     Countdown.start();   // Start the Hub countdown timer
     FanProfile.init();   // Pre-load saved fan profile from localStorage
+    Render.updateHubRecord(); // Show season record on Hub
 
     // Update the next-match label in the Hub from data
     const matchLabel = document.querySelector('.countdown-card .tag');

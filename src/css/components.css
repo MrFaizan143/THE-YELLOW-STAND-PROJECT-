@@ -169,8 +169,29 @@ h1 {
 
 
 /* --------------------------------------------------------------------------
+   Hub Record
+   Season W-L summary shown below the countdown card.
+-------------------------------------------------------------------------- */
+.hub-record-wrap {
+    margin-top: var(--space-6);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+}
+
+.hub-record {
+    font-size: 1.6rem;
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-mono);
+    color: var(--color-text);
+    letter-spacing: 1px;
+}
+
+
+/* --------------------------------------------------------------------------
    Fixture Item
-   Single match row on the Map page.
+   Single match row on the Map page, extended for result tracking.
 -------------------------------------------------------------------------- */
 .fixture-item {
     background: var(--color-surface);
@@ -181,6 +202,8 @@ h1 {
     justify-content: space-between;
     align-items: center;
     border: 1px solid var(--color-border);
+    position: relative;
+    overflow: hidden;
 }
 
 .fixture-item .opponent {
@@ -192,16 +215,34 @@ h1 {
     color: var(--color-text-muted);
 }
 
-.fixture-item .date {
-    color: var(--color-yellow);
-    font-weight: var(--font-weight-bold);
-    font-family: var(--font-mono);
+.fixture-item .broadcast {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+}
+
+.fixture-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.fixture-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-shrink: 0;
+    margin-left: var(--space-4);
 }
 
 .fixture-meta {
     text-align: right;
     flex-shrink: 0;
-    margin-left: var(--space-4);
+}
+
+.fixture-item .date {
+    color: var(--color-yellow);
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-mono);
 }
 
 .fixture-item .time {
@@ -211,10 +252,88 @@ h1 {
     margin-top: var(--space-1);
 }
 
-.fixture-item .broadcast {
-    font-size: var(--text-xxs);
+/* "NEXT" badge on the upcoming fixture */
+.next-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--color-yellow);
+    color: var(--color-black);
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1.5px;
+    padding: 3px 8px;
+    border-bottom-left-radius: var(--radius-sm);
+}
+
+/* Highlight the next upcoming match row */
+.fixture-item.fixture-next {
+    border-color: var(--color-yellow);
+    box-shadow: 0 0 0 1px var(--color-yellow);
+}
+
+/* Result state — dim played matches slightly */
+.fixture-item.result-win,
+.fixture-item.result-loss,
+.fixture-item.result-nr {
+    opacity: 0.85;
+}
+
+/* Left edge accent for results */
+.fixture-item.result-win  { border-left: 3px solid #4ade80; }
+.fixture-item.result-loss { border-left: 3px solid #f87171; }
+.fixture-item.result-nr   { border-left: 3px solid var(--color-text-muted); }
+
+
+/* --------------------------------------------------------------------------
+   Result Button
+   Circular tap target on each fixture row.
+-------------------------------------------------------------------------- */
+.result-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    border: 1.5px solid var(--color-border-lt);
+    background: transparent;
     color: var(--color-text-muted);
-    margin-top: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background var(--transition-fast), color var(--transition-fast),
+                border-color var(--transition-fast);
+    letter-spacing: 0;
+}
+
+.result-btn:hover {
+    border-color: var(--color-yellow);
+    color: var(--color-yellow);
+}
+
+/* Win */
+.fixture-item.result-win .result-btn.has-result {
+    background: #4ade80;
+    border-color: #4ade80;
+    color: #000;
+}
+
+/* Loss */
+.fixture-item.result-loss .result-btn.has-result {
+    background: #f87171;
+    border-color: #f87171;
+    color: #000;
+}
+
+/* No result */
+.fixture-item.result-nr .result-btn.has-result {
+    background: var(--color-text-muted);
+    border-color: var(--color-text-muted);
+    color: #000;
 }
 
 

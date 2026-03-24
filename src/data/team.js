@@ -13,22 +13,26 @@ const DATA = {
         label: "March 30 vs RR"
     },
 
-    /** Full fixture list -- d: date, t: time (IST), o: opponent, v: venue, b: broadcast */
+    /**
+     * Full fixture list
+     * d: display date   t: display time (IST)   o: opponent   v: venue   b: broadcast
+     * iso: ISO-8601 match start in IST (UTC+5:30) used for auto-detecting the next match
+     */
     fixtures: [
-        { d: "30 MAR", t: "7:30 PM", o: "Rajasthan Royals",          v: "Barsapara, Guwahati",        b: "Star Sports / JioCinema" },
-        { d: "03 APR", t: "7:30 PM", o: "Punjab Kings",               v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema" },
-        { d: "05 APR", t: "3:30 PM", o: "Royal Challengers Bengaluru",v: "Chinnaswamy, Bengaluru",     b: "Star Sports / JioCinema" },
-        { d: "11 APR", t: "7:30 PM", o: "Delhi Capitals",             v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema" },
-        { d: "14 APR", t: "7:30 PM", o: "Gujarat Titans",             v: "Narendra Modi, Ahmedabad",   b: "Star Sports / JioCinema" },
-        { d: "17 APR", t: "7:30 PM", o: "Sunrisers Hyderabad",        v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema" },
-        { d: "20 APR", t: "3:30 PM", o: "Mumbai Indians",             v: "Wankhede, Mumbai",           b: "Star Sports / JioCinema" },
-        { d: "26 APR", t: "7:30 PM", o: "Kolkata Knight Riders",      v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema" },
-        { d: "29 APR", t: "7:30 PM", o: "Lucknow Super Giants",       v: "Ekana, Lucknow",             b: "Star Sports / JioCinema" },
-        { d: "03 MAY", t: "3:30 PM", o: "Rajasthan Royals",           v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema" },
-        { d: "07 MAY", t: "7:30 PM", o: "Punjab Kings",               v: "New PCA, Mullanpur",         b: "Star Sports / JioCinema" },
-        { d: "11 MAY", t: "7:30 PM", o: "Delhi Capitals",             v: "Arun Jaitley, Delhi",        b: "Star Sports / JioCinema" },
-        { d: "15 MAY", t: "7:30 PM", o: "Gujarat Titans",             v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema" },
-        { d: "18 MAY", t: "7:30 PM", o: "Sunrisers Hyderabad",        v: "Rajiv Gandhi, Hyderabad",    b: "Star Sports / JioCinema" }
+        { d: "30 MAR", t: "7:30 PM",  o: "Rajasthan Royals",           v: "Barsapara, Guwahati",        b: "Star Sports / JioCinema", iso: "2026-03-30T14:00:00Z" },
+        { d: "03 APR", t: "7:30 PM",  o: "Punjab Kings",                v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-04-03T14:00:00Z" },
+        { d: "05 APR", t: "3:30 PM",  o: "Royal Challengers Bengaluru", v: "Chinnaswamy, Bengaluru",     b: "Star Sports / JioCinema", iso: "2026-04-05T10:00:00Z" },
+        { d: "11 APR", t: "7:30 PM",  o: "Delhi Capitals",              v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-04-11T14:00:00Z" },
+        { d: "14 APR", t: "7:30 PM",  o: "Gujarat Titans",              v: "Narendra Modi, Ahmedabad",   b: "Star Sports / JioCinema", iso: "2026-04-14T14:00:00Z" },
+        { d: "17 APR", t: "7:30 PM",  o: "Sunrisers Hyderabad",         v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-04-17T14:00:00Z" },
+        { d: "20 APR", t: "3:30 PM",  o: "Mumbai Indians",              v: "Wankhede, Mumbai",           b: "Star Sports / JioCinema", iso: "2026-04-20T10:00:00Z" },
+        { d: "26 APR", t: "7:30 PM",  o: "Kolkata Knight Riders",       v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-04-26T14:00:00Z" },
+        { d: "29 APR", t: "7:30 PM",  o: "Lucknow Super Giants",        v: "Ekana, Lucknow",             b: "Star Sports / JioCinema", iso: "2026-04-29T14:00:00Z" },
+        { d: "03 MAY", t: "3:30 PM",  o: "Rajasthan Royals",            v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-05-03T10:00:00Z" },
+        { d: "07 MAY", t: "7:30 PM",  o: "Punjab Kings",                v: "New PCA, Mullanpur",         b: "Star Sports / JioCinema", iso: "2026-05-07T14:00:00Z" },
+        { d: "11 MAY", t: "7:30 PM",  o: "Delhi Capitals",              v: "Arun Jaitley, Delhi",        b: "Star Sports / JioCinema", iso: "2026-05-11T14:00:00Z" },
+        { d: "15 MAY", t: "7:30 PM",  o: "Gujarat Titans",              v: "Chidambaram, Chennai",       b: "Star Sports / JioCinema", iso: "2026-05-15T14:00:00Z" },
+        { d: "18 MAY", t: "7:30 PM",  o: "Sunrisers Hyderabad",         v: "Rajiv Gandhi, Hyderabad",    b: "Star Sports / JioCinema", iso: "2026-05-18T14:00:00Z" }
     ],
 
     /** Squad organised by category */
