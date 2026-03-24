@@ -213,9 +213,93 @@ h1 {
 
 
 /* --------------------------------------------------------------------------
-   Staff Item
-   Support staff row on the Pride page.
+   Fan Mood Wall
+   Pre-match hype reaction widget on the Hub page.
 -------------------------------------------------------------------------- */
+.mood-wall {
+    margin-top: var(--space-8);
+}
+
+.mood-title {
+    font-size: clamp(1.6rem, 6vw, 3rem);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: var(--space-6);
+}
+
+.mood-reactions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.mood-btn {
+    flex: 1;
+    min-width: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-2);
+    cursor: pointer;
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    transition:
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+.mood-btn:hover {
+    background: var(--color-surface-mid);
+    border-color: var(--color-border-lt);
+    transform: translateY(-2px);
+}
+
+.mood-btn.active {
+    background: var(--color-yellow);
+    border-color: var(--color-yellow);
+    color: var(--color-black);
+}
+
+.mood-btn.active .mood-count,
+.mood-btn.active .mood-label {
+    color: var(--color-black);
+}
+
+.mood-emoji {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.mood-count {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+}
+
+.mood-label {
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.5px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+}
+
+.mood-total {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-4);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
 .staff-item {
     background: var(--color-surface-deep);
     padding: var(--space-4);
