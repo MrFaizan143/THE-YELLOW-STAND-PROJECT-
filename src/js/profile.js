@@ -139,6 +139,13 @@ const FanProfile = (() => {
         const streakDown = document.getElementById('streak-down');
         const streakVal  = document.getElementById('streak-val');
 
+        /** Sync jersey number state to DOM and storage */
+        function applyJerseyNumber(val) {
+            state.jerseyNumber = val;
+            document.querySelector('.jersey-number').textContent = val || defaults.jerseyNumber;
+            save();
+        }
+
         nameInput.addEventListener('input', () => {
             state.fanName = nameInput.value;
             document.querySelector('.jersey-name').textContent =
@@ -147,10 +154,15 @@ const FanProfile = (() => {
         });
 
         numInput.addEventListener('input', () => {
-            state.jerseyNumber = numInput.value;
-            document.querySelector('.jersey-number').textContent =
-                state.jerseyNumber || defaults.jerseyNumber;
-            save();
+            applyJerseyNumber(numInput.value);
+        });
+
+        numInput.addEventListener('blur', () => {
+            let val = parseInt(numInput.value, 10);
+            if (isNaN(val) || val < 1)  val = 1;
+            if (val > 99)               val = 99;
+            numInput.value = val;
+            applyJerseyNumber(val);
         });
 
         playerSel.addEventListener('change', () => {
@@ -298,7 +310,13 @@ const FanPoll = (() => {
                 <p class="poll-question">${DATA.poll.question}</p>
                 <div class="poll-results">${bars}</div>
                 <p class="poll-total">${total} vote${total !== 1 ? 's' : ''}</p>
+                <button class="poll-change-btn" aria-label="Change your vote">Change vote</button>
             </div>`;
+
+        container.querySelector('.poll-change-btn').addEventListener('click', () => {
+            localStorage.removeItem(storageKey());
+            renderOptions(container);
+        });
     }
 
     return { render };

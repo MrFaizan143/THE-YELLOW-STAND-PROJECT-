@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     await navigator.share(shareData);
                 } else if (navigator.clipboard) {
                     await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
-                    shareBtn.textContent = '✓ Copied!';
+                    shareBtn.innerHTML = '<span class="share-icon">✓</span> Copied!';
                     setTimeout(() => {
                         shareBtn.innerHTML = '<span class="share-icon">↑</span> Share';
                     }, 2000);

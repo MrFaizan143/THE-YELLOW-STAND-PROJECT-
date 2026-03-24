@@ -802,6 +802,33 @@ h1 {
     letter-spacing: 1px;
 }
 
+.poll-change-btn {
+    margin-top: var(--space-4);
+    background: transparent;
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: var(--space-2) var(--space-4);
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.poll-change-btn:hover {
+    border-color: var(--color-yellow);
+    color: var(--color-yellow);
+}
+
+.poll-change-btn:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
 
 /* --------------------------------------------------------------------------
    Hub Info Row
