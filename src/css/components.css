@@ -1136,3 +1136,156 @@ h1 {
     text-transform: uppercase;
 }
 
+
+/* --------------------------------------------------------------------------
+   Tool Card
+   Calculator card on the Tools page.
+-------------------------------------------------------------------------- */
+.tool-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    margin-bottom: var(--space-4);
+}
+
+.tool-card .tag {
+    margin-bottom: var(--space-2);
+}
+
+.tool-desc {
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-5);
+    line-height: 1.5;
+}
+
+.tool-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+}
+
+.tool-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.tool-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.tool-input {
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-md);
+    padding: var(--space-3) var(--space-4);
+    width: 100%;
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: border-color var(--transition-fast);
+}
+
+.tool-input:focus {
+    outline: none;
+    border-color: var(--color-yellow);
+}
+
+/* Hide number spinner arrows */
+.tool-input::-webkit-inner-spin-button,
+.tool-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.tool-input[type=number] { -moz-appearance: textfield; }
+
+.tool-result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    margin-top: var(--space-2);
+}
+
+.tool-result-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.tool-result {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+}
+
+
+/* --------------------------------------------------------------------------
+   Resource Grid
+   Cards linking to free cricket tools and websites.
+-------------------------------------------------------------------------- */
+.resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+}
+
+.resource-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    text-decoration: none;
+    color: var(--color-text);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast),
+                background var(--transition-fast);
+}
+
+.resource-card:hover {
+    border-color: var(--color-yellow);
+    box-shadow: 0 0 0 1px var(--color-yellow);
+}
+
+.resource-card:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
+.resource-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.resource-name {
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.resource-desc {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
