@@ -56,7 +56,7 @@ const Router = (() => {
                 }
                 Render.standings();
             }
-            if (pageId === 'p') { Render.legacy(); Render.squad(); }
+            if (pageId === 'p') { Render.legacy(); Render.management(); Render.squad(); }
             if (pageId === 'n') News.fetchAndRender();
             if (pageId === 'f') {
                 CricketQuiz.render();
