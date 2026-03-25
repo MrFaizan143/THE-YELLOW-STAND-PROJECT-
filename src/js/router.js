@@ -61,6 +61,12 @@ const Router = (() => {
             if (pageId === 't') Tools.render();
         }
 
+        // Always call Schedule.onPageShow when navigating to the schedule page
+        // (map must be visible before Leaflet can initialize it)
+        if (pageId === 'm' && typeof Schedule !== 'undefined') {
+            Schedule.onPageShow();
+        }
+
         window.scrollTo(0, 0);
     }
 

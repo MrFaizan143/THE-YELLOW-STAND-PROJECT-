@@ -25,6 +25,12 @@ const Render = (() => {
     /** Currently active fixture filter: 'all' | 'home' | 'away' | 'upcoming' | 'done' */
     let currentFilter = 'all';
 
+    /** Active venue filter: 'all' or an exact venue string from DATA.fixtures */
+    let currentVenueFilter = 'all';
+
+    /** Active time-slot filter: 'all' | 'afternoon' | 'evening' */
+    let currentTimeSlot = 'all';
+
     /** Last resolved fixture data (live or static) stored for re-filtering */
     let storedFixtureSource = null;
 
@@ -59,7 +65,7 @@ const Render = (() => {
         renderFixtures();
     }
 
-    /** Internal: re-renders the fixture list applying currentFilter */
+    /** Internal: re-renders the fixture list applying currentFilter, venue filter, and time-slot filter */
     function renderFixtures() {
         const container = document.getElementById('fixture-list');
         if (!container) return;
@@ -69,17 +75,30 @@ const Render = (() => {
         const nextIdx      = Results.nextFixtureIndex();
         const now          = Date.now();
 
-        // Apply filter
+        // Apply all active filters (AND logic)
         const filtered = source.map((f, i) => ({ f, i })).filter(({ f, i }) => {
             const result  = savedResults[i];
             const isPast  = f.iso && new Date(f.iso).getTime() <= now;
+
+            // Base filter
+            let pass = true;
             switch (currentFilter) {
-                case 'home':     return f.home === true;
-                case 'away':     return f.home === false;
-                case 'upcoming': return !isPast;
-                case 'done':     return isPast || result;
-                default:         return true;
+                case 'home':     pass = f.home === true;         break;
+                case 'away':     pass = f.home === false;        break;
+                case 'upcoming': pass = !isPast;                 break;
+                case 'done':     pass = isPast || !!result;      break;
+                default:         pass = true;
             }
+            if (!pass) return false;
+
+            // Venue filter
+            if (currentVenueFilter !== 'all' && f.v !== currentVenueFilter) return false;
+
+            // Time-slot filter (Afternoon = 3:30 PM, Evening = 7:30 PM)
+            if (currentTimeSlot === 'afternoon' && !(f.t && f.t.startsWith('3:'))) return false;
+            if (currentTimeSlot === 'evening'   && !(f.t && f.t.startsWith('7:'))) return false;
+
+            return true;
         });
 
         // Season progress (based on all source fixtures, not filtered)
@@ -95,17 +114,38 @@ const Render = (() => {
             <p class="season-progress-label">${playedMatches} / ${totalMatches} played</p>
         </div>`;
 
-        // Filter bar HTML
-        const filters = ['all', 'home', 'away', 'upcoming', 'done'];
-        const countSuffix = currentFilter !== 'all'
-            ? ` <span class="fixture-count">${filtered.length}</span>`
-            : '';
+        // Build unique venue list for the venue dropdown
+        const allVenues = [...new Set(source.map(f => f.v).filter(Boolean))].sort();
+        const venueOptions = allVenues.map(v =>
+            `<option value="${v}"${currentVenueFilter === v ? ' selected' : ''}>${v}</option>`
+        ).join('');
+
+        // Filter bar HTML — base filters + venue dropdown + time-slot toggles
+        const baseFilters   = ['all', 'home', 'away', 'upcoming', 'done'];
+        const activeCount   = currentFilter !== 'all' ? ` <span class="fixture-count">${filtered.length}</span>` : '';
         const filterBar = `
         <div class="fixture-filters" role="group" aria-label="Filter fixtures">
-            ${filters.map(f => `
-            <button class="filter-btn${currentFilter === f ? ' filter-btn--active' : ''}"
-                    data-filter="${f}" aria-pressed="${currentFilter === f}">${f.charAt(0).toUpperCase() + f.slice(1)}${currentFilter === f ? countSuffix : ''}</button>
-            `).join('')}
+            <div class="filter-row" role="group" aria-label="Status filter">
+                ${baseFilters.map(f => `
+                <button class="filter-btn${currentFilter === f ? ' filter-btn--active' : ''}"
+                        data-filter="${f}" aria-pressed="${currentFilter === f}">
+                    ${f.charAt(0).toUpperCase() + f.slice(1)}${currentFilter === f ? activeCount : ''}
+                </button>`).join('')}
+            </div>
+            <div class="filter-row filter-row--secondary">
+                <select class="filter-venue-select" id="venue-filter-select" aria-label="Filter by venue">
+                    <option value="all"${currentVenueFilter === 'all' ? ' selected' : ''}>All Venues</option>
+                    ${venueOptions}
+                </select>
+                <div class="filter-timeslot" role="group" aria-label="Filter by time slot">
+                    <button class="filter-btn filter-btn--sm${currentTimeSlot === 'all'       ? ' filter-btn--active' : ''}"
+                            data-timeslot="all"       aria-pressed="${currentTimeSlot === 'all'}">Any Time</button>
+                    <button class="filter-btn filter-btn--sm${currentTimeSlot === 'afternoon' ? ' filter-btn--active' : ''}"
+                            data-timeslot="afternoon" aria-pressed="${currentTimeSlot === 'afternoon'}">☀ 3:30 PM</button>
+                    <button class="filter-btn filter-btn--sm${currentTimeSlot === 'evening'   ? ' filter-btn--active' : ''}"
+                            data-timeslot="evening"   aria-pressed="${currentTimeSlot === 'evening'}">🌙 7:30 PM</button>
+                </div>
+            </div>
         </div>`;
 
         if (filtered.length === 0) {
@@ -137,9 +177,25 @@ const Render = (() => {
             const homeBadge = `<span class="fixture-badge fixture-badge--${isHome ? 'home' : 'away'}"
                                      aria-label="${isHome ? 'Home' : 'Away'}">${isHome ? 'HOME' : 'AWAY'}</span>`;
 
-            const calBtn = f.iso
+            // .ics download calendar button
+            const icsBtn = f.iso
                 ? `<a class="cal-btn" href="${buildICS(f)}" download="csk-vs-${f.o.replace(/\s+/g, '-').toLowerCase()}.ics"
-                      aria-label="Add to calendar" title="Add to calendar">📅</a>`
+                      aria-label="Add to iCal / Outlook" title="Add to iCal / Outlook">📅</a>`
+                : '';
+
+            // Google Calendar URL deep-link button
+            const gCalBtn = f.iso
+                ? `<a class="cal-btn cal-btn--gcal" href="${buildGoogleCalendarLink(f)}"
+                      target="_blank" rel="noopener noreferrer"
+                      aria-label="Add to Google Calendar" title="Add to Google Calendar">📆</a>`
+                : '';
+
+            // Directions link (Google Maps)
+            const vInfo = DATA.venueInfo && DATA.venueInfo[f.v];
+            const dirLink = vInfo
+                ? `<a class="travel-link" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(vInfo.stadium + ', ' + vInfo.city)}"
+                      target="_blank" rel="noopener noreferrer"
+                      aria-label="Get directions to ${vInfo.stadium}" title="Get directions">📍 Directions</a>`
                 : '';
 
             // Days-away label for the next upcoming fixture
@@ -172,6 +228,7 @@ const Render = (() => {
                         ${homeBadge}
                     </div>
                     <p class="venue">${f.v}</p>
+                    ${dirLink ? `<span class="fixture-travel-row">${dirLink}</span>` : ''}
                     <p class="broadcast">${f.b}</p>
                 </div>
                 <div class="fixture-right">
@@ -179,7 +236,7 @@ const Render = (() => {
                         <p class="date">${f.d}</p>
                         <p class="time">${f.t} IST</p>
                         ${daysLabel}
-                        ${calBtn}
+                        <span class="cal-btns">${icsBtn}${gCalBtn}</span>
                     </div>
                     <button class="result-btn${result ? ' has-result' : ''}"
                             aria-label="${resultTitle}"
@@ -221,16 +278,39 @@ const Render = (() => {
                 });
             }
         }
+
+        // Notify the Schedule module so it can re-bind H2H tooltips and weather badges
+        if (typeof Schedule !== 'undefined' && Schedule.onFixturesRendered) {
+            Schedule.onFixturesRendered();
+        }
     }
 
-    /** Binds click handlers on filter buttons inside container */
+    /** Binds click handlers on filter buttons (base + venue + time-slot) inside container */
     function bindFilterButtons(container) {
-        container.querySelectorAll('.filter-btn').forEach(btn => {
+        // Base status filters
+        container.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
             btn.addEventListener('click', () => {
                 currentFilter = btn.dataset.filter;
                 renderFixtures();
             });
         });
+
+        // Time-slot toggle buttons
+        container.querySelectorAll('.filter-btn[data-timeslot]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentTimeSlot = btn.dataset.timeslot;
+                renderFixtures();
+            });
+        });
+
+        // Venue dropdown
+        const venueSelect = container.querySelector('#venue-filter-select');
+        if (venueSelect) {
+            venueSelect.addEventListener('change', () => {
+                currentVenueFilter = venueSelect.value || 'all';
+                renderFixtures();
+            });
+        }
     }
 
     /** Duration to add when generating .ics DTEND (3.5 hours in ms) */
@@ -265,6 +345,26 @@ const Render = (() => {
         ].join('\r\n');
 
         return 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
+    }
+
+    /**
+     * Builds a Google Calendar "add event" deep-link URL for a fixture.
+     * Opens in a new tab — no API key required.
+     * @param {Object} f — fixture object with iso, o, v, b fields.
+     * @returns {string} Google Calendar URL.
+     */
+    function buildGoogleCalendarLink(f) {
+        const start = new Date(f.iso);
+        const end   = new Date(start.getTime() + MATCH_DURATION_MS);
+        const fmt   = d => d.toISOString().replace(/[-:.]/g, '').slice(0, 15) + 'Z';
+        const params = new URLSearchParams({
+            action:   'TEMPLATE',
+            text:     `CSK vs ${f.o}`,
+            dates:    `${fmt(start)}/${fmt(end)}`,
+            location: f.v,
+            details:  `IPL 2026 — CSK vs ${f.o} at ${f.v}. Watch on ${f.b}.`
+        });
+        return `https://calendar.google.com/calendar/render?${params.toString()}`;
     }
 
     /** Re-renders a single fixture row's result state without full re-render */
@@ -583,7 +683,8 @@ const Render = (() => {
 
             html += `
             <div class="ipl-match-card${cskClass}${liveClass}${pastClass}" role="listitem"
-                 aria-label="${m.team1Short} vs ${m.team2Short}, ${m.d}">
+                 aria-label="${m.team1Short} vs ${m.team2Short}, ${m.d}"
+                 data-team1-short="${m.team1Short}" data-team2-short="${m.team2Short}">
                 ${liveTag}
                 <div class="ipl-match-teams">
                     <span class="ipl-match-team${m.isCSK && /Chennai Super Kings|CSK/i.test(m.team1) ? ' ipl-match-team--csk' : ''}">${m.team1Short}</span>
@@ -599,6 +700,11 @@ const Render = (() => {
         });
 
         container.innerHTML = `<div class="ipl-schedule-rows" role="list">${html}</div>`;
+
+        // Re-apply favourite team highlighting
+        if (typeof Schedule !== 'undefined' && Schedule.applyFavTeamHighlight) {
+            Schedule.applyFavTeamHighlight();
+        }
     }
 
     /** Public API */

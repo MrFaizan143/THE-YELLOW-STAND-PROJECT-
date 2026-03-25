@@ -1976,3 +1976,680 @@ h1 {
     text-transform: uppercase;
 }
 
+
+
+/* ==========================================================================
+   Advanced Schedule Features — added for TYS 2026 interactive enhancements
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   Notification Bell
+   Fixed top-right corner, togglable push-notification opt-in.
+-------------------------------------------------------------------------- */
+.notif-bell {
+    position: fixed;
+    top: 16px;
+    right: 60px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-full);
+    font-size: 1rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: var(--z-nav);
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+    padding: 0;
+}
+
+.notif-bell:hover {
+    border-color: var(--color-yellow);
+}
+
+.notif-bell--active {
+    background: var(--color-yellow);
+    border-color: var(--color-yellow);
+}
+
+.notif-bell:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Follow My Team Bar
+   Compact team selector shown above the venue map.
+-------------------------------------------------------------------------- */
+.follow-team-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+    flex-wrap: wrap;
+}
+
+.follow-team-label {
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.follow-team-select {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-pill);
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1px;
+    padding: var(--space-2) var(--space-4);
+    cursor: pointer;
+    appearance: none;
+    transition: border-color var(--transition-fast);
+}
+
+.follow-team-select:hover,
+.follow-team-select:focus-visible {
+    border-color: var(--color-yellow);
+    outline: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   Venue Map (Leaflet container)
+   Fixed-height map block on the schedule page.
+-------------------------------------------------------------------------- */
+.venue-map-container {
+    width: 100%;
+    height: 280px;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border-lt);
+    overflow: hidden;
+    margin-bottom: var(--space-6);
+    background: var(--color-surface);
+}
+
+/* Custom Leaflet marker pins */
+.map-pin {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-surface-mid);
+    border: 2px solid var(--color-border-lt);
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-bold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform var(--transition-fast), border-color var(--transition-fast);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.map-pin:hover {
+    transform: scale(1.2);
+    border-color: var(--color-yellow);
+}
+
+.map-pin--next {
+    background: var(--color-yellow);
+    border-color: var(--color-yellow);
+    color: var(--color-black);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.map-pin--live {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #fff;
+}
+
+.map-pin--rain {
+    border-color: #60a5fa;
+    box-shadow: 0 0 8px rgba(96, 165, 250, 0.5);
+}
+
+/* Leaflet popup overrides */
+.map-popup {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
+.map-popup-stadium {
+    font-size: 0.8rem;
+    font-weight: var(--font-weight-bold);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.map-popup-city {
+    color: #888;
+    margin-bottom: var(--space-2);
+    font-size: 0.7rem;
+}
+
+.map-popup-match {
+    padding: 2px 0;
+    border-top: 1px solid #eee;
+    font-size: 0.7rem;
+}
+
+.map-popup-match--past {
+    opacity: 0.5;
+}
+
+.map-popup-filter-btn {
+    margin-top: var(--space-2);
+    background: #FDB913;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: #000;
+    width: 100%;
+}
+
+.map-popup-filter-btn:hover {
+    background: #e6a800;
+}
+
+
+/* --------------------------------------------------------------------------
+   Venue Sidebar
+   Off-canvas panel that slides in from the right on map-pin click.
+-------------------------------------------------------------------------- */
+.venue-sidebar {
+    display: none;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+    margin-bottom: var(--space-6);
+}
+
+.venue-sidebar--open {
+    display: block;
+    animation: fadeUp var(--transition-slow) ease;
+}
+
+.venue-sidebar-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+}
+
+.venue-sidebar-stadium {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-md);
+    margin-bottom: 2px;
+}
+
+.venue-sidebar-city {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.venue-sidebar-close {
+    background: transparent;
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-full);
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.venue-sidebar-close:hover {
+    color: var(--color-text);
+    border-color: var(--color-text);
+}
+
+.venue-sidebar-matches {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.sidebar-match {
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.sidebar-match--past {
+    opacity: 0.5;
+}
+
+.sidebar-match-teams {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-md);
+    margin-bottom: 2px;
+}
+
+.sidebar-match-meta {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.5px;
+    margin-bottom: var(--space-1);
+}
+
+
+/* --------------------------------------------------------------------------
+   Traveler Mode Buttons
+   Compact links for directions and hotels.
+-------------------------------------------------------------------------- */
+.travel-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.5px;
+    padding: var(--space-1) var(--space-3);
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+    white-space: nowrap;
+}
+
+.travel-btn:hover {
+    border-color: var(--color-yellow);
+    color: var(--color-yellow);
+}
+
+.travel-btn--hotels {
+    width: 100%;
+    justify-content: center;
+    padding: var(--space-2) var(--space-4);
+}
+
+/* Compact directions link inside fixture rows */
+.fixture-travel-row {
+    display: block;
+    margin-top: var(--space-1);
+    margin-bottom: 2px;
+}
+
+.travel-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    letter-spacing: 0.5px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.travel-link:hover {
+    color: var(--color-yellow);
+}
+
+
+/* --------------------------------------------------------------------------
+   Weather Badge
+   Shows rain threat or temperature on each fixture card.
+-------------------------------------------------------------------------- */
+.weather-badge {
+    display: inline-block;
+    margin-top: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    letter-spacing: 0.5px;
+    color: var(--color-text-muted);
+    padding: 2px 6px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-deep);
+}
+
+.weather-badge--rain {
+    color: #60a5fa;
+    border-color: rgba(96, 165, 250, 0.35);
+    background: rgba(96, 165, 250, 0.08);
+    font-weight: var(--font-weight-bold);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+
+/* --------------------------------------------------------------------------
+   Schedule Countdown
+   Ticking live countdown displayed at the top of the schedule page.
+-------------------------------------------------------------------------- */
+.schedule-countdown-wrap {
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5) var(--space-6);
+    margin-bottom: var(--space-6);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+.schedule-countdown-wrap .tag {
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.schedule-countdown-display {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+    letter-spacing: 1px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Smart Filters — secondary row (venue + time-slot)
+-------------------------------------------------------------------------- */
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+}
+
+.filter-row--secondary {
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border);
+}
+
+.filter-venue-select {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-pill);
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1px;
+    padding: var(--space-1) var(--space-3);
+    cursor: pointer;
+    appearance: none;
+    transition: border-color var(--transition-fast);
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.filter-venue-select:hover,
+.filter-venue-select:focus-visible {
+    border-color: var(--color-yellow);
+    outline: none;
+}
+
+.filter-timeslot {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.filter-btn--sm {
+    font-size: 0.58rem;
+    padding: var(--space-1) var(--space-3);
+}
+
+
+/* --------------------------------------------------------------------------
+   Calendar Buttons — .ics download + Google Calendar side by side
+-------------------------------------------------------------------------- */
+.cal-btns {
+    display: flex;
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+    justify-content: flex-end;
+}
+
+.cal-btn--gcal {
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+    text-decoration: none;
+    font-size: 0.75rem;
+}
+
+.cal-btn--gcal:hover {
+    opacity: 1;
+}
+
+
+/* --------------------------------------------------------------------------
+   H2H Tooltip
+   Fixed-position floating card that appears on fixture row hover.
+-------------------------------------------------------------------------- */
+.h2h-tooltip {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-fast), visibility var(--transition-fast);
+    max-width: 240px;
+    min-width: 180px;
+}
+
+.h2h-tooltip--visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.h2h-tooltip-inner {
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4) var(--space-5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.h2h-title {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-md);
+    margin-bottom: var(--space-2);
+}
+
+.h2h-record {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.5px;
+    margin-bottom: var(--space-2);
+}
+
+.h2h-record strong {
+    color: var(--color-text);
+}
+
+.h2h-last5-label {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.5px;
+    margin-bottom: var(--space-2);
+    text-transform: uppercase;
+}
+
+.h2h-dots {
+    display: flex;
+    gap: var(--space-1);
+    flex-wrap: wrap;
+}
+
+.h2h-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: var(--font-weight-bold);
+}
+
+.h2h-dot--w {
+    background: rgba(74, 222, 128, 0.2);
+    border: 1px solid rgba(74, 222, 128, 0.5);
+    color: #4ade80;
+}
+
+.h2h-dot--l {
+    background: rgba(248, 113, 113, 0.2);
+    border: 1px solid rgba(248, 113, 113, 0.5);
+    color: #f87171;
+}
+
+
+/* --------------------------------------------------------------------------
+   Probable Playing XIs
+   Two-column layout showing both team XIs before match day.
+-------------------------------------------------------------------------- */
+.probable-xi-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5) var(--space-6);
+    margin-bottom: var(--space-6);
+}
+
+.probable-xi-match {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    letter-spacing: 1px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    margin-bottom: var(--space-4);
+}
+
+.probable-xi-tbd {
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+    margin-top: var(--space-2);
+}
+
+.probable-xi-teams {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+}
+
+@media (max-width: 500px) {
+    .probable-xi-teams {
+        grid-template-columns: 1fr;
+    }
+}
+
+.probable-xi-team-name {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-yellow);
+    margin-bottom: var(--space-2);
+}
+
+.probable-xi-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.probable-xi-player {
+    font-size: var(--text-base);
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+}
+
+.probable-xi-num {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    min-width: 16px;
+    text-align: right;
+}
+
+
+/* --------------------------------------------------------------------------
+   Live Score in Schedule Rows
+   Mini live scorecard injected into a fixture row when a match is in progress.
+-------------------------------------------------------------------------- */
+.fixture-live-score {
+    margin-top: var(--space-2);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.live-score-text {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.5px;
+    color: var(--color-text);
+}
+
+.live-score-status {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.5px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Follow My Team — IPL schedule card highlight
+-------------------------------------------------------------------------- */
+.ipl-match--fav {
+    border-color: var(--color-yellow) !important;
+    background: rgba(253, 185, 19, 0.07) !important;
+}
+
+.ipl-match--fav .ipl-match-team {
+    color: var(--color-yellow);
+}
+
+/* Section divider for pinned favourite-team matches */
+.fav-section-sep {
+    color: var(--color-yellow);
+    border-color: rgba(253, 185, 19, 0.3);
+}
