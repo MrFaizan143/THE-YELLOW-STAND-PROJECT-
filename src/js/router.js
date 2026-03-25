@@ -64,8 +64,10 @@ const Router = (() => {
                 TossTracker.render();
                 MatchJournal.render();
                 FanProfile.render();
+                FantasyTips.render();
             }
             if (pageId === 't') Tools.render();
+            if (pageId === 'l') Live.render();
         }
 
         // Always call Schedule.onPageShow when navigating to the schedule page

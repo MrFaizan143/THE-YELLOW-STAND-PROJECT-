@@ -3382,3 +3382,770 @@ h1 {
 
 .compare-stat-val:first-child { text-align: right; }
 .compare-stat-val:last-child  { text-align: left; }
+
+/* =============================================================================
+   Player Card — Career IPL Stats + Mini-Graphs
+   ============================================================================= */
+
+.player-career {
+    display: none;
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.card--expanded .player-career {
+    display: flex;
+}
+
+.player-career-title {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-yellow);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin: 0;
+}
+
+.player-career-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.player-career-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 4px 8px;
+    min-width: 36px;
+}
+
+.player-career-val {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    line-height: 1.2;
+}
+
+.player-career-lbl {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.4px;
+}
+
+.player-career-graph {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.player-career-graph-lbl {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    width: 22px;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+}
+
+.player-career-graph-val {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+}
+
+.player-career-bar-track {
+    flex: 1;
+    height: 5px;
+    background: var(--color-surface-deep);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+}
+
+.player-career-bar-fill {
+    height: 100%;
+    border-radius: var(--radius-pill);
+    transition: width 0.4s ease;
+}
+
+.player-career-bar-fill--bat {
+    background: var(--color-yellow);
+}
+
+.player-career-bar-fill--bowl {
+    background: #4fc3f7;
+}
+
+/* =============================================================================
+   Live Match Centre — Filter Tabs
+   ============================================================================= */
+
+.live-filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.live-tab {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 4px 10px;
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.live-tab:hover {
+    color: var(--color-text);
+    border-color: var(--color-border-lt);
+}
+
+.live-tab--active,
+.live-tab:focus-visible {
+    background: var(--color-yellow);
+    color: var(--color-black);
+    border-color: var(--color-yellow);
+    outline: none;
+}
+
+/* =============================================================================
+   Live Match Centre — Match Cards
+   ============================================================================= */
+
+.live-match-card {
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    animation: fadeUp var(--transition-slow) ease both;
+}
+
+.live-card-top {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.live-format-badge {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    padding: 2px 7px;
+}
+
+.live-tag-soon {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface-deep);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+}
+
+.live-card-teams {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.live-team-name {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+}
+
+.live-vs {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+}
+
+.live-card-scores {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.live-score-line {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.live-score-inning {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    flex: 1;
+    min-width: 120px;
+}
+
+.live-score-runs {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+}
+
+.live-score-overs {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+}
+
+.live-score-na {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.live-card-status {
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.live-card-venue {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    margin: 0;
+}
+
+.live-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+}
+
+.live-action-btn {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 5px 10px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-deep);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.live-action-btn:hover {
+    color: var(--color-text);
+    border-color: var(--color-border-lt);
+}
+
+.live-action-btn--pinned,
+.live-action-btn--pinned:hover {
+    background: var(--color-yellow);
+    color: var(--color-black);
+    border-color: var(--color-yellow);
+}
+
+.live-action-btn--fancode {
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.35);
+}
+
+.live-action-btn--fancode:hover {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: #f59e0b;
+}
+
+/* =============================================================================
+   Live Match Centre — Scorecard Panel
+   ============================================================================= */
+
+.live-scorecard-panel {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+}
+
+.sc-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.sc-score-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.sc-score-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.sc-inning-label {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    flex: 1;
+    min-width: 120px;
+}
+
+.sc-total {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+}
+
+.sc-overs-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+}
+
+.sc-status {
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.sc-inning-title {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: var(--space-2) 0 var(--space-1);
+}
+
+.sc-batting-table,
+.sc-bowling-table {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    font-size: var(--text-xxs);
+}
+
+.sc-row {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr repeat(5, auto);
+    gap: 4px;
+    padding: 5px 8px;
+    border-bottom: 1px solid var(--color-border);
+    align-items: center;
+}
+
+.sc-row:last-child { border-bottom: none; }
+
+.sc-row--header {
+    background: var(--color-surface-deep);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.sc-bowling-table .sc-row {
+    grid-template-columns: 1fr repeat(5, auto);
+}
+
+.sc-col--player    { font-weight: var(--font-weight-bold); color: var(--color-text); }
+.sc-col--dismissal { color: var(--color-text-muted); }
+.sc-col--stat      { text-align: right; font-family: var(--font-mono); color: var(--color-text); }
+.sc-col--bold      { font-weight: var(--font-weight-bold); color: var(--color-yellow); }
+
+.sc-section-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin: var(--space-2) 0 var(--space-1);
+}
+
+.sc-partnerships {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.sc-partnership-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xxs);
+}
+
+.sc-p-players {
+    font-family: var(--font-mono);
+    color: var(--color-text);
+    flex: 0 0 130px;
+    font-size: var(--text-xxs);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sc-p-bar-track {
+    flex: 1;
+    height: 5px;
+    background: var(--color-surface-deep);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+}
+
+.sc-p-bar-fill {
+    height: 100%;
+    background: var(--color-yellow);
+    border-radius: var(--radius-pill);
+    transition: width 0.4s ease;
+}
+
+.sc-p-runs {
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+}
+
+.sc-note {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.sc-links {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-top: var(--space-1);
+}
+
+.sc-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-yellow);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.sc-link:hover { text-decoration: underline; }
+
+.sc-commentary-note {
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border);
+}
+
+/* =============================================================================
+   Live Match Centre — Empty state & Legend
+   ============================================================================= */
+
+.live-empty {
+    text-align: center;
+    padding: var(--space-6) var(--space-4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.live-empty-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+    margin: 0;
+}
+
+.live-empty-msg {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-base);
+    color: var(--color-text);
+    margin: 0;
+}
+
+.live-legend {
+    margin-top: var(--space-4);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+}
+
+.live-legend-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-yellow);
+    text-decoration: none;
+}
+
+.live-legend-link:hover { text-decoration: underline; }
+
+/* =============================================================================
+   Pin Score Widget — floating live score bar
+   ============================================================================= */
+
+.pin-score-widget {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    background: var(--color-black);
+    border-bottom: 2px solid var(--color-yellow);
+    padding: 6px var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    animation: fadeUp var(--transition-slow) ease both;
+}
+
+.pin-widget-label {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.pin-widget-teams {
+    color: var(--color-text);
+    font-weight: var(--font-weight-bold);
+    flex-shrink: 0;
+}
+
+.pin-widget-score {
+    color: var(--color-yellow);
+    font-weight: var(--font-weight-bold);
+    flex-shrink: 0;
+}
+
+.pin-widget-status {
+    color: var(--color-text-muted);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* =============================================================================
+   Fantasy Tips — Fan Page Module
+   ============================================================================= */
+
+.fantasy-card {
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    margin-top: var(--space-4);
+}
+
+.fantasy-desc {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-3);
+    line-height: 1.5;
+}
+
+.fantasy-empty {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    text-align: center;
+    padding: var(--space-4) 0;
+    margin: 0;
+}
+
+.fantasy-tip-card {
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    margin-bottom: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    animation: fadeUp var(--transition-slow) ease both;
+}
+
+.fantasy-tip-card:last-child { margin-bottom: 0; }
+
+.fantasy-tip-card--past {
+    opacity: 0.55;
+}
+
+.fantasy-tip-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.fantasy-tip-opp {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    flex: 1;
+    min-width: 120px;
+}
+
+.fantasy-tip-date {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+}
+
+.fantasy-tip-badge {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    background: rgba(253, 185, 19, 0.15);
+    color: var(--color-yellow);
+    border: 1px solid rgba(253, 185, 19, 0.3);
+    flex-shrink: 0;
+}
+
+.fantasy-tip-badge--past {
+    background: var(--color-surface-mid);
+    color: var(--color-text-muted);
+    border-color: var(--color-border);
+}
+
+.fantasy-pick-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.fantasy-pick-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    flex-shrink: 0;
+}
+
+.fantasy-section-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin: var(--space-1) 0 0;
+}
+
+.fantasy-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+}
+
+.fantasy-chip {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-mid);
+    color: var(--color-text);
+    white-space: nowrap;
+}
+
+.fantasy-chip--must {
+    background: rgba(253, 185, 19, 0.12);
+    border-color: rgba(253, 185, 19, 0.35);
+    color: var(--color-yellow);
+}
+
+.fantasy-chip--diff {
+    background: rgba(79, 195, 247, 0.1);
+    border-color: rgba(79, 195, 247, 0.3);
+    color: #4fc3f7;
+}
+
+.fantasy-chip--avoid {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.25);
+    color: #f87171;
+}
+
+.fantasy-chip--captain {
+    background: var(--color-yellow);
+    border-color: var(--color-yellow);
+    color: var(--color-black);
+    font-weight: var(--font-weight-bold);
+}
+
+.fantasy-chip--vc {
+    background: transparent;
+    border-color: var(--color-yellow);
+    color: var(--color-yellow);
+    font-weight: var(--font-weight-bold);
+}
+
+.fantasy-summary {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin: var(--space-1) 0 0;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border);
+}

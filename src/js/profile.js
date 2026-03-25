@@ -892,3 +892,96 @@ const MatchJournal = (() => {
 
 })();
 
+
+// =============================================================================
+//   FantasyTips — Per-fixture fantasy cricket pick guide on the Fan page.
+//   Reads from DATA.fantasyTips keyed by ISO timestamp.
+// =============================================================================
+
+const FantasyTips = (() => {
+
+    function render() {
+        const container = document.getElementById('fantasy-tips-content');
+        if (!container) return;
+
+        const tips = DATA.fantasyTips || {};
+        const keys = Object.keys(tips).sort();
+
+        if (keys.length === 0) {
+            container.innerHTML = `
+            <div class="fantasy-card" aria-label="Fantasy Tips">
+                <p class="tag">Fantasy Tips</p>
+                <p class="fantasy-empty">No tips available yet. Check back closer to match day.</p>
+            </div>`;
+            return;
+        }
+
+        const now = Date.now();
+
+        const cards = keys.map(iso => {
+            const t   = tips[iso];
+            const dt  = new Date(iso);
+            const isPast = dt.getTime() < now;
+
+            const dateStr = dt.toLocaleDateString('en-IN', {
+                month: 'short', day: 'numeric', weekday: 'short',
+                timeZone: 'Asia/Kolkata'
+            });
+            const timeStr = dt.toLocaleTimeString('en-IN', {
+                hour: '2-digit', minute: '2-digit',
+                timeZone: 'Asia/Kolkata', hour12: true
+            });
+
+            const mustHtml = t.mustPick && t.mustPick.length
+                ? t.mustPick.map(p => `<span class="fantasy-chip fantasy-chip--must">${p}</span>`).join('')
+                : '';
+            const diffHtml = t.differentials && t.differentials.length
+                ? t.differentials.map(p => `<span class="fantasy-chip fantasy-chip--diff">${p}</span>`).join('')
+                : '';
+            const avoidHtml = t.avoidList && t.avoidList.length
+                ? t.avoidList.map(p => `<span class="fantasy-chip fantasy-chip--avoid">${p}</span>`).join('')
+                : '';
+
+            return `
+            <div class="fantasy-tip-card${isPast ? ' fantasy-tip-card--past' : ''}"
+                 aria-label="Fantasy tips for CSK vs ${t.opponent || '?'} on ${dateStr}">
+                <div class="fantasy-tip-header">
+                    <span class="fantasy-tip-opp">CSK vs ${t.opponent || '?'}</span>
+                    <span class="fantasy-tip-date">${dateStr} · ${timeStr} IST</span>
+                    ${isPast ? '<span class="fantasy-tip-badge fantasy-tip-badge--past">Past</span>' : '<span class="fantasy-tip-badge">Upcoming</span>'}
+                </div>
+
+                ${t.captainPick ? `
+                <div class="fantasy-pick-row">
+                    <span class="fantasy-pick-label">Captain</span>
+                    <span class="fantasy-chip fantasy-chip--captain">${t.captainPick}</span>
+                    ${t.vcPick ? `<span class="fantasy-pick-label">VC</span><span class="fantasy-chip fantasy-chip--vc">${t.vcPick}</span>` : ''}
+                </div>` : ''}
+
+                ${mustHtml ? `
+                <p class="fantasy-section-label">Must-Pick</p>
+                <div class="fantasy-chip-row">${mustHtml}</div>` : ''}
+
+                ${diffHtml ? `
+                <p class="fantasy-section-label">Differentials</p>
+                <div class="fantasy-chip-row">${diffHtml}</div>` : ''}
+
+                ${avoidHtml ? `
+                <p class="fantasy-section-label">Avoid</p>
+                <div class="fantasy-chip-row">${avoidHtml}</div>` : ''}
+
+                ${t.summary ? `<p class="fantasy-summary">${t.summary}</p>` : ''}
+            </div>`;
+        }).join('');
+
+        container.innerHTML = `
+        <div class="fantasy-card" aria-label="Fantasy Tips">
+            <p class="tag">Fantasy Tips</p>
+            <p class="fantasy-desc">Match-by-match fantasy cricket pick guide for CSK fixtures.</p>
+            ${cards}
+        </div>`;
+    }
+
+    return { render };
+
+})();
