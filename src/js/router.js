@@ -52,7 +52,7 @@ const Router = (() => {
             }
             if (pageId === 'p') Render.squad();
             if (pageId === 'n') News.render();
-            if (pageId === 'f') { FanProfile.render(); FanPoll.render(); }
+            if (pageId === 'f') { FanProfile.render(); FanPoll.render(); FanPredictions.render(); }
             if (pageId === 't') Tools.render();
         }
 

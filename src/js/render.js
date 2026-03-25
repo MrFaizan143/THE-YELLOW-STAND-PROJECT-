@@ -6,6 +6,28 @@
 
 const Render = (() => {
 
+    /** Short-name lookup for IPL teams */
+    const TEAM_SHORT = {
+        'Rajasthan Royals':           'RR',
+        'Punjab Kings':               'PBKS',
+        'Royal Challengers Bengaluru':'RCB',
+        'Delhi Capitals':             'DC',
+        'Gujarat Titans':             'GT',
+        'Sunrisers Hyderabad':        'SRH',
+        'Mumbai Indians':             'MI',
+        'Kolkata Knight Riders':      'KKR',
+        'Lucknow Super Giants':       'LSG'
+    };
+
+    /* Expose for other modules (countdown, etc.) */
+    window.TEAM_SHORT = TEAM_SHORT;
+
+    /** Currently active fixture filter: 'all' | 'home' | 'away' | 'upcoming' | 'done' */
+    let currentFilter = 'all';
+
+    /** Last resolved fixture data (live or static) stored for re-filtering */
+    let storedFixtureSource = null;
+
     /** Show a loading placeholder in #fixture-list */
     function fixturesLoading() {
         const container = document.getElementById('fixture-list');
@@ -21,22 +43,59 @@ const Render = (() => {
     }
 
     /**
-     * Renders the fixture list into #fixture-list with result tracking.
+     * Renders the fixture list into #fixture-list with filter bar and result tracking.
      * @param {Array} [liveData] — normalised fixtures from CricketAPI; falls back
      *                             to the static DATA.fixtures when omitted or empty.
      */
     function fixtures(liveData) {
+        if (Array.isArray(liveData) && liveData.length > 0) {
+            storedFixtureSource = liveData;
+        } else if (!storedFixtureSource) {
+            storedFixtureSource = DATA.fixtures;
+        }
+        renderFixtures();
+    }
+
+    /** Internal: re-renders the fixture list applying currentFilter */
+    function renderFixtures() {
         const container = document.getElementById('fixture-list');
         if (!container) return;
 
-        const fixtureSource = (Array.isArray(liveData) && liveData.length > 0)
-            ? liveData
-            : DATA.fixtures;
-
+        const source       = storedFixtureSource || DATA.fixtures;
         const savedResults = Results.load();
         const nextIdx      = Results.nextFixtureIndex();
+        const now          = Date.now();
 
-        container.innerHTML = fixtureSource.map((f, i) => {
+        // Apply filter
+        const filtered = source.map((f, i) => ({ f, i })).filter(({ f, i }) => {
+            const result  = savedResults[i];
+            const isPast  = f.iso && new Date(f.iso).getTime() <= now;
+            switch (currentFilter) {
+                case 'home':     return f.home === true;
+                case 'away':     return f.home === false;
+                case 'upcoming': return !isPast;
+                case 'done':     return isPast || result;
+                default:         return true;
+            }
+        });
+
+        // Filter bar HTML
+        const filters = ['all', 'home', 'away', 'upcoming', 'done'];
+        const filterBar = `
+        <div class="fixture-filters" role="group" aria-label="Filter fixtures">
+            ${filters.map(f => `
+            <button class="filter-btn${currentFilter === f ? ' filter-btn--active' : ''}"
+                    data-filter="${f}" aria-pressed="${currentFilter === f}">${f.charAt(0).toUpperCase() + f.slice(1)}</button>
+            `).join('')}
+        </div>`;
+
+        if (filtered.length === 0) {
+            container.innerHTML = filterBar + '<p class="fixtures-status">No fixtures match this filter.</p>';
+            bindFilterButtons(container);
+            return;
+        }
+
+        const rows = filtered.map(({ f, i }) => {
             const result  = savedResults[i];
             const isNext  = i === nextIdx;
             const isHome  = f.home === true;
@@ -87,14 +146,43 @@ const Render = (() => {
             </div>`;
         }).join('');
 
+        container.innerHTML = filterBar + `<div class="fixture-rows" role="list">${rows}</div>`;
+
+        bindFilterButtons(container);
+
         // Bind result-button click events
         container.querySelectorAll('.result-btn').forEach(btn => {
             btn.addEventListener('click', e => {
                 e.stopPropagation();
                 const idx    = parseInt(btn.closest('.fixture-item').dataset.idx, 10);
                 const newVal = Results.cycle(idx);
-                updateFixtureRow(container, idx, newVal);
+                // Refresh the full list (filter may affect visibility)
+                renderFixtures();
                 updateHubRecord();
+                // Refresh Hub last result card live
+                lastResult();
+                // Refresh Hub venue card in case next fixture changed
+                venueInfo();
+                // Refresh countdown label
+                if (typeof Countdown !== 'undefined') Countdown.updateLabel();
+            });
+        });
+
+        // Auto-scroll to the next fixture on first render
+        const nextRow = container.querySelector('.fixture-next');
+        if (nextRow) {
+            requestAnimationFrame(() => {
+                nextRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        }
+    }
+
+    /** Binds click handlers on filter buttons inside container */
+    function bindFilterButtons(container) {
+        container.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentFilter = btn.dataset.filter;
+                renderFixtures();
             });
         });
     }
@@ -160,12 +248,32 @@ const Render = (() => {
         el.textContent = N > 0 ? `${W}W · ${L}L · ${N}NR` : `${W}W · ${L}L`;
     }
 
-    /** Renders the last result card into #hub-last-result */
+    /**
+     * Renders the last result card into #hub-last-result.
+     * Auto-derives the most recent result from user-recorded results,
+     * falling back to DATA.lastResult when none are recorded yet.
+     */
     function lastResult() {
         const container = document.getElementById('hub-last-result');
         if (!container) return;
 
-        const lr = DATA.lastResult;
+        const savedResults = Results.load();
+        let lr = DATA.lastResult;
+
+        // Find the most recently played fixture with a recorded result
+        for (let i = DATA.fixtures.length - 1; i >= 0; i--) {
+            const r = savedResults[i];
+            if (r) {
+                const f = DATA.fixtures[i];
+                lr = {
+                    opponent: f.o,
+                    result: r,
+                    score: `${f.d} · ${f.v.split(',')[0].trim()}`
+                };
+                break;
+            }
+        }
+
         const resultClass = lr.result === 'W' ? 'hub-info-result--w'  :
                             lr.result === 'L' ? 'hub-info-result--l' :
                             lr.result === 'N' ? 'hub-info-result--n'   : '';
@@ -177,21 +285,47 @@ const Render = (() => {
             <span class="tag">Last Result</span>
             <p class="hub-info-label${resultClass ? ' ' + resultClass : ''}">${resultLabel}</p>
             <p class="hub-info-meta">${lr.opponent !== '—' ? 'vs ' + lr.opponent : '—'}</p>
-            <p class="hub-info-score">${lr.score}</p>`;
+            <p class="hub-info-score">${lr.score || ''}</p>`;
     }
 
-    /** Renders the next-match venue info card into #hub-venue */
+    /**
+     * Renders the next-match venue info card into #hub-venue.
+     * Auto-detects the next upcoming fixture from DATA.fixtures.
+     */
     function venueInfo() {
         const container = document.getElementById('hub-venue');
         if (!container) return;
 
-        const nm = DATA.nextMatch;
+        const nextIdx = Results.nextFixtureIndex();
+        let venue, city, pitch, weather;
+
+        if (nextIdx >= 0) {
+            const f   = DATA.fixtures[nextIdx];
+            const vp  = f.v.split(',');
+            venue     = vp[0].trim();
+            city      = vp.length > 1 ? vp[1].trim() : vp[0].trim();
+            // Use static nextMatch pitch/weather for first match, generic otherwise
+            if (nextIdx === 0) {
+                pitch   = DATA.nextMatch.pitch;
+                weather = DATA.nextMatch.weather;
+            } else {
+                pitch   = 'Pitch info closer to match day';
+                weather = 'Weather info closer to match day';
+            }
+        } else {
+            // Season over — show last-known data
+            venue   = DATA.nextMatch.venue;
+            city    = DATA.nextMatch.city;
+            pitch   = '—';
+            weather = '—';
+        }
+
         container.innerHTML = `
             <span class="tag">Next Venue</span>
-            <p class="hub-info-label">${nm.venue}</p>
-            <p class="hub-info-meta">${nm.city}</p>
-            <p class="hub-info-score">${nm.pitch}</p>
-            <p class="hub-info-score">${nm.weather}</p>`;
+            <p class="hub-info-label">${venue}</p>
+            <p class="hub-info-meta">${city}</p>
+            <p class="hub-info-score">${pitch}</p>
+            <p class="hub-info-score">${weather}</p>`;
     }
 
     /** Renders squad grid + staff list into #squad-content */
@@ -199,12 +333,18 @@ const Render = (() => {
         const container = document.getElementById('squad-content');
         if (!container) return;
 
-        let html = '';
+        // Search bar
+        let html = `
+        <div class="squad-search-wrap">
+            <input id="squad-search" class="squad-search-input" type="search"
+                   placeholder="Search players…" autocomplete="off"
+                   aria-label="Search players by name">
+        </div>`;
 
         // Player categories
         for (const [category, players] of Object.entries(DATA.squad)) {
             html += `<h2 class="squad-category-title">${category}</h2>`;
-            html += `<div class="grid">`;
+            html += `<div class="grid squad-group" data-category="${category}">`;
             html += players.map(player => {
                 const details   = (DATA.playerDetails && DATA.playerDetails[player]) || {};
                 const isCaptain = /\(C\)/.test(player);
@@ -243,7 +383,8 @@ const Render = (() => {
 
                 return `
                 <div class="${cardClasses}" role="button" tabindex="0"
-                     aria-expanded="false" aria-label="View profile of ${player}">
+                     aria-expanded="false" aria-label="View profile of ${player}"
+                     data-player-name="${player.toLowerCase()}">
                     <div class="card-header">
                         <p class="name">${player}</p>
                         ${captainBadge}
@@ -267,6 +408,29 @@ const Render = (() => {
         `).join('');
 
         container.innerHTML = html;
+
+        // Bind search
+        const searchInput = container.querySelector('#squad-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                const q = searchInput.value.trim().toLowerCase();
+                container.querySelectorAll('.card[data-player-name]').forEach(card => {
+                    const name = card.dataset.playerName || '';
+                    card.style.display = (!q || name.includes(q)) ? '' : 'none';
+                });
+                // Show/hide category titles when all cards in a group are hidden
+                container.querySelectorAll('.squad-group').forEach(group => {
+                    const anyVisible = [...group.querySelectorAll('.card')].some(
+                        c => c.style.display !== 'none'
+                    );
+                    const title = group.previousElementSibling;
+                    if (title && title.classList.contains('squad-category-title')) {
+                        title.style.display = anyVisible ? '' : 'none';
+                    }
+                    group.style.display = anyVisible ? '' : 'none';
+                });
+            });
+        }
 
         // Bind tap-to-expand on player cards
         container.querySelectorAll('.card[aria-expanded]').forEach(card => {
@@ -300,9 +464,11 @@ const Render = (() => {
 
         const rows = DATA.standings.map((s, i) => {
             const isCsk = s.team === 'CSK';
+            // Top 4 teams qualify for playoffs
+            const isPlayoff = i < 4;
             return `
-            <div class="standing-row${isCsk ? ' standing-row--csk' : ''}" role="row"
-                 aria-label="${s.team}: ${s.pts} points">
+            <div class="standing-row${isCsk ? ' standing-row--csk' : ''}${isPlayoff ? ' standing-row--playoff' : ''}" role="row"
+                 aria-label="${s.team}: ${s.pts} points${isPlayoff ? ', playoff position' : ''}">
                 <span class="standing-pos">${i + 1}</span>
                 <span class="standing-team">${s.team}</span>
                 <span class="standing-num">${s.played}</span>
@@ -313,7 +479,10 @@ const Render = (() => {
             </div>`;
         }).join('');
 
-        container.innerHTML = header + rows;
+        // Playoff qualification note
+        const note = `<p class="standings-note">Top 4 qualify for playoffs</p>`;
+
+        container.innerHTML = header + rows + note;
     }
 
     /** Public API */
@@ -321,4 +490,5 @@ const Render = (() => {
              lastResult, venueInfo, updateHubRecord };
 
 })();
+
 

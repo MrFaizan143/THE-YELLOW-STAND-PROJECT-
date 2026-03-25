@@ -6,15 +6,11 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     Router.init();       // Bind nav button click handlers
-    Countdown.start();   // Start the Hub countdown timer
+    Countdown.start();   // Start the Hub countdown timer (auto-detects next fixture)
     FanProfile.init();   // Pre-load saved fan profile from localStorage
     Render.updateHubRecord(); // Show season record on Hub
 
-    // Update the next-match label in the Hub from data
-    const matchLabel = document.querySelector('.countdown-card .tag');
-    if (matchLabel) matchLabel.textContent = DATA.nextMatch.label;
-
-    // Render Hub info cards (last result + next venue)
+    // Render Hub info cards (last result + next venue — both auto-detected)
     Render.lastResult();
     Render.venueInfo();
 
@@ -24,9 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const shareBtn = document.getElementById('share-btn');
     if (shareBtn) {
         shareBtn.addEventListener('click', async () => {
+            const nextIdx = Results.nextFixtureIndex();
+            const matchText = nextIdx >= 0
+                ? `Next CSK match: ${DATA.fixtures[nextIdx].d} vs ${DATA.fixtures[nextIdx].o}. Whistle Podu! 🦁`
+                : 'Follow CSK this IPL 2026 season! Whistle Podu! 🦁';
             const shareData = {
                 title: 'The Yellow Stand',
-                text:  `Next CSK match: ${DATA.nextMatch.label}. Whistle Podu! 🦁`,
+                text:  matchText,
                 url:   window.location.href
             };
             try {

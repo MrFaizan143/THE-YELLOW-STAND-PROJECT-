@@ -1289,3 +1289,362 @@ h1 {
     line-height: 1.5;
 }
 
+
+/* --------------------------------------------------------------------------
+   Fixture Filters
+   Pill-style filter bar at the top of the fixture list.
+-------------------------------------------------------------------------- */
+.fixture-filters {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+}
+
+.filter-btn {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: var(--space-2) var(--space-4);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast),
+                border-color var(--transition-fast);
+}
+
+.filter-btn:hover {
+    border-color: var(--color-yellow);
+    color: var(--color-yellow);
+}
+
+.filter-btn--active {
+    background: var(--color-yellow);
+    border-color: var(--color-yellow);
+    color: var(--color-black);
+}
+
+.filter-btn:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Squad Search
+   Search input at the top of the Pride page.
+-------------------------------------------------------------------------- */
+.squad-search-wrap {
+    margin-bottom: var(--space-4);
+}
+
+.squad-search-input {
+    width: 100%;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-md);
+    padding: var(--space-3) var(--space-4);
+    box-sizing: border-box;
+    transition: border-color var(--transition-fast);
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.squad-search-input:focus {
+    outline: none;
+    border-color: var(--color-yellow);
+}
+
+.squad-search-input::placeholder {
+    color: var(--color-text-muted);
+}
+
+/* Clear button inside search (WebKit) */
+.squad-search-input::-webkit-search-cancel-button {
+    cursor: pointer;
+}
+
+
+/* --------------------------------------------------------------------------
+   Favourite Player Info
+   Chip-row shown beneath the favourite player select.
+-------------------------------------------------------------------------- */
+.fav-player-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+}
+
+.fav-player-info span {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    padding: 2px 8px;
+    display: inline-block;
+}
+
+
+/* --------------------------------------------------------------------------
+   Tool Reset Button
+   Small secondary button below each calculator card.
+-------------------------------------------------------------------------- */
+.tool-reset-btn {
+    margin-top: var(--space-4);
+    background: transparent;
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: var(--space-2) var(--space-4);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.tool-reset-btn:hover {
+    border-color: var(--color-yellow);
+    color: var(--color-yellow);
+}
+
+.tool-reset-btn:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
+
+/* --------------------------------------------------------------------------
+   NRR Calculator — Group label
+   Small italic sub-label separating batting / bowling innings.
+-------------------------------------------------------------------------- */
+.tool-nrr-group {
+    margin-bottom: var(--space-4);
+}
+
+.tool-nrr-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-yellow);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: var(--space-3);
+}
+
+
+/* --------------------------------------------------------------------------
+   Standings — Playoff qualifier indicator
+-------------------------------------------------------------------------- */
+.standing-row--playoff:not(.standing-header) {
+    background: rgba(253, 185, 19, 0.04) !important;
+}
+
+.standings-note {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: var(--space-3) var(--space-4);
+    text-align: center;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface-deep);
+}
+
+
+/* --------------------------------------------------------------------------
+   News Toggle Button
+   "Read more / Show less" link below truncated articles.
+-------------------------------------------------------------------------- */
+.news-toggle-btn {
+    margin-top: var(--space-3);
+    background: transparent;
+    border: none;
+    color: var(--color-yellow);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0;
+    cursor: pointer;
+    display: inline-block;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: opacity var(--transition-fast);
+}
+
+.news-toggle-btn:hover {
+    opacity: 0.75;
+}
+
+.news-toggle-btn:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Match Predictions Card
+-------------------------------------------------------------------------- */
+.prediction-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    margin-bottom: var(--space-8);
+}
+
+.prediction-desc {
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin-bottom: var(--space-4);
+}
+
+.prediction-score {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-yellow);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: var(--space-4);
+}
+
+.prediction-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.prediction-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4);
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    transition: border-color var(--transition-fast);
+}
+
+.prediction-item--correct {
+    border-color: #4ade80;
+    background: rgba(74, 222, 128, 0.05);
+}
+
+.prediction-item--wrong {
+    border-color: #f87171;
+    background: rgba(248, 113, 113, 0.05);
+}
+
+.prediction-match {
+    flex: 1;
+    min-width: 80px;
+}
+
+.prediction-opponent {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-md);
+}
+
+.prediction-date {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+}
+
+.prediction-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.prediction-btn {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1px;
+    padding: var(--space-2) var(--space-4);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast),
+                border-color var(--transition-fast);
+}
+
+.prediction-btn:hover:not(:disabled) {
+    border-color: var(--color-yellow);
+    color: var(--color-yellow);
+}
+
+.prediction-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.prediction-btn--win-active {
+    background: #4ade80;
+    border-color: #4ade80;
+    color: #000;
+}
+
+.prediction-btn--loss-active {
+    background: #f87171;
+    border-color: #f87171;
+    color: #000;
+}
+
+.prediction-btn:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
+.prediction-outcome {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+}
+
+.prediction-outcome--correct {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.prediction-outcome--wrong {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.prediction-empty {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    letter-spacing: 1px;
+    padding: var(--space-6) 0;
+    text-transform: uppercase;
+}
+
