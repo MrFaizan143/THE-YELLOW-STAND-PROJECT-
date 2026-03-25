@@ -15,6 +15,36 @@ document.addEventListener('DOMContentLoaded', () => {
     Render.venueInfo();
 
     // -------------------------------------------------------------------------
+    // Live score polling — shown on Hub when a CSK match is in progress
+    // Only active when a cricapi.com key is configured (free, 100 calls/day).
+    // Polls every 60 seconds; clears automatically once the match ends.
+    // -------------------------------------------------------------------------
+    if (CricketAPI.isCricapiConfigured()) {
+        const liveScoreEl = document.getElementById('hub-live-score');
+
+        function updateLiveScore() {
+            CricketAPI.fetchCSKLiveMatch().then(match => {
+                if (!liveScoreEl) return;
+                if (match && match.score) {
+                    liveScoreEl.innerHTML = `
+                        <span class="tag live-tag">🔴 LIVE</span>
+                        <p class="hub-live-score-teams">CSK vs ${match.o}</p>
+                        <p class="hub-live-score-text">${match.score}</p>
+                        <p class="hub-live-score-status">${match.status || ''}</p>`;
+                    liveScoreEl.style.display = '';
+                } else {
+                    liveScoreEl.style.display = 'none';
+                }
+            }).catch(() => {});
+        }
+
+        if (liveScoreEl) {
+            updateLiveScore();
+            setInterval(updateLiveScore, 60_000); // refresh every 60 s
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // Share button — Web Share API with clipboard copy fallback
     // -------------------------------------------------------------------------
     const shareBtn = document.getElementById('share-btn');

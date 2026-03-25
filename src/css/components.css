@@ -174,6 +174,51 @@ h1 {
 
 
 /* --------------------------------------------------------------------------
+   Hub Live Score Card
+   Shown during a CSK match in progress (requires cricapi.com key).
+-------------------------------------------------------------------------- */
+.hub-live-score-card {
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border-lt);
+    border-left: 3px solid #ef4444;
+    border-radius: var(--radius-xl);
+    padding: var(--space-6) var(--space-8);
+    margin-top: var(--space-4);
+}
+
+.live-tag {
+    background: #ef4444;
+    color: #fff;
+    animation: live-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.55; }
+}
+
+.hub-live-score-teams {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    margin: var(--space-2) 0 var(--space-1);
+}
+
+.hub-live-score-text {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    margin-bottom: var(--space-1);
+}
+
+.hub-live-score-status {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+
+/* --------------------------------------------------------------------------
    Hub Record
    Season W-L summary shown below the countdown card.
 -------------------------------------------------------------------------- */
@@ -1118,6 +1163,17 @@ h1 {
     font-weight: var(--font-weight-bold);
     line-height: 1.4;
     margin-bottom: var(--space-3);
+}
+
+.news-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.news-link:hover,
+.news-link:focus-visible {
+    text-decoration: underline;
+    color: var(--color-yellow);
 }
 
 .news-body {

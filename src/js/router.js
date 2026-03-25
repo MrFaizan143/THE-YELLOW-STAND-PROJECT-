@@ -40,7 +40,7 @@ const Router = (() => {
         if (!visited.has(pageId)) {
             visited.add(pageId);
             if (pageId === 'm') {
-                if (CricketAPI.isConfigured()) {
+                if (CricketAPI.isConfigured() || CricketAPI.isCricapiConfigured()) {
                     Render.fixturesLoading();
                     CricketAPI.fetchCSKFixtures()
                         .then(live => { Render.fixtures(live); })
@@ -51,7 +51,7 @@ const Router = (() => {
                 Render.standings();
             }
             if (pageId === 'p') Render.squad();
-            if (pageId === 'n') News.render();
+            if (pageId === 'n') News.fetchAndRender();
             if (pageId === 'f') { FanProfile.render(); FanPoll.render(); FanPredictions.render(); }
             if (pageId === 't') Tools.render();
         }
