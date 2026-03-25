@@ -1,7 +1,7 @@
 /**
  * profile.js — TYS 2026 Fan Profile Module
  * Handles fan profile: favourite player, squad role, win streak,
- * and jersey customisation (name + number).
+ * jersey customisation (name + number), and match predictions.
  * All preferences are persisted in localStorage.
  */
 
@@ -52,6 +52,25 @@ const FanProfile = (() => {
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;');
+    }
+
+    /** Build the favourite player details block HTML (shown below the select) */
+    function buildFavPlayerInfo(playerName) {
+        if (!playerName) return '';
+        const d = (DATA.playerDetails && DATA.playerDetails[playerName]) || {};
+        if (!d.role) return '';
+
+        const items = [
+            d.flag  ? `<span>${d.flag} ${d.nat || ''}</span>`  : '',
+            d.jersey != null ? `<span>#${d.jersey}</span>`       : '',
+            d.role   ? `<span>${d.role}</span>`                  : '',
+            d.age    ? `<span>Age ${d.age}</span>`               : '',
+            d.bat    ? `<span>${d.bat}</span>`                   : '',
+            d.bowl   ? `<span>${d.bowl}</span>`                  : ''
+        ].filter(Boolean);
+
+        if (items.length === 0) return '';
+        return `<div class="fav-player-info">${items.join('')}</div>`;
     }
 
     /** Build and inject the Fan page HTML, then bind live events */
@@ -105,6 +124,7 @@ const FanProfile = (() => {
                         <option value="">— Pick a player —</option>
                         ${playerOptions}
                     </select>
+                    <div id="fav-player-info">${buildFavPlayerInfo(state.favPlayer)}</div>
                 </div>
 
                 <div class="profile-field">
@@ -138,6 +158,7 @@ const FanProfile = (() => {
         const streakUp   = document.getElementById('streak-up');
         const streakDown = document.getElementById('streak-down');
         const streakVal  = document.getElementById('streak-val');
+        const favInfo    = document.getElementById('fav-player-info');
 
         /** Sync jersey number state to DOM and storage */
         function applyJerseyNumber(val) {
@@ -167,6 +188,7 @@ const FanProfile = (() => {
 
         playerSel.addEventListener('change', () => {
             state.favPlayer = playerSel.value;
+            if (favInfo) favInfo.innerHTML = buildFavPlayerInfo(state.favPlayer);
             save();
         });
 
@@ -322,3 +344,139 @@ const FanPoll = (() => {
     return { render };
 
 })();
+
+/* ==========================================================================
+   FanPredictions — Match prediction widget on the Fan page.
+   Users predict W (win) or L (loss) for upcoming CSK matches.
+   Predictions are stored in localStorage and compared once results are known.
+   ========================================================================== */
+
+const FanPredictions = (() => {
+
+    const STORAGE_KEY = 'tys_predictions_2026';
+
+    /** Load predictions object { isoKey: 'W'|'L' } from localStorage */
+    function load() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : {};
+        } catch (_) {
+            return {};
+        }
+    }
+
+    /** Save predictions object to localStorage */
+    function save(preds) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(preds));
+    }
+
+    /** Toggle or set a prediction for a fixture by ISO key */
+    function setPrediction(iso, pick) {
+        const preds = load();
+        if (preds[iso] === pick) {
+            delete preds[iso]; // tap same pick to clear
+        } else {
+            preds[iso] = pick;
+        }
+        save(preds);
+    }
+
+    function render() {
+        const container = document.getElementById('predictions-content');
+        if (!container) return;
+
+        const preds       = load();
+        const savedResults = Results.load();
+        const now          = Date.now();
+
+        // Show all fixtures — upcoming for predicting, past for checking accuracy
+        const allFixtures = DATA.fixtures.map((f, i) => ({ f, i }));
+
+        if (allFixtures.length === 0) {
+            container.innerHTML = '<p class="prediction-empty">No fixtures available.</p>';
+            return;
+        }
+
+        const rows = allFixtures.map(({ f, i }) => {
+            const iso       = f.iso || '';
+            const isPast    = iso && new Date(iso).getTime() <= now;
+            const pred      = preds[iso] || null;
+            const actual    = savedResults[i] || null;
+            const short     = (window.TEAM_SHORT && window.TEAM_SHORT[f.o]) || (f.o ? f.o.substring(0, 3).toUpperCase() : '???');
+
+            // Outcome: correct / wrong / pending
+            let outcomeClass = '';
+            let outcomeBadge = '';
+            if (isPast && actual && pred) {
+                if (pred === actual) {
+                    outcomeClass = 'prediction-item--correct';
+                    outcomeBadge = '<span class="prediction-outcome prediction-outcome--correct">✓ Correct</span>';
+                } else {
+                    outcomeClass = 'prediction-item--wrong';
+                    outcomeBadge = '<span class="prediction-outcome prediction-outcome--wrong">✗ Wrong</span>';
+                }
+            }
+
+            const winActive  = pred === 'W' ? ' prediction-btn--win-active'  : '';
+            const lossActive = pred === 'L' ? ' prediction-btn--loss-active' : '';
+            const disabled   = isPast ? 'disabled' : '';
+
+            return `
+            <div class="prediction-item ${outcomeClass}" data-iso="${iso}">
+                <div class="prediction-match">
+                    <p class="prediction-opponent">vs ${short}</p>
+                    <p class="prediction-date">${f.d}${isPast ? ' · ' + (actual ? actual : 'Result TBA') : ''}</p>
+                </div>
+                <div class="prediction-controls">
+                    ${outcomeBadge}
+                    <button class="prediction-btn prediction-btn--win${winActive}"
+                            data-iso="${iso}" data-pick="W" ${disabled}
+                            aria-label="Predict win vs ${short}" aria-pressed="${pred === 'W'}">WIN</button>
+                    <button class="prediction-btn prediction-btn--loss${lossActive}"
+                            data-iso="${iso}" data-pick="L" ${disabled}
+                            aria-label="Predict loss vs ${short}" aria-pressed="${pred === 'L'}">LOSS</button>
+                </div>
+            </div>`;
+        }).join('');
+
+        // Score summary
+        const allPreds   = Object.entries(preds);
+        const scored     = allPreds.filter(([iso, pick]) => {
+            const idx  = DATA.fixtures.findIndex(f => f.iso === iso);
+            const actual = idx >= 0 ? savedResults[idx] : null;
+            return actual && pick === actual;
+        }).length;
+        const attempted  = allPreds.filter(([iso]) => {
+            const idx  = DATA.fixtures.findIndex(f => f.iso === iso);
+            const actual = idx >= 0 ? savedResults[idx] : null;
+            return !!actual;
+        }).length;
+
+        const scoreHtml = attempted > 0
+            ? `<p class="prediction-score">${scored}/${attempted} correct predictions</p>`
+            : '';
+
+        container.innerHTML = `
+            <div class="prediction-card" aria-label="Match predictions">
+                <p class="tag">Match Predictions</p>
+                <p class="prediction-desc">Predict each match outcome before it starts. Locked once the match begins.</p>
+                ${scoreHtml}
+                <div class="prediction-list">${rows}</div>
+            </div>`;
+
+        // Bind button events
+        container.querySelectorAll('.prediction-btn[data-pick]').forEach(btn => {
+            if (btn.disabled) return;
+            btn.addEventListener('click', () => {
+                const iso  = btn.dataset.iso;
+                const pick = btn.dataset.pick;
+                setPrediction(iso, pick);
+                render(); // re-render to reflect new state
+            });
+        });
+    }
+
+    return { render };
+
+})();
+
