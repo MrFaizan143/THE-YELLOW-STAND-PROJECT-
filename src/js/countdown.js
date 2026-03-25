@@ -69,9 +69,14 @@ const Countdown = (() => {
         const mins  = Math.floor((gap % 3_600_000) / 60_000);
         const secs  = Math.floor((gap % 60_000) / 1_000);
 
+        // Urgency modifiers: <1h = urgent (red pulse), <24h = soon (yellow)
+        const urgencyClass = gap < 3_600_000   ? 'cd-blocks--urgent'
+                           : gap < 86_400_000  ? 'cd-blocks--soon'
+                           : '';
+
         const label = `${days}d ${pad(hours)}h ${pad(mins)}m ${pad(secs)}s`;
         el.innerHTML = `
-            <div class="cd-blocks">
+            <div class="cd-blocks${urgencyClass ? ' ' + urgencyClass : ''}">
                 ${block(String(days), 'D')}
                 <span class="cd-sep">:</span>
                 ${block(pad(hours), 'H')}

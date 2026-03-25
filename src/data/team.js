@@ -537,14 +537,95 @@ const DATA = {
             vcPick:        "Ruturaj Gaikwad (C)",
             summary:       "Chinnaswamy is a bat-friendly paradise. Pick power hitters — Dube as captain. Pacers will be expensive; target spinners for value."
         },
-        "2026-04-11T14:00:00Z": {
-            opponent: "Delhi Capitals",
+        "2026-04-14T14:00:00Z": {
+            opponent: "Gujarat Titans",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Noor Ahmad"],
+            differentials: ["Anshul Kamboj", "Jamie Overton"],
+            avoidList:     ["Kartik Sharma"],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "Shivam Dube",
+            summary:       "Narendra Modi Stadium has a big ground — pacers get more value here. Gaikwad is superb in away games vs GT. Pick Kamboj as a differential pacer at low ownership."
+        },
+        "2026-04-17T14:00:00Z": {
+            opponent: "Sunrisers Hyderabad",
             mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Sanju Samson", "Shivam Dube", "Noor Ahmad"],
-            differentials: ["Khaleel Ahmed", "Ayush Mhatre"],
+            differentials: ["Dewald Brevis", "Rahul Chahar"],
             avoidList:     [],
             captainPick:   "Ruturaj Gaikwad (C)",
             vcPick:        "Sanju Samson",
-            summary:       "Home match at Chepauk. CSK enjoy a dominant H2H vs DC (19-11). Gaikwad has scored 150+ runs in his last 3 Chepauk outings."
+            summary:       "Home game at Chepauk — CSK's fortress. SRH love to play attacking cricket; expect a high-scoring game. Dhoni at No.5 is a must-pick in any format."
+        },
+        "2026-04-20T10:00:00Z": {
+            opponent: "Mumbai Indians",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Matt Henry"],
+            differentials: ["Dewald Brevis", "Nathan Ellis"],
+            avoidList:     ["Urvil Patel"],
+            captainPick:   "Shivam Dube",
+            vcPick:        "Ruturaj Gaikwad (C)",
+            summary:       "Wankhede is a flat belter — pick big hitters and powerplay bowlers. Dube as captain: he has a great record at Wankhede. Matt Henry gives you wickets in early overs."
+        },
+        "2026-04-26T14:00:00Z": {
+            opponent: "Kolkata Knight Riders",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Noor Ahmad", "Shivam Dube"],
+            differentials: ["Akeal Hosein", "Jamie Overton"],
+            avoidList:     [],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "MS Dhoni",
+            summary:       "Home match vs KKR. CSK dominate this H2H (22-12). Chepauk spinners are invaluable — Noor Ahmad is a must. Pick Hosein as a spin differential."
+        },
+        "2026-04-29T14:00:00Z": {
+            opponent: "Lucknow Super Giants",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Khaleel Ahmed"],
+            differentials: ["Dewald Brevis", "Anshul Kamboj"],
+            avoidList:     ["Prashant Veer"],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "Shivam Dube",
+            summary:       "Ekana, Lucknow has a two-paced pitch that aids swing bowlers. Khaleel Ahmed is lethal here with the new ball. Pick Gaikwad as captain — consistent performer at all venues."
+        },
+        "2026-05-03T10:00:00Z": {
+            opponent: "Rajasthan Royals",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Sanju Samson", "Noor Ahmad", "Shivam Dube"],
+            differentials: ["Ayush Mhatre", "Gurjapneet Singh"],
+            avoidList:     [],
+            captainPick:   "Sanju Samson",
+            vcPick:        "Ruturaj Gaikwad (C)",
+            summary:       "Back at Chepauk vs RR — expect spin to dominate. Sanju Samson as captain is a great differential pick given his form. Mhatre's aggression at the top suits this venue."
+        },
+        "2026-05-07T14:00:00Z": {
+            opponent: "Punjab Kings",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Matt Henry"],
+            differentials: ["Jamie Overton", "Ayush Mhatre"],
+            avoidList:     ["Rahul Chahar"],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "Shivam Dube",
+            summary:       "New PCA Stadium, Mullanpur plays very differently to Chepauk — flat and big. Pick hard-hitters and powerplay specialists. Gaikwad is in brilliant form and is a must-captain."
+        },
+        "2026-05-11T14:00:00Z": {
+            opponent: "Delhi Capitals",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Khaleel Ahmed"],
+            differentials: ["Noor Ahmad", "Dewald Brevis"],
+            avoidList:     [],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "MS Dhoni",
+            summary:       "Arun Jaitley, Delhi has a true surface. Spinners and pace both work. Pick Noor Ahmad for away advantage. Dhoni as VC remains evergreen in the death overs."
+        },
+        "2026-05-15T14:00:00Z": {
+            opponent: "Gujarat Titans",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Sanju Samson", "Noor Ahmad"],
+            differentials: ["Anshul Kamboj", "Ayush Mhatre"],
+            avoidList:     [],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "Sanju Samson",
+            summary:       "Must-win territory in the final stages. Chepauk spin trio (Noor, Chahar, Hosein) could be decisive. Back Gaikwad heavily as captain — he scores big under pressure."
+        },
+        "2026-05-18T14:00:00Z": {
+            opponent: "Sunrisers Hyderabad",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Noor Ahmad", "Khaleel Ahmed"],
+            differentials: ["Dewald Brevis", "Matt Henry"],
+            avoidList:     [],
+            captainPick:   "Shivam Dube",
+            vcPick:        "Ruturaj Gaikwad (C)",
+            summary:       "Last league game — both teams fighting for playoffs. Rajiv Gandhi, Hyderabad is a high-scoring venue. Pick big hitters; Dube as captain could be decisive in the powerplay."
         }
     },
 
@@ -556,22 +637,32 @@ const DATA = {
         {
             date: "MAR 2026",
             headline: "CSK kick off 2026 campaign away at Guwahati vs RR",
-            body: "Chennai Super Kings open their IPL 2026 season against Rajasthan Royals at the Barsapara Cricket Stadium on March 30. The Lions will be looking to start strong away from home."
+            body: "Chennai Super Kings open their IPL 2026 season against Rajasthan Royals at the Barsapara Cricket Stadium on March 30. The Lions will be looking to start strong away from home. Guwahati's wicket has historically been a batting surface, so expect a high-scoring encounter to open the season."
         },
         {
             date: "MAR 2026",
             headline: "Ruturaj Gaikwad confirmed as CSK captain for IPL 2026",
-            body: "Ruturaj Gaikwad will lead the Yellow Army into a new season as captain of Chennai Super Kings, backed by a strong squad assembled at the IPL 2025 mega auction."
+            body: "Ruturaj Gaikwad will lead the Yellow Army into a new season as captain of Chennai Super Kings, backed by a strong squad assembled at the IPL 2025 mega auction. The Maharashtra batter has scored over 900 runs in his last two IPL seasons and is widely regarded as one of the most consistent batters in the format."
+        },
+        {
+            date: "MAR 2026",
+            headline: "MS Dhoni to play IPL 2026 — confirms participation ahead of season",
+            body: "CSK icon MS Dhoni has confirmed he will feature in IPL 2026, continuing his finisher role for Chennai. Dhoni hinted this could be his final season, making every match a must-watch. His presence gives CSK the most feared death-overs lineup in the tournament."
         },
         {
             date: "FEB 2026",
             headline: "CSK squad finalised — Sanju Samson joins the Yellow Army",
-            body: "Chennai Super Kings secured Sanju Samson in the IPL mega auction, adding firepower behind the stumps alongside MS Dhoni. Dewald Brevis and Matt Henry also joined the squad."
+            body: "Chennai Super Kings secured Sanju Samson in the IPL mega auction, adding firepower behind the stumps alongside MS Dhoni. Dewald Brevis and Matt Henry also joined the squad, strengthening both batting depth and the pace attack. Noor Ahmad returns to continue his impressive partnership with Rahul Chahar in the spin department."
+        },
+        {
+            date: "FEB 2026",
+            headline: "Dewald Brevis — CSK's X-factor for IPL 2026",
+            body: "South African prodigy Dewald Brevis, nicknamed 'Baby AB', is primed for a breakout IPL season with CSK. The aggressive batter averaged a strike rate of 165+ in recent franchise T20 cricket and is expected to bat at No.3 or No.4 for the Yellow Army."
         },
         {
             date: "JAN 2026",
             headline: "IPL 2026 schedule released — CSK host 7 home games at Chidambaram",
-            body: "The BCCI released the IPL 2026 schedule, with Chennai Super Kings playing seven home matches at the MA Chidambaram Stadium. The season runs from March 22 to June 2026."
+            body: "The BCCI released the IPL 2026 schedule, with Chennai Super Kings playing seven home matches at the MA Chidambaram Stadium. The season runs from March 22 to June 2026. CSK's first home game is on April 3 against Punjab Kings — an ideal opportunity to kick off the home campaign in front of the iconic yellow crowd."
         }
     ]
 };

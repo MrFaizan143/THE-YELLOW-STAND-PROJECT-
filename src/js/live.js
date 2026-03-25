@@ -28,6 +28,9 @@ const Live = (() => {
     /** setInterval handle for the 30-second polling loop */
     let pollIntervalId = null;
 
+    /** Timestamp of the last successful data refresh */
+    let lastFetchedAt = null;
+
     // -------------------------------------------------------------------------
     // Match-type helpers
     // -------------------------------------------------------------------------
@@ -62,6 +65,13 @@ const Live = (() => {
         return /\bipl\b|indian premier/i.test(m.name || m.series || m.seriesName || '');
     }
 
+    /** Returns true if the match involves CSK */
+    function isCSKMatch(m) {
+        const name = (m.name || m.series || m.seriesName || '').toLowerCase();
+        const teams = Array.isArray(m.teams) ? m.teams.join(' ').toLowerCase() : '';
+        return /chennai super kings|\bcsk\b/i.test(name + ' ' + teams);
+    }
+
     // -------------------------------------------------------------------------
     // Rendering
     // -------------------------------------------------------------------------
@@ -83,6 +93,11 @@ const Live = (() => {
         if (!container) return;
 
         container.innerHTML = `
+            <div class="live-refresh-bar">
+                <span class="live-last-updated" id="live-last-updated">—</span>
+                <button class="live-refresh-btn" id="live-refresh-btn" aria-label="Refresh live matches">↻ Refresh</button>
+            </div>
+
             <div class="live-filter-tabs" role="tablist" aria-label="Match type filter">
                 <button class="live-tab live-tab--active" data-filter="all"   role="tab" aria-selected="true">All</button>
                 <button class="live-tab"                  data-filter="ipl"   role="tab" aria-selected="false">IPL</button>
@@ -114,14 +129,37 @@ const Live = (() => {
             });
         });
 
+        // Bind manual refresh button
+        const refreshBtn = document.getElementById('live-refresh-btn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                refreshBtn.disabled = true;
+                fetchAndRender().finally(() => {
+                    refreshBtn.disabled = false;
+                });
+            });
+        }
+
         fetchAndRender();
 
-        // Poll every 30 seconds
+        // Poll every 30 seconds — skip when tab is hidden to save battery / API quota
         if (pollIntervalId) clearInterval(pollIntervalId);
         pollIntervalId = setInterval(() => {
-            if (document.getElementById('live-content')) fetchAndRender(true);
-            else clearInterval(pollIntervalId);
+            if (!document.hidden && document.getElementById('live-content')) {
+                fetchAndRender(true);
+            } else if (!document.getElementById('live-content')) {
+                clearInterval(pollIntervalId);
+            }
         }, 30_000);
+
+        // Resume immediately when the tab becomes visible again
+        document.addEventListener('visibilitychange', _onVisibilityChange, { passive: true });
+    }
+
+    function _onVisibilityChange() {
+        if (!document.hidden && document.getElementById('live-content')) {
+            fetchAndRender(true);
+        }
     }
 
     /** Fetch matches from the API and refresh the list */
@@ -135,7 +173,9 @@ const Live = (() => {
 
         const matches = await CricketAPI.fetchAllCurrentMatches();
         cachedMatches = matches;
+        lastFetchedAt = Date.now();
         renderMatchList();
+        updateLastUpdatedLabel();
 
         // Also refresh the pin widget if a match is pinned
         if (pinnedMatchId) {
@@ -144,6 +184,14 @@ const Live = (() => {
                 updatePinWidget(pinned);
             }
         }
+    }
+
+    /** Update the "Last updated" label in the refresh bar */
+    function updateLastUpdatedLabel() {
+        const el = document.getElementById('live-last-updated');
+        if (!el || !lastFetchedAt) return;
+        const mins = Math.floor((Date.now() - lastFetchedAt) / 60_000);
+        el.textContent = mins < 1 ? 'Updated just now' : `Updated ${mins}m ago`;
     }
 
     /** Re-render #live-matches-list from cachedMatches using currentFilter */
@@ -182,6 +230,7 @@ const Live = (() => {
         const fmt    = detectFormat(m).toUpperCase();
         const women  = isWomen(m);
         const ipl    = isIPL(m);
+        const csk    = isCSKMatch(m);
         const status = m.status || '';
         const isLive = !status.toLowerCase().includes('match not started') && status !== '';
 
@@ -205,11 +254,14 @@ const Live = (() => {
         // FanCode URL — use deep-link with team names for better matching
         const fanCodeURL = `https://www.fancode.com/cricket`;
 
+        const cskClass = csk ? ' live-match-card--csk' : '';
+
         return `
-        <div class="live-match-card" data-match-id="${m.id}" aria-label="Match: ${team1} vs ${team2}">
+        <div class="live-match-card${cskClass}" data-match-id="${m.id}" aria-label="Match: ${team1} vs ${team2}">
             <div class="live-card-top">
                 ${isLive ? '<span class="tag live-tag" aria-label="Live match">🔴 LIVE</span>' : '<span class="tag live-tag-soon">🕐 UPCOMING</span>'}
                 <span class="live-format-badge">${fmtLabel}</span>
+                ${csk ? '<span class="tag" style="color:var(--color-yellow);margin:0">🦁 CSK</span>' : ''}
             </div>
 
             <div class="live-card-teams">

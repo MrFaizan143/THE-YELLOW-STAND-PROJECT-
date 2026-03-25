@@ -872,18 +872,24 @@ const MatchJournal = (() => {
                 <div class="journal-list">${rows}</div>
             </div>`;
 
-        // Bind textarea events — auto-save on input
+        // Bind textarea events — auto-save with a short debounce to avoid saving on every keystroke
+        const _debounceTimers = {};
         container.querySelectorAll('.journal-textarea').forEach(ta => {
             ta.addEventListener('input', () => {
                 const iso   = ta.dataset.iso;
-                const notes = load();
-                notes[iso]  = ta.value;
-                save(notes);
 
-                // Update char count
+                // Update char count immediately
                 const ccId = 'jcc-' + iso.replace(/[^a-z0-9]/gi, '');
                 const ccEl = document.getElementById(ccId);
                 if (ccEl) ccEl.textContent = `${ta.value.length}/${MAX_CHARS}`;
+
+                // Debounce the localStorage write by 600 ms
+                clearTimeout(_debounceTimers[iso]);
+                _debounceTimers[iso] = setTimeout(() => {
+                    const notes = load();
+                    notes[iso]  = ta.value;
+                    save(notes);
+                }, 600);
             });
         });
     }

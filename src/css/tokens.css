@@ -53,7 +53,7 @@
     /* -----------------------------------------------------------------------
        Font Sizes
     ----------------------------------------------------------------------- */
-    --text-xxs:   0.6rem;    /* tags, roles, small labels */
+    --text-xxs:   0.65rem;   /* tags, roles, small labels */
     --text-xs:    0.65rem;   /* nav items */
     --text-sm:    0.7rem;    /* squad category titles */
     --text-base:  0.8rem;    /* staff names */
@@ -81,6 +81,12 @@
     --radius-xl:   24px;
     --radius-pill: 50px;
     --radius-full: 100px;
+
+    /* -----------------------------------------------------------------------
+       Semantic status colors
+    ----------------------------------------------------------------------- */
+    --color-positive:     #4ade80;   /* NRR +, correct predictions, wins */
+    --color-negative:     #f87171;   /* NRR -, wrong predictions, losses */
 
     /* -----------------------------------------------------------------------
        Z-Index
@@ -128,4 +134,7 @@
 
     --color-overlay-nav:  rgba(245, 245, 240, 0.85);
     --color-overlay-nav-border: rgba(0, 0, 0, 0.12);
+
+    --color-positive:     #16a34a;
+    --color-negative:     #dc2626;
 }

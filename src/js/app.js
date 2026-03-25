@@ -50,7 +50,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (liveScoreEl) {
             updateLiveScore();
-            setInterval(updateLiveScore, 60_000); // refresh every 60 s
+            const hubPollId = setInterval(() => {
+                // Skip polling when the tab is hidden to save battery and API quota
+                if (!document.hidden) updateLiveScore();
+            }, 60_000);
+
+            // Clean up the interval if the page is ever fully hidden for a long time
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) updateLiveScore();
+            }, { passive: true });
         }
     }
 
