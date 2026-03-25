@@ -42,9 +42,14 @@ const Router = (() => {
             if (pageId === 'm') {
                 if (CricketAPI.isConfigured() || CricketAPI.isCricapiConfigured()) {
                     Render.fixturesLoading();
-                    CricketAPI.fetchCSKFixtures()
-                        .then(live => { Render.fixtures(live); })
-                        .catch(() => { Render.fixtures(); });
+                    // Fetch CSK-only fixtures and full IPL schedule in parallel
+                    Promise.all([
+                        CricketAPI.fetchCSKFixtures().catch(() => []),
+                        CricketAPI.fetchAllIPLFixtures().catch(() => [])
+                    ]).then(([cskLive, iplLive]) => {
+                        Render.fixtures(cskLive);
+                        Render.iplSchedule(iplLive);
+                    });
                 } else {
                     Render.fixtures();
                 }
