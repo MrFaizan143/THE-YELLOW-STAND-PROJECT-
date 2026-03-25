@@ -32,6 +32,13 @@ const CricketAPI = (() => {
     /** RapidAPI cricket-live-data key (optional, 500 req/month free) */
     const RAPIDAPI_KEY = '1c452f2595msh591b430a54e97c6p1d901bjsnfbb28c9ec143';
 
+    /**
+     * OpenWeatherMap API key (free, 1000 calls/day, no credit card required).
+     * Get one at: https://openweathermap.org/api
+     * Used for weather forecasts and Rain Threat badges on the schedule page.
+     */
+    const OPENWEATHER_KEY = '';
+
     // -------------------------------------------------------------------------
     // Constants shared by both providers
     // -------------------------------------------------------------------------
@@ -473,10 +480,71 @@ const CricketAPI = (() => {
         }
     }
 
+    // -------------------------------------------------------------------------
+    // OpenWeatherMap weather helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Fetch the weather forecast for a venue at the time of a specific match.
+     * Uses OpenWeatherMap 5-day / 3-hour free forecast.
+     * Returns { description, temp, rainProb, isRainThreat } or null on failure.
+     * @param {number} lat - Venue latitude.
+     * @param {number} lng - Venue longitude.
+     * @param {string} matchIso - ISO-8601 match start time.
+     */
+    async function fetchVenueWeather(lat, lng, matchIso) {
+        if (!OPENWEATHER_KEY) return null;
+        try {
+            const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lng}&appid=${encodeURIComponent(OPENWEATHER_KEY)}&units=metric`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`weather ${res.status}`);
+            const data = await res.json();
+
+            const matchTime = matchIso ? new Date(matchIso).getTime() : null;
+            let bestSlot = null;
+            if (matchTime && data.list && data.list.length > 0) {
+                let minDiff = Infinity;
+                for (const slot of data.list) {
+                    const diff = Math.abs(slot.dt * 1000 - matchTime);
+                    if (diff < minDiff) { minDiff = diff; bestSlot = slot; }
+                }
+            } else if (data.list && data.list.length > 0) {
+                bestSlot = data.list[0];
+            }
+
+            if (!bestSlot) return null;
+
+            const description = bestSlot.weather && bestSlot.weather[0] ? bestSlot.weather[0].description : '';
+            const temp        = bestSlot.main ? Math.round(bestSlot.main.temp) : null;
+            const rainProb    = typeof bestSlot.pop === 'number' ? Math.round(bestSlot.pop * 100) : 0;
+            const isRainThreat = rainProb >= 50 || /rain|drizzle|thunder|storm/i.test(description);
+
+            return { description, temp, rainProb, isRainThreat };
+        } catch (err) {
+            console.warn('[CricketAPI] fetchVenueWeather failed:', err.message);
+            return null;
+        }
+    }
+
+    /**
+     * Fetch weather for all given fixtures in parallel.
+     * Returns an array of weather results indexed to match the input array.
+     * @param {Array} fixtures - Array of fixture objects with `v` and `iso` fields.
+     */
+    async function fetchWeatherForFixtures(fixtures) {
+        if (!OPENWEATHER_KEY) return fixtures.map(() => null);
+        return Promise.all(fixtures.map(f => {
+            const vInfo = (typeof DATA !== 'undefined') && DATA.venueInfo && DATA.venueInfo[f.v];
+            if (!vInfo) return Promise.resolve(null);
+            return fetchVenueWeather(vInfo.lat, vInfo.lng, f.iso);
+        }));
+    }
+
     /** Public API */
     return {
         isConfigured,
         isCricapiConfigured,
+        isWeatherConfigured: () => OPENWEATHER_KEY.length > 0,
         getSeries,
         getFixtures,
         getFixturesBySeries,
@@ -492,7 +560,9 @@ const CricketAPI = (() => {
         fetchCSKLiveMatch,
         fetchCSKResults,
         fetchCSKFixturesBySeries,
-        fetchAllIPLFixtures
+        fetchAllIPLFixtures,
+        fetchVenueWeather,
+        fetchWeatherForFixtures
     };
 
 })();

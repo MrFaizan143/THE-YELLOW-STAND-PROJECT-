@@ -10,6 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     FanProfile.init();   // Pre-load saved fan profile from localStorage
     Render.updateHubRecord(); // Show season record on Hub
 
+    // Initialize Schedule module (notification bell, follow-team selector, etc.)
+    if (typeof Schedule !== 'undefined') {
+        Schedule.init();
+    }
+
     // Render Hub info cards (last result + next venue — both auto-detected)
     Render.lastResult();
     Render.venueInfo();
@@ -32,6 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="hub-live-score-text">${match.score}</p>
                         <p class="hub-live-score-status">${match.status || ''}</p>`;
                     liveScoreEl.style.display = '';
+
+                    // Also update the matching fixture row in the schedule page
+                    if (typeof Schedule !== 'undefined') {
+                        Schedule.updateLiveInSchedule(match);
+                    }
                 } else {
                     liveScoreEl.style.display = 'none';
                 }

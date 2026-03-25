@@ -169,6 +169,60 @@ const DATA = {
     },
 
     /**
+     * IPL 2026 venue geocoordinates — used for the interactive map and weather overlay.
+     * Key matches the `v` field in fixtures (exact string).
+     */
+    venueInfo: {
+        "Barsapara, Guwahati":       { lat: 26.1158, lng: 91.7086, city: "Guwahati",   stadium: "Barsapara Cricket Stadium"                  },
+        "Chidambaram, Chennai":      { lat: 13.0604, lng: 80.2784, city: "Chennai",    stadium: "MA Chidambaram Stadium"                     },
+        "Chinnaswamy, Bengaluru":    { lat: 12.9785, lng: 77.5993, city: "Bengaluru",  stadium: "M. Chinnaswamy Stadium"                     },
+        "Narendra Modi, Ahmedabad":  { lat: 23.0922, lng: 72.5972, city: "Ahmedabad",  stadium: "Narendra Modi Stadium"                      },
+        "Wankhede, Mumbai":          { lat: 18.9388, lng: 72.8258, city: "Mumbai",     stadium: "Wankhede Stadium"                           },
+        "Ekana, Lucknow":            { lat: 26.8467, lng: 80.9462, city: "Lucknow",    stadium: "BRSABV Ekana Cricket Stadium"               },
+        "New PCA, Mullanpur":        { lat: 30.7046, lng: 76.7179, city: "Mullanpur",  stadium: "New PCA Stadium"                            },
+        "Arun Jaitley, Delhi":       { lat: 28.6365, lng: 77.2354, city: "Delhi",      stadium: "Arun Jaitley Stadium"                       },
+        "Rajiv Gandhi, Hyderabad":   { lat: 17.4055, lng: 78.5500, city: "Hyderabad",  stadium: "Rajiv Gandhi International Cricket Stadium" },
+        "Eden Gardens, Kolkata":     { lat: 22.5646, lng: 88.3433, city: "Kolkata",    stadium: "Eden Gardens"                               }
+    },
+
+    /**
+     * Head-to-head historical records vs each CSK opponent.
+     * w: overall wins, l: overall losses, last5: five most recent results (newest first).
+     */
+    h2h: {
+        "Rajasthan Royals":            { w: 18, l: 15, last5: ['W','L','W','W','L'] },
+        "Punjab Kings":                { w: 20, l: 12, last5: ['W','W','L','W','W'] },
+        "Royal Challengers Bengaluru": { w: 21, l: 13, last5: ['L','W','W','L','W'] },
+        "Delhi Capitals":              { w: 19, l: 11, last5: ['W','W','W','L','W'] },
+        "Gujarat Titans":              { w:  4, l:  2, last5: ['W','L','W','W','L'] },
+        "Sunrisers Hyderabad":         { w: 14, l: 11, last5: ['L','W','L','W','W'] },
+        "Mumbai Indians":              { w: 17, l: 19, last5: ['L','W','L','L','W'] },
+        "Kolkata Knight Riders":       { w: 18, l: 16, last5: ['W','L','L','W','W'] },
+        "Lucknow Super Giants":        { w:  3, l:  4, last5: ['L','W','L','W','L'] }
+    },
+
+    /**
+     * Probable Playing XIs — keyed by fixture ISO timestamp.
+     * Update this object closer to each match day.
+     */
+    probableXIs: {
+        "2026-03-30T14:00:00Z": {
+            csk: [
+                "Ruturaj Gaikwad (C)", "Ayush Mhatre", "Dewald Brevis",
+                "Sanju Samson (wk)", "Shivam Dube (vc)", "MS Dhoni",
+                "Matthew Short", "Noor Ahmad", "Khaleel Ahmed",
+                "Matt Henry", "Anshul Kamboj"
+            ],
+            opp: [
+                "Yashasvi Jaiswal", "Vaibhav Suryavanshi", "Sanju Samson (C/wk)",
+                "Riyan Parag", "Shimron Hetmyer", "Dhruv Jurel",
+                "Nitish Rana", "Maheesh Theekshana", "Yuzvendra Chahal",
+                "Trent Boult", "Sandeep Sharma"
+            ]
+        }
+    },
+
+    /**
      * Static news / update entries — latest first.
      * Update this array to add new headlines throughout the season.
      */

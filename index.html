@@ -11,6 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;800&family=Space+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/css/main.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 </head>
 <body>
 
@@ -19,6 +21,9 @@
 
     <!-- Theme Toggle -->
     <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light mode">☀</button>
+
+    <!-- Notification Bell -->
+    <button id="notif-bell" class="notif-bell" aria-label="Enable match notifications" aria-pressed="false">🔕</button>
 
     <!-- Bottom Navigation -->
     <nav id="main-nav" role="navigation" aria-label="Main navigation">
@@ -62,6 +67,25 @@
         <section id="m" class="page" aria-label="Match Schedule">
             <span class="tag">Schedule</span>
             <h1>MAP.</h1>
+
+            <!-- Follow My Team selector -->
+            <div id="follow-team-bar"></div>
+
+            <!-- Interactive venue map (Leaflet) -->
+            <div id="venue-map" class="venue-map-container" aria-label="IPL 2026 venue map"></div>
+
+            <!-- Venue detail sidebar (opens on map pin click) -->
+            <aside id="venue-sidebar" class="venue-sidebar" aria-label="Venue details" role="complementary"></aside>
+
+            <!-- Schedule countdown to next match -->
+            <div class="schedule-countdown-wrap">
+                <span class="tag">Next Match In</span>
+                <p id="schedule-countdown" class="schedule-countdown-display" aria-live="off">—</p>
+            </div>
+
+            <!-- Probable Playing XIs (shown near match day) -->
+            <div id="probable-xi-section"></div>
+
             <div id="fixture-list"></div>
             <h2 class="section-heading" aria-label="IPL 2026 Full Schedule">Full IPL Schedule</h2>
             <div id="ipl-schedule-list" aria-live="polite" aria-label="IPL 2026 full match schedule">
@@ -103,6 +127,9 @@
 
     </main>
 
+    <!-- H2H Tooltip (body-level, position:fixed) -->
+    <div id="h2h-tooltip" class="h2h-tooltip" aria-hidden="true" role="tooltip"></div>
+
     <!-- Scripts (data first, then logic, then app init) -->
     <script src="src/data/team.js"></script>
     <script src="src/js/api.js"></script>
@@ -113,6 +140,10 @@
     <script src="src/js/profile.js"></script>
     <script src="src/js/news.js"></script>
     <script src="src/js/tools.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            id="leaflet-js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLs=" crossorigin=""></script>
+    <script src="src/js/schedule.js"></script>
     <script src="src/js/app.js"></script>
 </body>
 </html>
