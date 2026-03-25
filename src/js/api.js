@@ -27,7 +27,7 @@ const CricketAPI = (() => {
      * Get one (free, no card) at: https://cricapi.com/
      * 100 API calls / day on the free plan.
      */
-    const CRICAPI_KEY = '';
+    const CRICAPI_KEY = 'bbf69190-0d70-4665-9b33-523ce96f057e';
 
     /** RapidAPI cricket-live-data key (optional, 500 req/month free) */
     const RAPIDAPI_KEY = '';
