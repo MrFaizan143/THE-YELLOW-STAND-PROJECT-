@@ -222,6 +222,62 @@ const DATA = {
     },
 
     /**
+     * CSK Legacy — IPL title history and all-time records.
+     */
+    legacy: {
+        titles: [
+            { year: 2010, final: "CSK vs MI",  result: "CSK won by 22 runs",     venue: "DY Patil Stadium, Navi Mumbai",           captain: "MS Dhoni" },
+            { year: 2011, final: "CSK vs RCB", result: "CSK won by 58 runs",     venue: "MA Chidambaram Stadium, Chennai",          captain: "MS Dhoni" },
+            { year: 2018, final: "CSK vs SRH", result: "CSK won by 8 wickets",   venue: "Wankhede Stadium, Mumbai",                 captain: "MS Dhoni" },
+            { year: 2021, final: "CSK vs KKR", result: "CSK won by 27 runs",     venue: "Dubai International Cricket Stadium",      captain: "MS Dhoni" },
+            { year: 2023, final: "CSK vs GT",  result: "CSK won by 5 wickets",   venue: "Narendra Modi Stadium, Ahmedabad",         captain: "MS Dhoni" }
+        ],
+        records: [
+            { label: "IPL Titles",             value: "5" },
+            { label: "Finals Played",          value: "10" },
+            { label: "Playoff Appearances",    value: "13/17" },
+            { label: "Most Runs (CSK)",        value: "S. Raina — 5528" },
+            { label: "Most Wickets (CSK)",     value: "D. Bravo — 183" },
+            { label: "Most Appearances",       value: "MS Dhoni — 264" },
+            { label: "Highest Team Score",     value: "246/5 vs PBKS (2010)" },
+            { label: "Home Ground",            value: "MA Chidambaram Stadium" }
+        ]
+    },
+
+    /**
+     * Cricket trivia quiz questions — 25 questions covering CSK, IPL & general cricket.
+     * q: question text  opts: 4 answer options (strings)  ans: index of correct option (0-based)
+     * cat: category label — 'CSK' | 'IPL' | 'Cricket'
+     */
+    quiz: [
+        { cat: "CSK",     q: "How many IPL titles has CSK won?",                                          opts: ["3","4","5","6"],                                                       ans: 2 },
+        { cat: "CSK",     q: "Who captained CSK in all 5 title-winning seasons?",                        opts: ["Suresh Raina","MS Dhoni","Ruturaj Gaikwad","Ravindra Jadeja"],         ans: 1 },
+        { cat: "CSK",     q: "What is MS Dhoni's iconic jersey number?",                                  opts: ["3","5","7","9"],                                                       ans: 2 },
+        { cat: "CSK",     q: "Which stadium is CSK's home ground?",                                       opts: ["Wankhede","Eden Gardens","MA Chidambaram","Chinnaswamy"],             ans: 2 },
+        { cat: "CSK",     q: "What is CSK's famous battle cry / slogan?",                                 opts: ["Jai CSK","Whistle Podu","Yellow Army","Lion Roar"],                    ans: 1 },
+        { cat: "CSK",     q: "In which year did CSK win their first IPL title?",                          opts: ["2008","2009","2010","2011"],                                           ans: 2 },
+        { cat: "CSK",     q: "Which player has scored the most runs for CSK in IPL history?",             opts: ["MS Dhoni","Murali Vijay","Suresh Raina","Michael Hussey"],            ans: 2 },
+        { cat: "CSK",     q: "Which team did CSK beat in the 2023 IPL Final?",                            opts: ["SRH","KKR","MI","GT"],                                                 ans: 3 },
+        { cat: "CSK",     q: "What is CSK's nickname?",                                                   opts: ["Super Kings","Yellow Lions","The Pride","Whistle Boys"],              ans: 0 },
+        { cat: "CSK",     q: "Who is CSK's head coach in IPL 2026?",                                     opts: ["Ricky Ponting","Stephen Fleming","Mahela Jayawardene","Anil Kumble"], ans: 1 },
+        { cat: "IPL",     q: "What year did the IPL start?",                                              opts: ["2006","2007","2008","2009"],                                           ans: 2 },
+        { cat: "IPL",     q: "Which team has won the most IPL titles overall (before 2026)?",             opts: ["CSK","MI","KKR","RCB"],                                                ans: 1 },
+        { cat: "IPL",     q: "How many teams currently compete in the IPL?",                              opts: ["8","9","10","12"],                                                     ans: 2 },
+        { cat: "IPL",     q: "Which stadium hosted the 2023 IPL Final?",                                  opts: ["Wankhede","Eden Gardens","Narendra Modi Stadium","Chepauk"],          ans: 2 },
+        { cat: "IPL",     q: "What is the maximum number of overs in an IPL match per side?",             opts: ["15","18","20","25"],                                                   ans: 2 },
+        { cat: "Cricket", q: "How many balls are in a cricket over?",                                     opts: ["4","5","6","8"],                                                       ans: 2 },
+        { cat: "Cricket", q: "What does 'LBW' stand for in cricket?",                                    opts: ["Leg Before Wicket","Left Before Wicket","Lost Ball Warning","Line Before Wicket"], ans: 0 },
+        { cat: "Cricket", q: "What is a score of zero called in cricket?",                                opts: ["Blank","Nil","Duck","Golden"],                                         ans: 2 },
+        { cat: "Cricket", q: "How many players are in a cricket team?",                                   opts: ["9","10","11","12"],                                                    ans: 2 },
+        { cat: "Cricket", q: "What does DRS stand for in cricket?",                                      opts: ["Direct Review System","Decision Review System","Dual Referral System","Digital Review Software"], ans: 1 },
+        { cat: "Cricket", q: "A batsman scores a 'century' when they reach how many runs?",               opts: ["50","75","100","150"],                                                 ans: 2 },
+        { cat: "Cricket", q: "What is a 'hat-trick' in cricket?",                                         opts: ["3 sixes in a row","3 wickets in 3 consecutive balls","Scoring 50 in 3 overs","Hitting the stumps 3 times"], ans: 1 },
+        { cat: "Cricket", q: "What nationality is batting legend Sachin Tendulkar?",                      opts: ["Pakistani","Sri Lankan","Indian","Bangladeshi"],                       ans: 2 },
+        { cat: "Cricket", q: "What is the maximum number of overs a T20 bowler can bowl per match?",      opts: ["3","4","5","6"],                                                       ans: 1 },
+        { cat: "Cricket", q: "Which fielding position is closest to the batsman, on the leg side?",       opts: ["Fine Leg","Square Leg","Silly Mid-On","Mid-Wicket"],                   ans: 2 }
+    ],
+
+    /**
      * Static news / update entries — latest first.
      * Update this array to add new headlines throughout the season.
      */

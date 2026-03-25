@@ -703,9 +703,53 @@ const Render = (() => {
         }
     }
 
+    /**
+     * Renders the CSK Legacy section (trophy gallery + records) into #legacy-content.
+     * Called once when the Pride page is first visited.
+     */
+    function legacy() {
+        const container = document.getElementById('legacy-content');
+        if (!container || !DATA.legacy) return;
+
+        const { titles, records } = DATA.legacy;
+
+        // Trophy cards
+        const trophyCards = titles.map(t => `
+            <div class="legacy-trophy-card" aria-label="IPL ${t.year} title">
+                <p class="legacy-trophy-year">${t.year}</p>
+                <p class="legacy-trophy-trophy" aria-hidden="true">🏆</p>
+                <p class="legacy-trophy-final">${t.final}</p>
+                <p class="legacy-trophy-result">${t.result}</p>
+                <p class="legacy-trophy-venue">${t.venue}</p>
+                <p class="legacy-trophy-captain">Captain: ${t.captain}</p>
+            </div>`).join('');
+
+        // Records grid
+        const recordItems = records.map(r => `
+            <div class="legacy-record-item" aria-label="${r.label}: ${r.value}">
+                <p class="legacy-record-value">${r.value}</p>
+                <p class="legacy-record-label">${r.label}</p>
+            </div>`).join('');
+
+        container.innerHTML = `
+            <h2 class="section-heading" aria-label="CSK Legacy">CSK Legacy</h2>
+            <div class="legacy-banner" aria-label="5 IPL Titles">
+                <span class="legacy-title-count">5×</span>
+                <span class="legacy-title-label">IPL Champions</span>
+                <span class="legacy-title-emoji" aria-hidden="true">🦁</span>
+            </div>
+            <div class="legacy-trophy-grid" role="list" aria-label="IPL title history">
+                ${trophyCards}
+            </div>
+            <h2 class="section-heading" aria-label="CSK All-Time Records">All-Time Records</h2>
+            <div class="legacy-records-grid" role="list" aria-label="CSK records">
+                ${recordItems}
+            </div>`;
+    }
+
     /** Public API */
     return { fixtures, fixturesLoading, fixturesError, squad, standings, iplSchedule,
-             lastResult, venueInfo, updateHubRecord };
+             lastResult, venueInfo, updateHubRecord, legacy };
 
 })();
 

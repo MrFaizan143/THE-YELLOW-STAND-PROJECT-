@@ -480,3 +480,415 @@ const FanPredictions = (() => {
 
 })();
 
+/* ==========================================================================
+   CricketQuiz — Cricket trivia quiz on the Fan page.
+   Questions come from DATA.quiz. Shows one question at a time with 4 options,
+   instant correct/wrong feedback, and a final score summary.
+   ========================================================================== */
+
+const CricketQuiz = (() => {
+
+    const CAT_COLORS = { CSK: '#FDB913', IPL: '#a78bfa', Cricket: '#34d399' };
+
+    let questions  = [];   // shuffled subset for this session
+    let current    = 0;    // index of current question
+    let score      = 0;    // correct answers so far
+    let answered   = false; // has the user answered the current question?
+
+    /** Fisher-Yates shuffle — returns a new shuffled array */
+    function shuffle(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    /** Start a fresh quiz session */
+    function startSession() {
+        questions = shuffle(DATA.quiz).slice(0, 10);  // 10 random questions
+        current   = 0;
+        score     = 0;
+        answered  = false;
+    }
+
+    /** Render the full quiz widget into #quiz-content */
+    function render() {
+        const container = document.getElementById('quiz-content');
+        if (!container) return;
+        startSession();
+        renderQuestion(container);
+    }
+
+    /** Render current question */
+    function renderQuestion(container) {
+        answered = false;
+        if (current >= questions.length) {
+            renderResult(container);
+            return;
+        }
+
+        const q        = questions[current];
+        const catColor = CAT_COLORS[q.cat] || '#FDB913';
+        const progress = `${current + 1} / ${questions.length}`;
+
+        const optButtons = q.opts.map((opt, i) => `
+            <button class="quiz-option" data-idx="${i}" aria-label="${opt}">
+                <span class="quiz-option-letter">${String.fromCharCode(65 + i)}</span>
+                <span class="quiz-option-text">${opt}</span>
+            </button>`).join('');
+
+        container.innerHTML = `
+            <div class="quiz-card" aria-label="Cricket trivia quiz">
+                <div class="quiz-header">
+                    <p class="tag" style="color:${catColor}">${q.cat}</p>
+                    <p class="quiz-progress" aria-label="Question ${current + 1} of ${questions.length}">${progress}</p>
+                </div>
+                <div class="quiz-score-display" aria-live="polite" aria-atomic="true">
+                    Score: ${score}
+                </div>
+                <div class="quiz-progress-bar" role="progressbar"
+                     aria-valuenow="${current}" aria-valuemin="0" aria-valuemax="${questions.length}">
+                    <div class="quiz-progress-fill" style="width:${(current / questions.length) * 100}%"></div>
+                </div>
+                <p class="quiz-question">${q.q}</p>
+                <div class="quiz-options" role="group" aria-label="Answer options">
+                    ${optButtons}
+                </div>
+                <div class="quiz-feedback" id="quiz-feedback" aria-live="assertive" aria-atomic="true"></div>
+                <button class="quiz-next-btn" id="quiz-next" style="display:none" aria-label="Next question">
+                    ${current + 1 < questions.length ? 'Next Question →' : 'See Results'}
+                </button>
+            </div>`;
+
+        // Bind option buttons
+        container.querySelectorAll('.quiz-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (answered) return;
+                answered = true;
+                const chosen  = parseInt(btn.dataset.idx, 10);
+                const correct = q.ans;
+                const isRight = chosen === correct;
+
+                if (isRight) score++;
+
+                // Style all options
+                container.querySelectorAll('.quiz-option').forEach((b, i) => {
+                    b.disabled = true;
+                    if (i === correct) {
+                        b.classList.add('quiz-option--correct');
+                    } else if (i === chosen && !isRight) {
+                        b.classList.add('quiz-option--wrong');
+                    }
+                });
+
+                // Show feedback
+                const feedbackEl = document.getElementById('quiz-feedback');
+                if (feedbackEl) {
+                    feedbackEl.textContent = isRight
+                        ? '✓ Correct!'
+                        : `✗ Wrong — the answer is "${q.opts[correct]}"`;
+                    feedbackEl.className = 'quiz-feedback ' +
+                        (isRight ? 'quiz-feedback--correct' : 'quiz-feedback--wrong');
+                }
+
+                // Update score display
+                const scoreEl = container.querySelector('.quiz-score-display');
+                if (scoreEl) scoreEl.textContent = `Score: ${score}`;
+
+                // Show next button
+                const nextBtn = document.getElementById('quiz-next');
+                if (nextBtn) nextBtn.style.display = '';
+            });
+        });
+
+        // Bind next button
+        const nextBtn = document.getElementById('quiz-next');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                current++;
+                renderQuestion(container);
+            });
+        }
+    }
+
+    /** Render end-of-quiz results */
+    function renderResult(container) {
+        const pct     = Math.round((score / questions.length) * 100);
+        let medal = '🏅';
+        let label = 'Good effort!';
+        if (pct >= 90) { medal = '🏆'; label = 'Cricket genius!'; }
+        else if (pct >= 70) { medal = '🥇'; label = 'Great job!'; }
+        else if (pct >= 50) { medal = '🥈'; label = 'Not bad!'; }
+
+        container.innerHTML = `
+            <div class="quiz-card quiz-card--result" aria-label="Quiz results">
+                <p class="tag">Quiz Complete</p>
+                <div class="quiz-result-medal" aria-hidden="true">${medal}</div>
+                <p class="quiz-result-label">${label}</p>
+                <p class="quiz-result-score" aria-label="You scored ${score} out of ${questions.length}">
+                    ${score} <span class="quiz-result-denom">/ ${questions.length}</span>
+                </p>
+                <p class="quiz-result-pct">${pct}% correct</p>
+                <button class="quiz-play-again-btn" aria-label="Play again">Play Again 🔄</button>
+            </div>`;
+
+        container.querySelector('.quiz-play-again-btn').addEventListener('click', () => {
+            startSession();
+            renderQuestion(container);
+        });
+    }
+
+    return { render };
+
+})();
+
+/* ==========================================================================
+   TossTracker — Per-match toss result recorder on the Fan page.
+   Users record whether CSK won the toss and what they chose (bat/field).
+   All data is persisted in localStorage.
+   ========================================================================== */
+
+const TossTracker = (() => {
+
+    const STORAGE_KEY = 'tys_toss_2026';
+
+    /** Load toss data: { [iso]: { won: bool|null, chose: 'bat'|'field'|null } } */
+    function load() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : {};
+        } catch (_) {
+            return {};
+        }
+    }
+
+    function save(data) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    /** Compute summary stats from toss data */
+    function stats(data) {
+        let won = 0, lost = 0, batFirst = 0, fieldFirst = 0;
+        for (const entry of Object.values(data)) {
+            if (entry.won === true)  won++;
+            if (entry.won === false) lost++;
+            if (entry.chose === 'bat')   batFirst++;
+            if (entry.chose === 'field') fieldFirst++;
+        }
+        return { won, lost, batFirst, fieldFirst };
+    }
+
+    function render() {
+        const container = document.getElementById('toss-content');
+        if (!container) return;
+        renderWidget(container);
+    }
+
+    function renderWidget(container) {
+        const data    = load();
+        const summary = stats(data);
+        const now     = Date.now();
+
+        const rows = DATA.fixtures.map(f => {
+            const iso    = f.iso || '';
+            const entry  = data[iso] || { won: null, chose: null };
+            const isPast = iso && new Date(iso).getTime() <= now;
+            const short  = (window.TEAM_SHORT && window.TEAM_SHORT[f.o]) || f.o.substring(0, 3).toUpperCase();
+
+            const wonClass  = entry.won === true  ? ' toss-btn--active-won'  : '';
+            const lostClass = entry.won === false ? ' toss-btn--active-lost' : '';
+            const batClass  = entry.chose === 'bat'   ? ' toss-elect--active' : '';
+            const fieldClass= entry.chose === 'field' ? ' toss-elect--active' : '';
+
+            const dis = '';   // allow editing anytime
+
+            return `
+            <div class="toss-match-row" data-iso="${iso}" aria-label="Toss vs ${short} on ${f.d}">
+                <div class="toss-match-info">
+                    <p class="toss-opponent">vs ${short}</p>
+                    <p class="toss-date">${f.d}</p>
+                </div>
+                <div class="toss-controls">
+                    <div class="toss-won-group">
+                        <span class="toss-group-label">Toss</span>
+                        <button class="toss-btn toss-btn--won${wonClass}"
+                                data-iso="${iso}" data-key="won" data-val="true" ${dis}
+                                aria-pressed="${entry.won === true}" aria-label="Toss won">Won</button>
+                        <button class="toss-btn toss-btn--lost${lostClass}"
+                                data-iso="${iso}" data-key="won" data-val="false" ${dis}
+                                aria-pressed="${entry.won === false}" aria-label="Toss lost">Lost</button>
+                    </div>
+                    <div class="toss-elect-group" ${entry.won !== true ? 'style="opacity:0.35;pointer-events:none"' : ''}>
+                        <span class="toss-group-label">Chose</span>
+                        <button class="toss-elect-btn${batClass}"
+                                data-iso="${iso}" data-key="chose" data-val="bat" ${dis}
+                                aria-pressed="${entry.chose === 'bat'}" aria-label="Elected to bat">Bat</button>
+                        <button class="toss-elect-btn${fieldClass}"
+                                data-iso="${iso}" data-key="chose" data-val="field" ${dis}
+                                aria-pressed="${entry.chose === 'field'}" aria-label="Elected to field">Field</button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+
+        const total      = summary.won + summary.lost;
+        const winPct     = total > 0 ? Math.round((summary.won / total) * 100) : 0;
+        const statsHtml  = total > 0 ? `
+            <div class="toss-stats" aria-label="Toss statistics">
+                <div class="toss-stat-item">
+                    <p class="toss-stat-value">${summary.won}/${total}</p>
+                    <p class="toss-stat-label">Toss Wins</p>
+                </div>
+                <div class="toss-stat-item">
+                    <p class="toss-stat-value">${winPct}%</p>
+                    <p class="toss-stat-label">Win Rate</p>
+                </div>
+                <div class="toss-stat-item">
+                    <p class="toss-stat-value">${summary.batFirst}</p>
+                    <p class="toss-stat-label">Chose Bat</p>
+                </div>
+                <div class="toss-stat-item">
+                    <p class="toss-stat-value">${summary.fieldFirst}</p>
+                    <p class="toss-stat-label">Chose Field</p>
+                </div>
+            </div>` : '';
+
+        container.innerHTML = `
+            <div class="toss-card" aria-label="Toss tracker">
+                <p class="tag">Toss Tracker</p>
+                <p class="toss-desc">Record CSK's toss results and field/bat decisions.</p>
+                ${statsHtml}
+                <div class="toss-list">${rows}</div>
+            </div>`;
+
+        // Bind buttons
+        container.querySelectorAll('[data-key]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const iso = btn.dataset.iso;
+                const key = btn.dataset.key;
+                let   val = btn.dataset.val;
+
+                // Parse boolean strings
+                if (val === 'true')  val = true;
+                if (val === 'false') val = false;
+
+                const data    = load();
+                const entry   = data[iso] || { won: null, chose: null };
+
+                // Toggle off if already selected
+                if (entry[key] === val) {
+                    entry[key] = null;
+                    // Clear chose if toss result cleared
+                    if (key === 'won') entry.chose = null;
+                } else {
+                    entry[key] = val;
+                    // Clear chose if toss was changed to lost
+                    if (key === 'won' && val === false) entry.chose = null;
+                }
+
+                data[iso] = entry;
+                save(data);
+                renderWidget(container);
+            });
+        });
+    }
+
+    return { render };
+
+})();
+
+/* ==========================================================================
+   MatchJournal — Per-match notes diary on the Fan page.
+   Users can write a short note for each CSK fixture.
+   All notes are persisted in localStorage.
+   ========================================================================== */
+
+const MatchJournal = (() => {
+
+    const STORAGE_KEY = 'tys_journal_2026';
+    const MAX_CHARS   = 280;
+
+    function load() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : {};
+        } catch (_) {
+            return {};
+        }
+    }
+
+    function save(data) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function render() {
+        const container = document.getElementById('journal-content');
+        if (!container) return;
+        renderWidget(container);
+    }
+
+    function renderWidget(container) {
+        const notes = load();
+        const now   = Date.now();
+
+        const rows = DATA.fixtures.map(f => {
+            const iso   = f.iso || '';
+            const note  = notes[iso] || '';
+            const isPast = iso && new Date(f.iso).getTime() <= now;
+            const short = (window.TEAM_SHORT && window.TEAM_SHORT[f.o]) || f.o.substring(0, 3).toUpperCase();
+            const chars = note.length;
+
+            // For upcoming matches show placeholder, past matches allow a short recap
+            const placeholder = isPast
+                ? `How was the match vs ${short}? Add your recap…`
+                : `What are you expecting vs ${short}?`;
+
+            return `
+            <div class="journal-match-row" data-iso="${iso}" aria-label="Journal entry for match vs ${short}">
+                <div class="journal-match-header">
+                    <span class="journal-opponent">vs ${short}</span>
+                    <span class="journal-date">${f.d}</span>
+                    ${isPast ? '<span class="journal-badge">Past</span>' : '<span class="journal-badge journal-badge--upcoming">Upcoming</span>'}
+                </div>
+                <textarea class="journal-textarea"
+                          data-iso="${iso}"
+                          maxlength="${MAX_CHARS}"
+                          placeholder="${placeholder}"
+                          aria-label="Match notes for ${f.o} on ${f.d}"
+                          rows="3">${note}</textarea>
+                <p class="journal-char-count" id="jcc-${iso.replace(/[^a-z0-9]/gi, '')}">${chars}/${MAX_CHARS}</p>
+            </div>`;
+        }).join('');
+
+        const totalNotes = Object.values(notes).filter(n => n.trim()).length;
+
+        container.innerHTML = `
+            <div class="journal-card" aria-label="Match journal">
+                <p class="tag">Match Journal</p>
+                <p class="journal-desc">Your personal match diary — notes auto-save as you type.</p>
+                ${totalNotes > 0 ? `<p class="journal-count">${totalNotes} entr${totalNotes !== 1 ? 'ies' : 'y'} written</p>` : ''}
+                <div class="journal-list">${rows}</div>
+            </div>`;
+
+        // Bind textarea events — auto-save on input
+        container.querySelectorAll('.journal-textarea').forEach(ta => {
+            ta.addEventListener('input', () => {
+                const iso   = ta.dataset.iso;
+                const notes = load();
+                notes[iso]  = ta.value;
+                save(notes);
+
+                // Update char count
+                const ccId = 'jcc-' + iso.replace(/[^a-z0-9]/gi, '');
+                const ccEl = document.getElementById(ccId);
+                if (ccEl) ccEl.textContent = `${ta.value.length}/${MAX_CHARS}`;
+            });
+        });
+    }
+
+    return { render };
+
+})();
+

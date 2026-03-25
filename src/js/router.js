@@ -55,9 +55,16 @@ const Router = (() => {
                 }
                 Render.standings();
             }
-            if (pageId === 'p') Render.squad();
+            if (pageId === 'p') { Render.legacy(); Render.squad(); }
             if (pageId === 'n') News.fetchAndRender();
-            if (pageId === 'f') { FanProfile.render(); FanPoll.render(); FanPredictions.render(); }
+            if (pageId === 'f') {
+                CricketQuiz.render();
+                FanPoll.render();
+                FanPredictions.render();
+                TossTracker.render();
+                MatchJournal.render();
+                FanProfile.render();
+            }
             if (pageId === 't') Tools.render();
         }
 
