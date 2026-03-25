@@ -522,8 +522,74 @@ const Render = (() => {
                 if (details.bat)            expandLines.push(`<span>${details.bat}</span>`);
                 if (details.bowl)           expandLines.push(`<span>${details.bowl}</span>`);
 
-                const expandSection = expandLines.length > 0
-                    ? `<div class="player-expand">${expandLines.join('')}</div>`
+                // Career IPL stats + mini-graphs
+                let careerHtml = '';
+                const ipl = details.career && details.career.ipl;
+                if (ipl) {
+                    const hasBat  = ipl.runs  != null && ipl.matches > 0;
+                    const hasBowl = ipl.wkts  != null && ipl.wkts > 0 && ipl.eco != null;
+
+                    // SR mini-bar: map 60–200 to 0–100%
+                    const srPct = hasBat && ipl.sr != null
+                        ? Math.min(100, Math.max(0, Math.round((ipl.sr - 60) / 1.4)))
+                        : null;
+                    // Economy mini-bar: inverted, 6–12 → 100–0%
+                    const ecoPct = hasBowl
+                        ? Math.min(100, Math.max(0, Math.round((12 - ipl.eco) / 0.06)))
+                        : null;
+
+                    careerHtml = `
+                    <div class="player-career">
+                        <p class="player-career-title">IPL Career</p>
+                        <div class="player-career-stats">
+                            <div class="player-career-stat">
+                                <span class="player-career-val">${ipl.matches}</span>
+                                <span class="player-career-lbl">M</span>
+                            </div>
+                            ${hasBat ? `
+                            <div class="player-career-stat">
+                                <span class="player-career-val">${ipl.runs}</span>
+                                <span class="player-career-lbl">Runs</span>
+                            </div>
+                            <div class="player-career-stat">
+                                <span class="player-career-val">${ipl.avg}</span>
+                                <span class="player-career-lbl">Avg</span>
+                            </div>
+                            <div class="player-career-stat">
+                                <span class="player-career-val">${ipl.sr}</span>
+                                <span class="player-career-lbl">SR</span>
+                            </div>` : ''}
+                            ${hasBowl ? `
+                            <div class="player-career-stat">
+                                <span class="player-career-val">${ipl.wkts}</span>
+                                <span class="player-career-lbl">Wkts</span>
+                            </div>
+                            <div class="player-career-stat">
+                                <span class="player-career-val">${ipl.eco}</span>
+                                <span class="player-career-lbl">Eco</span>
+                            </div>` : ''}
+                        </div>
+                        ${srPct !== null ? `
+                        <div class="player-career-graph" aria-label="Strike rate ${ipl.sr}">
+                            <span class="player-career-graph-lbl">SR</span>
+                            <div class="player-career-bar-track">
+                                <div class="player-career-bar-fill player-career-bar-fill--bat" style="width:${srPct}%"></div>
+                            </div>
+                            <span class="player-career-graph-val">${ipl.sr}</span>
+                        </div>` : ''}
+                        ${ecoPct !== null ? `
+                        <div class="player-career-graph" aria-label="Economy ${ipl.eco}">
+                            <span class="player-career-graph-lbl">Eco</span>
+                            <div class="player-career-bar-track">
+                                <div class="player-career-bar-fill player-career-bar-fill--bowl" style="width:${ecoPct}%"></div>
+                            </div>
+                            <span class="player-career-graph-val">${ipl.eco}</span>
+                        </div>` : ''}
+                    </div>`;
+                }
+
+                const expandSection = expandLines.length > 0 || careerHtml
+                    ? `<div class="player-expand">${expandLines.join('')}</div>${careerHtml}`
                     : '';
 
                 return `

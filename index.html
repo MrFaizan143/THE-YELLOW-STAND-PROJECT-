@@ -33,6 +33,7 @@
         <button class="n-i" data-page="n">News</button>
         <button class="n-i" data-page="f">Fan</button>
         <button class="n-i" data-page="t">Tools</button>
+        <button class="n-i" data-page="l">Live</button>
     </nav>
 
     <!-- Pages -->
@@ -120,6 +121,7 @@
             <div id="toss-content"></div>
             <div id="journal-content"></div>
             <div id="fan-content"></div>
+            <div id="fantasy-tips-content"></div>
         </section>
 
         <!-- Tools Page -->
@@ -129,7 +131,22 @@
             <div id="tools-content"></div>
         </section>
 
+        <!-- Live Match Centre Page -->
+        <section id="l" class="page" aria-label="Live Match Centre">
+            <span class="tag">Live Now</span>
+            <h1>LIVE.</h1>
+            <div id="live-content"></div>
+        </section>
+
     </main>
+
+    <!-- Pin Score Widget — floating, persists across pages -->
+    <div id="pin-score-widget" class="pin-score-widget" hidden aria-live="polite" aria-label="Pinned live score">
+        <span class="pin-widget-label">📌 LIVE</span>
+        <span id="pin-teams" class="pin-widget-teams">—</span>
+        <span id="pin-score" class="pin-widget-score">—</span>
+        <span id="pin-status" class="pin-widget-status"></span>
+    </div>
 
     <!-- H2H Tooltip (body-level, position:fixed) -->
     <div id="h2h-tooltip" class="h2h-tooltip" aria-hidden="true" role="tooltip"></div>
@@ -144,6 +161,7 @@
     <script src="src/js/profile.js"></script>
     <script src="src/js/news.js"></script>
     <script src="src/js/tools.js"></script>
+    <script src="src/js/live.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             id="leaflet-js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLs=" crossorigin=""></script>
