@@ -473,6 +473,37 @@ const CricketAPI = (() => {
         }
     }
 
+    /**
+     * Fetch all currently active / live matches from cricapi.com.
+     * Returns a raw array of match objects (not normalised) so the Live module
+     * can extract type, series, and detailed score information.
+     */
+    async function fetchAllCurrentMatches() {
+        if (!isCricapiConfigured()) return [];
+        try {
+            const data = await cricapiRequest('/currentMatches?offset=0');
+            return extractList(data);
+        } catch (err) {
+            console.warn('[CricketAPI] fetchAllCurrentMatches failed:', err.message);
+            return [];
+        }
+    }
+
+    /**
+     * Fetch detailed match info / scorecard for a specific match ID from cricapi.com.
+     * Returns the raw match data object, or null on failure.
+     */
+    async function fetchMatchInfo(matchId) {
+        if (!isCricapiConfigured() || !matchId) return null;
+        try {
+            const data = await cricapiRequest(`/match_info?id=${encodeURIComponent(matchId)}`);
+            return (data && (data.data || data.result)) || null;
+        } catch (err) {
+            console.warn('[CricketAPI] fetchMatchInfo failed:', err.message);
+            return null;
+        }
+    }
+
     /** Public API */
     return {
         isConfigured,
@@ -492,7 +523,9 @@ const CricketAPI = (() => {
         fetchCSKLiveMatch,
         fetchCSKResults,
         fetchCSKFixturesBySeries,
-        fetchAllIPLFixtures
+        fetchAllIPLFixtures,
+        fetchAllCurrentMatches,
+        fetchMatchInfo
     };
 
 })();

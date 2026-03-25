@@ -108,31 +108,56 @@ const DATA = {
      * vc: true if the player is the vice-captain.
      */
     playerDetails: {
-        "Ruturaj Gaikwad (C)": { nat: "IND", flag: "🇮🇳", role: "Top order",       jersey: 31, age: 27, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
-        "Sarfaraz Khan":        { nat: "IND", flag: "🇮🇳", role: "Middle order",    jersey: 45, age: 27, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
-        "Dewald Brevis":        { nat: "RSA", flag: "🇿🇦", role: "Top order",       jersey: 52, age: 21, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
-        "Ayush Mhatre":         { nat: "IND", flag: "🇮🇳", role: "Top order",       jersey: 83, age: 18, bat: "Right-hand",  bowl: "Right-arm medium",        vc: false },
-        "MS Dhoni":             { nat: "IND", flag: "🇮🇳", role: "Wicket-keeper",   jersey:  7, age: 44, bat: "Right-hand",  bowl: "Right-arm medium",        vc: false },
-        "Sanju Samson":         { nat: "IND", flag: "🇮🇳", role: "Wicket-keeper",   jersey:  8, age: 31, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
-        "Urvil Patel":          { nat: "IND", flag: "🇮🇳", role: "Wicket-keeper",   jersey: 95, age: 23, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
-        "Kartik Sharma":        { nat: "IND", flag: "🇮🇳", role: "Wicket-keeper",   jersey: 62, age: 21, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
-        "Shivam Dube":          { nat: "IND", flag: "🇮🇳", role: "Finisher",        jersey: 21, age: 31, bat: "Left-hand",   bowl: "Right-arm medium-fast",   vc: true  },
-        "Jamie Overton":        { nat: "ENG", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", role: "All-rounder",    jersey: 14, age: 29, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
-        "Matthew Short":        { nat: "AUS", flag: "🇦🇺", role: "All-rounder",     jersey: 59, age: 27, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false },
-        "Aman Hakim Khan":      { nat: "IND", flag: "🇮🇳", role: "All-rounder",     jersey: 77, age: 22, bat: "Right-hand",  bowl: "Right-arm medium",        vc: false },
-        "Prashant Veer":        { nat: "IND", flag: "🇮🇳", role: "All-rounder",     jersey: 66, age: 22, bat: "Right-hand",  bowl: "Right-arm medium-fast",   vc: false },
-        "R. Ghosh":             { nat: "IND", flag: "🇮🇳", role: "All-rounder",     jersey: 48, age: 20, bat: "Left-hand",   bowl: "Left-arm orthodox",       vc: false },
-        "Zakary Foulkes":       { nat: "ENG", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", role: "Pace",          jersey: 88, age: 22, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
-        "Khaleel Ahmed":        { nat: "IND", flag: "🇮🇳", role: "Pace",            jersey: 10, age: 27, bat: "Left-hand",   bowl: "Left-arm fast-medium",    vc: false },
-        "M. Choudhary":         { nat: "IND", flag: "🇮🇳", role: "Pace",            jersey: 23, age: 29, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
-        "Nathan Ellis":         { nat: "AUS", flag: "🇦🇺", role: "Pace",            jersey: 35, age: 29, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
-        "Matt Henry":           { nat: "NZ",  flag: "🇳🇿", role: "Pace",            jersey: 29, age: 32, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
-        "Anshul Kamboj":        { nat: "IND", flag: "🇮🇳", role: "Pace",            jersey: 71, age: 22, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
-        "Gurjapneet Singh":     { nat: "IND", flag: "🇮🇳", role: "Pace",            jersey: 90, age: 24, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false },
-        "Noor Ahmad":           { nat: "AFG", flag: "🇦🇫", role: "Spin",            jersey: 18, age: 20, bat: "Right-hand",  bowl: "Left-arm wrist spin",     vc: false },
-        "Rahul Chahar":         { nat: "IND", flag: "🇮🇳", role: "Spin",            jersey: 40, age: 25, bat: "Right-hand",  bowl: "Right-arm leg-break",     vc: false },
-        "Akeal Hosein":         { nat: "WIN", flag: "🇹🇹", role: "Spin",            jersey: 55, age: 30, bat: "Left-hand",   bowl: "Left-arm orthodox",       vc: false },
-        "Shreyas Gopal":        { nat: "IND", flag: "🇮🇳", role: "Spin",            jersey: 16, age: 31, bat: "Right-hand",  bowl: "Right-arm leg-break",     vc: false }
+        "Ruturaj Gaikwad (C)": { nat: "IND", flag: "🇮🇳", role: "Top order",       jersey: 31, age: 27, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false,
+            career: { ipl: { matches: 98,  runs: 2914, avg: 31.7, sr: 133.5, hs: 101, wkts: 0,  eco: null,  bowlAvg: null  } } },
+        "Sarfaraz Khan":        { nat: "IND", flag: "🇮🇳", role: "Middle order",    jersey: 45, age: 27, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false,
+            career: { ipl: { matches: 31,  runs: 612,  avg: 22.6, sr: 144.2, hs: 71,  wkts: 0,  eco: null,  bowlAvg: null  } } },
+        "Dewald Brevis":        { nat: "RSA", flag: "🇿🇦", role: "Top order",       jersey: 52, age: 21, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false,
+            career: { ipl: { matches: 28,  runs: 481,  avg: 19.2, sr: 151.7, hs: 49,  wkts: 1,  eco: 9.2,   bowlAvg: null  } } },
+        "Ayush Mhatre":         { nat: "IND", flag: "🇮🇳", role: "Top order",       jersey: 83, age: 18, bat: "Right-hand",  bowl: "Right-arm medium",        vc: false,
+            career: { ipl: { matches: 4,   runs: 87,   avg: 21.8, sr: 139.4, hs: 38,  wkts: 0,  eco: null,  bowlAvg: null  } } },
+        "MS Dhoni":             { nat: "IND", flag: "🇮🇳", role: "Wicket-keeper",   jersey:  7, age: 44, bat: "Right-hand",  bowl: "Right-arm medium",        vc: false,
+            career: { ipl: { matches: 264, runs: 5082, avg: 37.6, sr: 135.2, hs: 84,  wkts: 1,  eco: 8.3,   bowlAvg: null  } } },
+        "Sanju Samson":         { nat: "IND", flag: "🇮🇳", role: "Wicket-keeper",   jersey:  8, age: 31, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false,
+            career: { ipl: { matches: 184, runs: 4490, avg: 26.7, sr: 138.3, hs: 119, wkts: 0,  eco: null,  bowlAvg: null  } } },
+        "Urvil Patel":          { nat: "IND", flag: "🇮🇳", role: "Wicket-keeper",   jersey: 95, age: 23, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false,
+            career: { ipl: { matches: 6,   runs: 98,   avg: 16.3, sr: 148.5, hs: 43,  wkts: 0,  eco: null,  bowlAvg: null  } } },
+        "Kartik Sharma":        { nat: "IND", flag: "🇮🇳", role: "Wicket-keeper",   jersey: 62, age: 21, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false,
+            career: { ipl: { matches: 2,   runs: 17,   avg: 8.5,  sr: 113.3, hs: 11,  wkts: 0,  eco: null,  bowlAvg: null  } } },
+        "Shivam Dube":          { nat: "IND", flag: "🇮🇳", role: "Finisher",        jersey: 21, age: 31, bat: "Left-hand",   bowl: "Right-arm medium-fast",   vc: true,
+            career: { ipl: { matches: 82,  runs: 1451, avg: 26.4, sr: 151.3, hs: 95,  wkts: 11, eco: 9.8,   bowlAvg: 42.6  } } },
+        "Jamie Overton":        { nat: "ENG", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", role: "All-rounder",    jersey: 14, age: 29, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false,
+            career: { ipl: { matches: 8,   runs: 142,  avg: 23.7, sr: 158.4, hs: 37,  wkts: 6,  eco: 9.1,   bowlAvg: 33.5  } } },
+        "Matthew Short":        { nat: "AUS", flag: "🇦🇺", role: "All-rounder",     jersey: 59, age: 27, bat: "Right-hand",  bowl: "Right-arm off-break",     vc: false,
+            career: { ipl: { matches: 12,  runs: 231,  avg: 21.0, sr: 141.2, hs: 62,  wkts: 4,  eco: 7.6,   bowlAvg: 38.0  } } },
+        "Aman Hakim Khan":      { nat: "IND", flag: "🇮🇳", role: "All-rounder",     jersey: 77, age: 22, bat: "Right-hand",  bowl: "Right-arm medium",        vc: false,
+            career: { ipl: { matches: 5,   runs: 41,   avg: 13.7, sr: 122.9, hs: 22,  wkts: 2,  eco: 9.4,   bowlAvg: 40.0  } } },
+        "Prashant Veer":        { nat: "IND", flag: "🇮🇳", role: "All-rounder",     jersey: 66, age: 22, bat: "Right-hand",  bowl: "Right-arm medium-fast",   vc: false,
+            career: { ipl: { matches: 3,   runs: 14,   avg: 7.0,  sr: 116.7, hs: 9,   wkts: 3,  eco: 8.7,   bowlAvg: 27.3  } } },
+        "R. Ghosh":             { nat: "IND", flag: "🇮🇳", role: "All-rounder",     jersey: 48, age: 20, bat: "Left-hand",   bowl: "Left-arm orthodox",       vc: false,
+            career: { ipl: { matches: 4,   runs: 28,   avg: 9.3,  sr: 127.3, hs: 18,  wkts: 3,  eco: 8.1,   bowlAvg: 31.0  } } },
+        "Zakary Foulkes":       { nat: "ENG", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", role: "Pace",          jersey: 88, age: 22, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false,
+            career: { ipl: { matches: 3,   runs: 8,    avg: 4.0,  sr: 88.9,  hs: 6,   wkts: 4,  eco: 8.9,   bowlAvg: 22.0  } } },
+        "Khaleel Ahmed":        { nat: "IND", flag: "🇮🇳", role: "Pace",            jersey: 10, age: 27, bat: "Left-hand",   bowl: "Left-arm fast-medium",    vc: false,
+            career: { ipl: { matches: 76,  runs: 89,   avg: 5.9,  sr: 97.8,  hs: 21,  wkts: 91, eco: 8.6,   bowlAvg: 26.8  } } },
+        "M. Choudhary":         { nat: "IND", flag: "🇮🇳", role: "Pace",            jersey: 23, age: 29, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false,
+            career: { ipl: { matches: 42,  runs: 44,   avg: 5.5,  sr: 91.7,  hs: 16,  wkts: 48, eco: 8.9,   bowlAvg: 28.1  } } },
+        "Nathan Ellis":         { nat: "AUS", flag: "🇦🇺", role: "Pace",            jersey: 35, age: 29, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false,
+            career: { ipl: { matches: 14,  runs: 22,   avg: 5.5,  sr: 84.6,  hs: 11,  wkts: 16, eco: 9.3,   bowlAvg: 30.4  } } },
+        "Matt Henry":           { nat: "NZ",  flag: "🇳🇿", role: "Pace",            jersey: 29, age: 32, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false,
+            career: { ipl: { matches: 6,   runs: 14,   avg: 3.5,  sr: 77.8,  hs: 8,   wkts: 9,  eco: 8.4,   bowlAvg: 21.3  } } },
+        "Anshul Kamboj":        { nat: "IND", flag: "🇮🇳", role: "Pace",            jersey: 71, age: 22, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false,
+            career: { ipl: { matches: 11,  runs: 18,   avg: 4.5,  sr: 81.8,  hs: 10,  wkts: 14, eco: 8.7,   bowlAvg: 24.6  } } },
+        "Gurjapneet Singh":     { nat: "IND", flag: "🇮🇳", role: "Pace",            jersey: 90, age: 24, bat: "Right-hand",  bowl: "Right-arm fast-medium",   vc: false,
+            career: { ipl: { matches: 4,   runs: 4,    avg: 2.0,  sr: 66.7,  hs: 3,   wkts: 4,  eco: 9.1,   bowlAvg: 29.8  } } },
+        "Noor Ahmad":           { nat: "AFG", flag: "🇦🇫", role: "Spin",            jersey: 18, age: 20, bat: "Right-hand",  bowl: "Left-arm wrist spin",     vc: false,
+            career: { ipl: { matches: 32,  runs: 31,   avg: 6.2,  sr: 77.5,  hs: 12,  wkts: 38, eco: 7.8,   bowlAvg: 23.1  } } },
+        "Rahul Chahar":         { nat: "IND", flag: "🇮🇳", role: "Spin",            jersey: 40, age: 25, bat: "Right-hand",  bowl: "Right-arm leg-break",     vc: false,
+            career: { ipl: { matches: 61,  runs: 79,   avg: 6.6,  sr: 86.8,  hs: 22,  wkts: 62, eco: 7.9,   bowlAvg: 26.3  } } },
+        "Akeal Hosein":         { nat: "WIN", flag: "🇹🇹", role: "Spin",            jersey: 55, age: 30, bat: "Left-hand",   bowl: "Left-arm orthodox",       vc: false,
+            career: { ipl: { matches: 18,  runs: 41,   avg: 8.2,  sr: 93.2,  hs: 17,  wkts: 17, eco: 8.2,   bowlAvg: 31.7  } } },
+        "Shreyas Gopal":        { nat: "IND", flag: "🇮🇳", role: "Spin",            jersey: 16, age: 31, bat: "Right-hand",  bowl: "Right-arm leg-break",     vc: false,
+            career: { ipl: { matches: 72,  runs: 166,  avg: 9.2,  sr: 112.9, hs: 33,  wkts: 69, eco: 8.4,   bowlAvg: 28.6  } } }
     },
 
     /**
@@ -276,6 +301,252 @@ const DATA = {
         { cat: "Cricket", q: "What is the maximum number of overs a T20 bowler can bowl per match?",      opts: ["3","4","5","6"],                                                       ans: 1 },
         { cat: "Cricket", q: "Which fielding position is closest to the batsman, on the leg side?",       opts: ["Fine Leg","Square Leg","Silly Mid-On","Mid-Wicket"],                   ans: 2 }
     ],
+
+    /**
+     * ICC Rankings — static snapshot (updated periodically).
+     * Covers Men & Women across T20I, ODI, and Test formats.
+     * Each entry: { rank, team|player, rating, [country] }
+     */
+    iccRankings: {
+        men: {
+            t20i: {
+                teams: [
+                    { rank: 1,  team: "India",        rating: 269 },
+                    { rank: 2,  team: "South Africa",  rating: 262 },
+                    { rank: 3,  team: "England",       rating: 248 },
+                    { rank: 4,  team: "Australia",     rating: 244 },
+                    { rank: 5,  team: "West Indies",   rating: 232 },
+                    { rank: 6,  team: "Pakistan",      rating: 227 },
+                    { rank: 7,  team: "Afghanistan",   rating: 219 },
+                    { rank: 8,  team: "New Zealand",   rating: 212 },
+                    { rank: 9,  team: "Sri Lanka",     rating: 198 },
+                    { rank: 10, team: "Bangladesh",    rating: 179 }
+                ],
+                batting: [
+                    { rank: 1,  player: "Suryakumar Yadav", country: "India",       rating: 865 },
+                    { rank: 2,  player: "Phil Salt",        country: "England",     rating: 776 },
+                    { rank: 3,  player: "Travis Head",      country: "Australia",   rating: 758 },
+                    { rank: 4,  player: "Babar Azam",       country: "Pakistan",    rating: 742 },
+                    { rank: 5,  player: "Rohit Sharma",     country: "India",       rating: 731 },
+                    { rank: 6,  player: "Mohammad Rizwan",  country: "Pakistan",    rating: 718 },
+                    { rank: 7,  player: "Virat Kohli",      country: "India",       rating: 702 },
+                    { rank: 8,  player: "David Warner",     country: "Australia",   rating: 693 },
+                    { rank: 9,  player: "Jos Buttler",      country: "England",     rating: 681 },
+                    { rank: 10, player: "Glenn Maxwell",    country: "Australia",   rating: 672 }
+                ],
+                bowling: [
+                    { rank: 1,  player: "Rashid Khan",      country: "Afghanistan", rating: 793 },
+                    { rank: 2,  player: "Wanindu Hasaranga",country: "Sri Lanka",   rating: 775 },
+                    { rank: 3,  player: "Adil Rashid",      country: "England",     rating: 747 },
+                    { rank: 4,  player: "Axar Patel",       country: "India",       rating: 721 },
+                    { rank: 5,  player: "Anrich Nortje",    country: "S. Africa",   rating: 708 },
+                    { rank: 6,  player: "Jasprit Bumrah",   country: "India",       rating: 698 },
+                    { rank: 7,  player: "Sam Curran",       country: "England",     rating: 682 },
+                    { rank: 8,  player: "Trent Boult",      country: "New Zealand", rating: 671 },
+                    { rank: 9,  player: "Kagiso Rabada",    country: "S. Africa",   rating: 663 },
+                    { rank: 10, player: "Shaheen Afridi",   country: "Pakistan",    rating: 657 }
+                ]
+            },
+            odi: {
+                teams: [
+                    { rank: 1,  team: "Australia",    rating: 126 },
+                    { rank: 2,  team: "India",        rating: 124 },
+                    { rank: 3,  team: "New Zealand",  rating: 117 },
+                    { rank: 4,  team: "England",      rating: 114 },
+                    { rank: 5,  team: "South Africa", rating: 112 },
+                    { rank: 6,  team: "Pakistan",     rating: 107 },
+                    { rank: 7,  team: "Sri Lanka",    rating: 98  },
+                    { rank: 8,  team: "Bangladesh",   rating: 92  },
+                    { rank: 9,  team: "West Indies",  rating: 87  },
+                    { rank: 10, team: "Afghanistan",  rating: 82  }
+                ],
+                batting: [
+                    { rank: 1,  player: "Virat Kohli",      country: "India",       rating: 873 },
+                    { rank: 2,  player: "Babar Azam",       country: "Pakistan",    rating: 849 },
+                    { rank: 3,  player: "Rohit Sharma",     country: "India",       rating: 821 },
+                    { rank: 4,  player: "Shubman Gill",     country: "India",       rating: 808 },
+                    { rank: 5,  player: "Travis Head",      country: "Australia",   rating: 786 },
+                    { rank: 6,  player: "Jos Buttler",      country: "England",     rating: 769 },
+                    { rank: 7,  player: "Daryl Mitchell",   country: "New Zealand", rating: 751 },
+                    { rank: 8,  player: "Fakhar Zaman",     country: "Pakistan",    rating: 744 },
+                    { rank: 9,  player: "Glenn Maxwell",    country: "Australia",   rating: 737 },
+                    { rank: 10, player: "Quinton de Kock",  country: "S. Africa",   rating: 721 }
+                ],
+                bowling: [
+                    { rank: 1,  player: "Jasprit Bumrah",   country: "India",       rating: 819 },
+                    { rank: 2,  player: "Trent Boult",      country: "New Zealand", rating: 793 },
+                    { rank: 3,  player: "Shaheen Afridi",   country: "Pakistan",    rating: 776 },
+                    { rank: 4,  player: "Rashid Khan",      country: "Afghanistan", rating: 762 },
+                    { rank: 5,  player: "Mohammed Shami",   country: "India",       rating: 748 },
+                    { rank: 6,  player: "Josh Hazlewood",   country: "Australia",   rating: 731 },
+                    { rank: 7,  player: "Adam Zampa",       country: "Australia",   rating: 718 },
+                    { rank: 8,  player: "Kagiso Rabada",    country: "S. Africa",   rating: 704 },
+                    { rank: 9,  player: "Matt Henry",       country: "New Zealand", rating: 687 },
+                    { rank: 10, player: "Kuldeep Yadav",    country: "India",       rating: 679 }
+                ]
+            },
+            test: {
+                teams: [
+                    { rank: 1,  team: "India",        rating: 125 },
+                    { rank: 2,  team: "Australia",    rating: 121 },
+                    { rank: 3,  team: "England",      rating: 106 },
+                    { rank: 4,  team: "New Zealand",  rating: 103 },
+                    { rank: 5,  team: "South Africa", rating: 97  },
+                    { rank: 6,  team: "Pakistan",     rating: 88  },
+                    { rank: 7,  team: "Sri Lanka",    rating: 84  },
+                    { rank: 8,  team: "West Indies",  rating: 73  },
+                    { rank: 9,  team: "Bangladesh",   rating: 61  },
+                    { rank: 10, team: "Zimbabwe",     rating: 43  }
+                ],
+                batting: [
+                    { rank: 1,  player: "Joe Root",         country: "England",     rating: 921 },
+                    { rank: 2,  player: "Marnus Labuschagne",country: "Australia",  rating: 893 },
+                    { rank: 3,  player: "Steve Smith",      country: "Australia",   rating: 878 },
+                    { rank: 4,  player: "Virat Kohli",      country: "India",       rating: 856 },
+                    { rank: 5,  player: "Kane Williamson",  country: "New Zealand", rating: 841 },
+                    { rank: 6,  player: "Babar Azam",       country: "Pakistan",    rating: 827 },
+                    { rank: 7,  player: "Yashasvi Jaiswal", country: "India",       rating: 814 },
+                    { rank: 8,  player: "David Warner",     country: "Australia",   rating: 798 },
+                    { rank: 9,  player: "Rohit Sharma",     country: "India",       rating: 783 },
+                    { rank: 10, player: "Ben Duckett",      country: "England",     rating: 769 }
+                ],
+                bowling: [
+                    { rank: 1,  player: "Jasprit Bumrah",   country: "India",       rating: 907 },
+                    { rank: 2,  player: "Pat Cummins",      country: "Australia",   rating: 884 },
+                    { rank: 3,  player: "Ravichandran Ashwin",country: "India",     rating: 861 },
+                    { rank: 4,  player: "James Anderson",   country: "England",     rating: 843 },
+                    { rank: 5,  player: "Kagiso Rabada",    country: "S. Africa",   rating: 826 },
+                    { rank: 6,  player: "Stuart Broad",     country: "England",     rating: 811 },
+                    { rank: 7,  player: "Nathan Lyon",      country: "Australia",   rating: 797 },
+                    { rank: 8,  player: "Shaheen Afridi",   country: "Pakistan",    rating: 783 },
+                    { rank: 9,  player: "Mohammed Shami",   country: "India",       rating: 768 },
+                    { rank: 10, player: "Kyle Jamieson",    country: "New Zealand", rating: 752 }
+                ]
+            }
+        },
+        women: {
+            t20i: {
+                teams: [
+                    { rank: 1,  team: "Australia",    rating: 292 },
+                    { rank: 2,  team: "England",      rating: 265 },
+                    { rank: 3,  team: "India",        rating: 258 },
+                    { rank: 4,  team: "New Zealand",  rating: 241 },
+                    { rank: 5,  team: "South Africa", rating: 225 },
+                    { rank: 6,  team: "Pakistan",     rating: 198 },
+                    { rank: 7,  team: "Sri Lanka",    rating: 182 },
+                    { rank: 8,  team: "West Indies",  rating: 171 },
+                    { rank: 9,  team: "Bangladesh",   rating: 157 },
+                    { rank: 10, team: "Ireland",      rating: 133 }
+                ],
+                batting: [
+                    { rank: 1,  player: "Smriti Mandhana",  country: "India",       rating: 786 },
+                    { rank: 2,  player: "Beth Mooney",      country: "Australia",   rating: 771 },
+                    { rank: 3,  player: "Shafali Verma",    country: "India",       rating: 754 },
+                    { rank: 4,  player: "Tammy Beaumont",   country: "England",     rating: 738 },
+                    { rank: 5,  player: "Sophie Devine",    country: "New Zealand", rating: 719 },
+                    { rank: 6,  player: "Alyssa Healy",     country: "Australia",   rating: 703 },
+                    { rank: 7,  player: "Laura Wolvaardt",  country: "S. Africa",   rating: 688 },
+                    { rank: 8,  player: "Harmanpreet Kaur", country: "India",       rating: 671 },
+                    { rank: 9,  player: "Nat Sciver-Brunt", country: "England",     rating: 659 },
+                    { rank: 10, player: "Meg Lanning",      country: "Australia",   rating: 644 }
+                ],
+                bowling: [
+                    { rank: 1,  player: "Sophie Ecclestone",country: "England",     rating: 784 },
+                    { rank: 2,  player: "Shabnim Ismail",   country: "S. Africa",   rating: 761 },
+                    { rank: 3,  player: "Deepti Sharma",    country: "India",       rating: 743 },
+                    { rank: 4,  player: "Megan Schutt",     country: "Australia",   rating: 727 },
+                    { rank: 5,  player: "Georgia Wareham",  country: "Australia",   rating: 711 },
+                    { rank: 6,  player: "Poonam Yadav",     country: "India",       rating: 698 },
+                    { rank: 7,  player: "Lea Tahuhu",       country: "New Zealand", rating: 683 },
+                    { rank: 8,  player: "Anisa Mohammed",   country: "West Indies", rating: 669 },
+                    { rank: 9,  player: "Alana King",       country: "Australia",   rating: 654 },
+                    { rank: 10, player: "Katherine Brunt",  country: "England",     rating: 641 }
+                ]
+            },
+            odi: {
+                teams: [
+                    { rank: 1,  team: "Australia",    rating: 143 },
+                    { rank: 2,  team: "India",        rating: 131 },
+                    { rank: 3,  team: "England",      rating: 122 },
+                    { rank: 4,  team: "New Zealand",  rating: 118 },
+                    { rank: 5,  team: "South Africa", rating: 109 },
+                    { rank: 6,  team: "Pakistan",     rating: 96  },
+                    { rank: 7,  team: "Sri Lanka",    rating: 87  },
+                    { rank: 8,  team: "Bangladesh",   rating: 72  },
+                    { rank: 9,  team: "West Indies",  rating: 67  },
+                    { rank: 10, team: "Ireland",      rating: 59  }
+                ],
+                batting: [
+                    { rank: 1,  player: "Smriti Mandhana",  country: "India",       rating: 799 },
+                    { rank: 2,  player: "Nat Sciver-Brunt", country: "England",     rating: 771 },
+                    { rank: 3,  player: "Meg Lanning",      country: "Australia",   rating: 754 },
+                    { rank: 4,  player: "Harmanpreet Kaur", country: "India",       rating: 736 },
+                    { rank: 5,  player: "Beth Mooney",      country: "Australia",   rating: 718 },
+                    { rank: 6,  player: "Laura Wolvaardt",  country: "S. Africa",   rating: 703 },
+                    { rank: 7,  player: "Amy Jones",        country: "England",     rating: 687 },
+                    { rank: 8,  player: "Sophie Devine",    country: "New Zealand", rating: 671 },
+                    { rank: 9,  player: "Deepti Sharma",    country: "India",       rating: 658 },
+                    { rank: 10, player: "Tammy Beaumont",   country: "England",     rating: 643 }
+                ],
+                bowling: [
+                    { rank: 1,  player: "Sophie Ecclestone",country: "England",     rating: 791 },
+                    { rank: 2,  player: "Deepti Sharma",    country: "India",       rating: 768 },
+                    { rank: 3,  player: "Megan Schutt",     country: "Australia",   rating: 742 },
+                    { rank: 4,  player: "Shabnim Ismail",   country: "S. Africa",   rating: 726 },
+                    { rank: 5,  player: "Ellyse Perry",     country: "Australia",   rating: 711 },
+                    { rank: 6,  player: "Jhulan Goswami",   country: "India",       rating: 694 },
+                    { rank: 7,  player: "Georgia Wareham",  country: "Australia",   rating: 679 },
+                    { rank: 8,  player: "Lea Tahuhu",       country: "New Zealand", rating: 664 },
+                    { rank: 9,  player: "Heather Knight",   country: "England",     rating: 648 },
+                    { rank: 10, player: "Anisa Mohammed",   country: "West Indies", rating: 633 }
+                ]
+            }
+        }
+    },
+
+    /**
+     * Fantasy cricket tips for each upcoming CSK fixture.
+     * Keyed by fixture ISO timestamp.
+     * Each entry: { mustPick[], avoidList[], differentials[], captainPick, vcPick, summary }
+     */
+    fantasyTips: {
+        "2026-03-30T14:00:00Z": {
+            opponent: "Rajasthan Royals",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Sanju Samson", "Shivam Dube", "Yashasvi Jaiswal"],
+            differentials: ["Dewald Brevis", "Noor Ahmad", "Ayush Mhatre"],
+            avoidList:     ["Khaleel Ahmed"],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "Shivam Dube",
+            summary:       "Guwahati pitch has historically aided pacers early. Pick Gaikwad as captain — he has scored 3 consecutive 60+ at neutral venues. Dewald Brevis is a great differential at just 8–9% ownership."
+        },
+        "2026-04-03T14:00:00Z": {
+            opponent: "Punjab Kings",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Noor Ahmad", "Khaleel Ahmed"],
+            differentials: ["Ayush Mhatre", "Anshul Kamboj"],
+            avoidList:     ["Matthew Short"],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "MS Dhoni",
+            summary:       "Chepauk is a spin-friendly surface. Pick Noor Ahmad and Rahul Chahar. MS Dhoni thrives at home — great VC option."
+        },
+        "2026-04-05T10:00:00Z": {
+            opponent: "Royal Challengers Bengaluru",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Dewald Brevis"],
+            differentials: ["Matt Henry", "Jamie Overton"],
+            avoidList:     ["Rahul Chahar"],
+            captainPick:   "Shivam Dube",
+            vcPick:        "Ruturaj Gaikwad (C)",
+            summary:       "Chinnaswamy is a bat-friendly paradise. Pick power hitters — Dube as captain. Pacers will be expensive; target spinners for value."
+        },
+        "2026-04-11T14:00:00Z": {
+            opponent: "Delhi Capitals",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Sanju Samson", "Shivam Dube", "Noor Ahmad"],
+            differentials: ["Khaleel Ahmed", "Ayush Mhatre"],
+            avoidList:     [],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "Sanju Samson",
+            summary:       "Home match at Chepauk. CSK enjoy a dominant H2H vs DC (19-11). Gaikwad has scored 150+ runs in his last 3 Chepauk outings."
+        }
+    },
 
     /**
      * Static news / update entries — latest first.

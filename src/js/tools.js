@@ -275,6 +275,27 @@ const Tools = (() => {
                 <div id="compare-result" class="compare-result" aria-live="polite" aria-label="Comparison result"></div>
             </div>
 
+            <!-- ── ICC Rankings ─────────────────────────────────────── -->
+            <h2 class="section-heading" aria-label="ICC World Rankings">ICC World Rankings</h2>
+            <div class="icc-card" aria-label="ICC Rankings viewer">
+                <div class="icc-gender-tabs" role="tablist" aria-label="Gender">
+                    <button class="icc-tab icc-tab--active" data-gender="men"   role="tab" aria-selected="true">Men</button>
+                    <button class="icc-tab"                 data-gender="women" role="tab" aria-selected="false">Women</button>
+                </div>
+                <div class="icc-format-tabs" role="tablist" aria-label="Format">
+                    <button class="icc-fmt icc-fmt--active" data-fmt="t20i" role="tab" aria-selected="true">T20I</button>
+                    <button class="icc-fmt"                 data-fmt="odi"  role="tab" aria-selected="false">ODI</button>
+                    <button class="icc-fmt"                 data-fmt="test" role="tab" aria-selected="false" id="icc-fmt-test">Test</button>
+                </div>
+                <div class="icc-sub-tabs" role="tablist" aria-label="Rankings type">
+                    <button class="icc-sub icc-sub--active" data-sub="teams"   role="tab" aria-selected="true">Teams</button>
+                    <button class="icc-sub"                 data-sub="batting" role="tab" aria-selected="false">Batting</button>
+                    <button class="icc-sub"                 data-sub="bowling" role="tab" aria-selected="false">Bowling</button>
+                </div>
+                <div id="icc-rankings-table" class="icc-rankings-table" aria-live="polite"></div>
+                <p class="icc-source">Data snapshot · For live rankings visit <a href="https://www.icc-cricket.com/rankings" target="_blank" rel="noopener noreferrer">icc-cricket.com</a></p>
+            </div>
+
             <!-- ── Free Cricket Resources ───────────────────────────── -->
             <h2 class="section-heading" aria-label="Free Cricket Resources">Free Cricket Resources</h2>
 
@@ -572,6 +593,112 @@ const Tools = (() => {
                 if (res) res.style.color = '';
             });
         });
+
+        // ── ICC Rankings ─────────────────────────────────────────────
+        let iccGender = 'men';
+        let iccFmt    = 't20i';
+        let iccSub    = 'teams';
+
+        function renderICCTable() {
+            const tableEl = document.getElementById('icc-rankings-table');
+            if (!tableEl) return;
+
+            const gData = (DATA.iccRankings && DATA.iccRankings[iccGender]) || {};
+            const fData = gData[iccFmt] || {};
+
+            // Women don't have a Test format
+            const testBtn = document.getElementById('icc-fmt-test');
+            if (testBtn) testBtn.style.display = iccGender === 'women' ? 'none' : '';
+            if (iccGender === 'women' && iccFmt === 'test') {
+                iccFmt = 't20i';
+                document.querySelectorAll('.icc-fmt').forEach(b => {
+                    const active = b.dataset.fmt === iccFmt;
+                    b.classList.toggle('icc-fmt--active', active);
+                    b.setAttribute('aria-selected', String(active));
+                });
+            }
+
+            const rows = fData[iccSub] || [];
+            if (rows.length === 0) {
+                tableEl.innerHTML = '<p class="fixtures-status">No data available.</p>';
+                return;
+            }
+
+            const isTeam    = iccSub === 'teams';
+            const nameLabel = isTeam ? 'Team' : 'Player';
+            const maxRating = rows[0].rating || 1;
+
+            let html = `
+            <div class="icc-table" role="table" aria-label="ICC ${iccGender} ${iccFmt} ${iccSub} rankings">
+                <div class="icc-row icc-row--header" role="row">
+                    <span class="icc-col icc-col--rank" role="columnheader">#</span>
+                    <span class="icc-col icc-col--name" role="columnheader">${nameLabel}</span>
+                    ${!isTeam ? '<span class="icc-col icc-col--country" role="columnheader">Country</span>' : ''}
+                    <span class="icc-col icc-col--rating" role="columnheader">Rating</span>
+                    <span class="icc-col icc-col--bar" role="columnheader" aria-hidden="true"></span>
+                </div>`;
+
+            rows.forEach(r => {
+                const pct    = Math.round((r.rating / maxRating) * 100);
+                const isTop3 = r.rank <= 3;
+                html += `
+                <div class="icc-row ${isTop3 ? 'icc-row--top3' : ''}" role="row">
+                    <span class="icc-col icc-col--rank" role="cell">${r.rank}</span>
+                    <span class="icc-col icc-col--name ${isTop3 ? 'icc-col--name-bold' : ''}" role="cell">
+                        ${isTeam ? r.team : r.player}
+                    </span>
+                    ${!isTeam ? `<span class="icc-col icc-col--country" role="cell">${r.country}</span>` : ''}
+                    <span class="icc-col icc-col--rating" role="cell">${r.rating}</span>
+                    <span class="icc-col icc-col--bar" role="cell" aria-hidden="true">
+                        <div class="icc-bar-track">
+                            <div class="icc-bar-fill" style="width:${pct}%"></div>
+                        </div>
+                    </span>
+                </div>`;
+            });
+
+            html += '</div>';
+            tableEl.innerHTML = html;
+        }
+
+        // Gender tabs
+        document.querySelectorAll('.icc-tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                iccGender = btn.dataset.gender;
+                document.querySelectorAll('.icc-tab').forEach(b => {
+                    b.classList.toggle('icc-tab--active', b === btn);
+                    b.setAttribute('aria-selected', String(b === btn));
+                });
+                renderICCTable();
+            });
+        });
+
+        // Format tabs
+        document.querySelectorAll('.icc-fmt').forEach(btn => {
+            btn.addEventListener('click', () => {
+                iccFmt = btn.dataset.fmt;
+                document.querySelectorAll('.icc-fmt').forEach(b => {
+                    b.classList.toggle('icc-fmt--active', b === btn);
+                    b.setAttribute('aria-selected', String(b === btn));
+                });
+                renderICCTable();
+            });
+        });
+
+        // Sub-type tabs
+        document.querySelectorAll('.icc-sub').forEach(btn => {
+            btn.addEventListener('click', () => {
+                iccSub = btn.dataset.sub;
+                document.querySelectorAll('.icc-sub').forEach(b => {
+                    b.classList.toggle('icc-sub--active', b === btn);
+                    b.setAttribute('aria-selected', String(b === btn));
+                });
+                renderICCTable();
+            });
+        });
+
+        // Initial render
+        renderICCTable();
     }
 
     /** Public API */
