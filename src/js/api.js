@@ -184,6 +184,32 @@ const CricketAPI = (() => {
     }
 
     // -------------------------------------------------------------------------
+    // Full team name → short code map (shared by normalisation helpers)
+    // -------------------------------------------------------------------------
+
+    const FULL_TEAM_SHORT = {
+        'Chennai Super Kings':           'CSK',
+        'Mumbai Indians':                'MI',
+        'Royal Challengers Bengaluru':   'RCB',
+        'Royal Challengers Bangalore':   'RCB',
+        'Kolkata Knight Riders':         'KKR',
+        'Delhi Capitals':                'DC',
+        'Rajasthan Royals':              'RR',
+        'Punjab Kings':                  'PBKS',
+        'Sunrisers Hyderabad':           'SRH',
+        'Gujarat Titans':                'GT',
+        'Lucknow Super Giants':          'LSG'
+    };
+
+    /** Convert a full team name to its IPL short code, or derive initials */
+    function toShortName(fullName) {
+        if (!fullName) return '—';
+        if (FULL_TEAM_SHORT[fullName]) return FULL_TEAM_SHORT[fullName];
+        // Fallback: first letter of each capitalised word
+        return fullName.split(' ').filter(w => /^[A-Z]/.test(w)).map(w => w[0]).join('').toUpperCase() || fullName;
+    }
+
+    // -------------------------------------------------------------------------
     // cricapi.com helpers (free tier — recommended)
     // -------------------------------------------------------------------------
 
@@ -243,6 +269,103 @@ const CricketAPI = (() => {
             status: raw.status || null,
             score:  score
         };
+    }
+
+    /**
+     * Normalise a cricapi.com match object into the full IPL fixture shape:
+     *   { id, d, t, team1, team2, team1Short, team2Short, v, b, iso, status, score, isCSK }
+     *
+     * cricapi.com fields: id, name, teams[], venue, date, dateTimeGMT, status, score
+     */
+    function normaliseCricapiMatchFull(raw) {
+        const isoStr = raw.dateTimeGMT || raw.date || '';
+        const dt     = isoStr ? new Date(isoStr) : null;
+
+        const teams      = Array.isArray(raw.teams) ? raw.teams : [];
+        const team1      = teams[0] || raw.name || '—';
+        const team2      = teams[1] || '—';
+        const team1Short = toShortName(team1);
+        const team2Short = toShortName(team2);
+        const isCSK      = /Chennai Super Kings|CSK/i.test(team1) || /Chennai Super Kings|CSK/i.test(team2);
+
+        // Format display date/time in IST (UTC+5:30)
+        let displayDate = '';
+        let displayTime = '';
+        if (dt) {
+            const ist   = new Date(dt.getTime() + IST_OFFSET_MS);
+            displayDate = `${ist.getUTCDate().toString().padStart(2, '0')} ${IST_MONTHS[ist.getUTCMonth()]}`;
+            const h24   = ist.getUTCHours();
+            const mins  = ist.getUTCMinutes().toString().padStart(2, '0');
+            const h12   = h24 % 12 || 12;
+            const ampm  = h24 < 12 ? 'AM' : 'PM';
+            displayTime = `${h12}:${mins} ${ampm}`;
+        }
+
+        // Live score string (only present during / after a match)
+        const score = Array.isArray(raw.score) && raw.score.length > 0
+            ? raw.score.map(s => `${s.inning}: ${s.r}/${s.w} (${s.o} ov)`).join(' | ')
+            : null;
+
+        return {
+            id:         raw.id,
+            d:          displayDate || raw.date || '—',
+            t:          displayTime || '—',
+            team1,      team2,
+            team1Short, team2Short,
+            v:          raw.venue  || '—',
+            b:          DEFAULT_BROADCAST,
+            iso:        isoStr,
+            status:     raw.status || null,
+            score,
+            isCSK
+        };
+    }
+
+    /** Returns true if a match is an IPL match */
+    function isIPLMatch(match) {
+        return /ipl|indian premier/i.test(match.seriesName || match.name || '');
+    }
+
+    /**
+     * Fetch all IPL 2026 fixtures from cricapi.com, normalised to full match format.
+     * Fetches three pages (offset 0, 25, 50) to cover the full IPL season.
+     * Returns an empty array if the key is not configured or all calls fail.
+     */
+    async function fetchAllIPLFixtures() {
+        if (!isCricapiConfigured()) return [];
+        try {
+            const [page1, page2, page3] = await Promise.all([
+                cricapiRequest('/matches?offset=0'),
+                cricapiRequest('/matches?offset=25'),
+                cricapiRequest('/matches?offset=50')
+            ]);
+
+            const all = [
+                ...extractList(page1),
+                ...extractList(page2),
+                ...extractList(page3)
+            ];
+
+            // De-duplicate by match id
+            const seen = new Set();
+            const unique = all.filter(m => {
+                if (!m.id || seen.has(m.id)) return false;
+                seen.add(m.id);
+                return true;
+            });
+
+            return unique
+                .filter(isIPLMatch)
+                .map(normaliseCricapiMatchFull)
+                .sort((a, b) => {
+                    if (!a.iso) return 1;
+                    if (!b.iso) return -1;
+                    return new Date(a.iso) - new Date(b.iso);
+                });
+        } catch (err) {
+            console.warn('[CricketAPI] fetchAllIPLFixtures failed:', err.message);
+            return [];
+        }
     }
 
     /**
@@ -363,11 +486,13 @@ const CricketAPI = (() => {
         getMatch,
         normaliseFixture,
         normaliseCricapiFixture,
+        normaliseCricapiMatchFull,
         fetchCSKFixtures,
         fetchCSKFixturesViaCricapi,
         fetchCSKLiveMatch,
         fetchCSKResults,
-        fetchCSKFixturesBySeries
+        fetchCSKFixturesBySeries,
+        fetchAllIPLFixtures
     };
 
 })();

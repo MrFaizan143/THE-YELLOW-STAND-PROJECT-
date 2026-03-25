@@ -1670,6 +1670,128 @@ h1 {
 
 
 /* --------------------------------------------------------------------------
+   IPL Full Schedule
+   All-teams match cards on the Map page.
+   CSK matches get a yellow-left accent; live matches pulse.
+-------------------------------------------------------------------------- */
+.ipl-schedule-rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+}
+
+.ipl-match-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    transition: opacity var(--transition-fast);
+}
+
+/* CSK matches — yellow left border */
+.ipl-match-card.ipl-match--csk {
+    border-left: 3px solid var(--color-yellow);
+}
+
+/* Past matches — slightly dimmed */
+.ipl-match-card.ipl-match--past {
+    opacity: 0.6;
+}
+
+/* Live matches — pulsing yellow glow */
+.ipl-match-card.ipl-match--live {
+    border-color: var(--color-yellow);
+    box-shadow: 0 0 0 2px rgba(253, 185, 19, 0.25);
+    animation: liveGlow 1.6s ease-in-out infinite;
+}
+
+@keyframes liveGlow {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(253, 185, 19, 0.2); }
+    50%       { box-shadow: 0 0 0 4px rgba(253, 185, 19, 0.45); }
+}
+
+/* Teams row */
+.ipl-match-teams {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.ipl-match-team {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    letter-spacing: 0.5px;
+}
+
+/* CSK team name in brand yellow */
+.ipl-match-team.ipl-match-team--csk {
+    color: var(--color-yellow);
+}
+
+.ipl-match-vs {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+}
+
+/* Date + venue row */
+.ipl-match-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ipl-match-datetime {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.5px;
+}
+
+.ipl-match-venue {
+    font-family: var(--font-sans);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+}
+
+/* Score / status lines */
+.ipl-match-score,
+.ipl-match-status {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.3px;
+    margin: 0;
+}
+
+.ipl-match-score {
+    color: var(--color-text);
+}
+
+/* Wider screens: put teams and meta side-by-side */
+@media (min-width: 480px) {
+    .ipl-match-card {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .ipl-match-meta {
+        text-align: right;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
    News Toggle Button
    "Read more / Show less" link below truncated articles.
 -------------------------------------------------------------------------- */

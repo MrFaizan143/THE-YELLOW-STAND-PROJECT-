@@ -534,8 +534,75 @@ const Render = (() => {
         container.innerHTML = header + rows + note;
     }
 
+    /**
+     * Renders all IPL 2026 fixtures into #ipl-schedule-list.
+     * CSK matches are highlighted with the brand-yellow accent.
+     * Matches are grouped by month. Falls back to a "no data" notice
+     * when liveData is empty or not provided.
+     * @param {Array} [liveData] — normalised full-match fixtures from CricketAPI.fetchAllIPLFixtures()
+     */
+    function iplSchedule(liveData) {
+        const container = document.getElementById('ipl-schedule-list');
+        if (!container) return;
+
+        const matches = Array.isArray(liveData) && liveData.length > 0 ? liveData : null;
+
+        if (!matches) {
+            container.innerHTML = '<p class="fixtures-status">IPL schedule data unavailable. Check back once the season is live.</p>';
+            return;
+        }
+
+        const now = Date.now();
+        let lastMonth = null;
+        let html = '';
+
+        matches.forEach(m => {
+            // Month separator
+            const dateParts = m.d.split(' ');
+            const month = dateParts.length >= 2 ? dateParts[1] : '';
+            if (month && month !== lastMonth) {
+                html += `<div class="fixture-month-sep" role="separator" aria-label="${month}">${month}</div>`;
+                lastMonth = month;
+            }
+
+            const isLive    = m.status && /live|progress/i.test(m.status);
+            const isPast    = m.iso && new Date(m.iso).getTime() <= now;
+            const cskClass  = m.isCSK ? ' ipl-match--csk' : '';
+            const liveClass = isLive  ? ' ipl-match--live' : '';
+            const pastClass = isPast && !isLive ? ' ipl-match--past' : '';
+
+            const scoreHtml = m.score
+                ? `<p class="ipl-match-score">${m.score}</p>`
+                : '';
+            const statusHtml = m.status && !isLive
+                ? `<p class="ipl-match-status">${m.status}</p>`
+                : '';
+            const liveTag   = isLive
+                ? '<span class="tag live-tag" aria-label="Live match">🔴 LIVE</span>'
+                : '';
+
+            html += `
+            <div class="ipl-match-card${cskClass}${liveClass}${pastClass}" role="listitem"
+                 aria-label="${m.team1Short} vs ${m.team2Short}, ${m.d}">
+                ${liveTag}
+                <div class="ipl-match-teams">
+                    <span class="ipl-match-team${m.isCSK && /Chennai Super Kings|CSK/i.test(m.team1) ? ' ipl-match-team--csk' : ''}">${m.team1Short}</span>
+                    <span class="ipl-match-vs">vs</span>
+                    <span class="ipl-match-team${m.isCSK && /Chennai Super Kings|CSK/i.test(m.team2) ? ' ipl-match-team--csk' : ''}">${m.team2Short}</span>
+                </div>
+                <div class="ipl-match-meta">
+                    <span class="ipl-match-datetime">${m.d} · ${m.t} IST</span>
+                    <span class="ipl-match-venue">${m.v}</span>
+                </div>
+                ${scoreHtml}${statusHtml}
+            </div>`;
+        });
+
+        container.innerHTML = `<div class="ipl-schedule-rows" role="list">${html}</div>`;
+    }
+
     /** Public API */
-    return { fixtures, fixturesLoading, fixturesError, squad, standings,
+    return { fixtures, fixturesLoading, fixturesError, squad, standings, iplSchedule,
              lastResult, venueInfo, updateHubRecord };
 
 })();
