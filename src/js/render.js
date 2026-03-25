@@ -535,9 +535,62 @@ const Render = (() => {
     }
 
     /**
+     * Static IPL 2026 schedule — matches 1-20 (28 Mar – 12 Apr 2026).
+     * Used as a reliable fallback when the live API returns no data.
+     * Each object mirrors the shape produced by CricketAPI.normaliseCricapiMatchFull().
+     */
+    const STATIC_IPL_2026 = (function () {
+        function m(no, isoDate, d, t, team1, team2, v) {
+            const isCSK = /Chennai Super Kings/i.test(team1) || /Chennai Super Kings/i.test(team2);
+            const SHORT = {
+                'Royal Challengers Bengaluru': 'RCB',
+                'Sunrisers Hyderabad':          'SRH',
+                'Mumbai Indians':               'MI',
+                'Kolkata Knight Riders':        'KKR',
+                'Rajasthan Royals':             'RR',
+                'Chennai Super Kings':          'CSK',
+                'Punjab Kings':                 'PBKS',
+                'Gujarat Titans':               'GT',
+                'Lucknow Super Giants':         'LSG',
+                'Delhi Capitals':               'DC'
+            };
+            return {
+                id: 'static-m' + no,
+                d, t, team1, team2,
+                team1Short: SHORT[team1] || team1,
+                team2Short: SHORT[team2] || team2,
+                v, iso: isoDate,
+                status: null, score: null, isCSK
+            };
+        }
+        return [
+            m( 1,'2026-03-28T14:00:00Z','28 Mar','7:30 PM','Royal Challengers Bengaluru','Sunrisers Hyderabad','M Chinnaswamy Stadium, Bengaluru'),
+            m( 2,'2026-03-29T14:00:00Z','29 Mar','7:30 PM','Mumbai Indians','Kolkata Knight Riders','Wankhede Stadium, Mumbai'),
+            m( 3,'2026-03-30T14:00:00Z','30 Mar','7:30 PM','Rajasthan Royals','Chennai Super Kings','Barsapara Cricket Stadium, Guwahati'),
+            m( 4,'2026-03-31T14:00:00Z','31 Mar','7:30 PM','Punjab Kings','Gujarat Titans','IS Bindra Stadium, New Chandigarh'),
+            m( 5,'2026-04-01T14:00:00Z','01 Apr','7:30 PM','Lucknow Super Giants','Delhi Capitals','BRSABV Ekana Cricket Stadium, Lucknow'),
+            m( 6,'2026-04-02T14:00:00Z','02 Apr','7:30 PM','Kolkata Knight Riders','Sunrisers Hyderabad','Eden Gardens, Kolkata'),
+            m( 7,'2026-04-03T14:00:00Z','03 Apr','7:30 PM','Chennai Super Kings','Punjab Kings','MA Chidambaram Stadium, Chennai'),
+            m( 8,'2026-04-04T10:00:00Z','04 Apr','3:30 PM','Delhi Capitals','Mumbai Indians','Arun Jaitley Stadium, Delhi'),
+            m( 9,'2026-04-04T14:00:00Z','04 Apr','7:30 PM','Gujarat Titans','Rajasthan Royals','Narendra Modi Stadium, Ahmedabad'),
+            m(10,'2026-04-05T10:00:00Z','05 Apr','3:30 PM','Sunrisers Hyderabad','Lucknow Super Giants','Rajiv Gandhi Int. Cricket Stadium, Hyderabad'),
+            m(11,'2026-04-05T14:00:00Z','05 Apr','7:30 PM','Royal Challengers Bengaluru','Chennai Super Kings','M Chinnaswamy Stadium, Bengaluru'),
+            m(12,'2026-04-06T14:00:00Z','06 Apr','7:30 PM','Kolkata Knight Riders','Punjab Kings','Eden Gardens, Kolkata'),
+            m(13,'2026-04-07T14:00:00Z','07 Apr','7:30 PM','Rajasthan Royals','Mumbai Indians','Barsapara Cricket Stadium, Guwahati'),
+            m(14,'2026-04-08T14:00:00Z','08 Apr','7:30 PM','Delhi Capitals','Gujarat Titans','Arun Jaitley Stadium, Delhi'),
+            m(15,'2026-04-09T14:00:00Z','09 Apr','7:30 PM','Kolkata Knight Riders','Lucknow Super Giants','Eden Gardens, Kolkata'),
+            m(16,'2026-04-10T14:00:00Z','10 Apr','7:30 PM','Rajasthan Royals','Royal Challengers Bengaluru','Barsapara Cricket Stadium, Guwahati'),
+            m(17,'2026-04-11T10:00:00Z','11 Apr','3:30 PM','Punjab Kings','Sunrisers Hyderabad','IS Bindra Stadium, New Chandigarh'),
+            m(18,'2026-04-11T14:00:00Z','11 Apr','7:30 PM','Chennai Super Kings','Delhi Capitals','MA Chidambaram Stadium, Chennai'),
+            m(19,'2026-04-12T10:00:00Z','12 Apr','3:30 PM','Lucknow Super Giants','Gujarat Titans','BRSABV Ekana Cricket Stadium, Lucknow'),
+            m(20,'2026-04-12T14:00:00Z','12 Apr','7:30 PM','Mumbai Indians','Royal Challengers Bengaluru','Wankhede Stadium, Mumbai')
+        ];
+    }());
+
+    /**
      * Renders all IPL 2026 fixtures into #ipl-schedule-list.
      * CSK matches are highlighted with the brand-yellow accent.
-     * Matches are grouped by month. Falls back to a "no data" notice
+     * Matches are grouped by month. Falls back to the static 2026 schedule
      * when liveData is empty or not provided.
      * @param {Array} [liveData] — normalised full-match fixtures from CricketAPI.fetchAllIPLFixtures()
      */
@@ -545,12 +598,7 @@ const Render = (() => {
         const container = document.getElementById('ipl-schedule-list');
         if (!container) return;
 
-        const matches = Array.isArray(liveData) && liveData.length > 0 ? liveData : null;
-
-        if (!matches) {
-            container.innerHTML = '<p class="fixtures-status">IPL schedule data unavailable. Check back once the season is live.</p>';
-            return;
-        }
+        const matches = Array.isArray(liveData) && liveData.length > 0 ? liveData : STATIC_IPL_2026;
 
         const now = Date.now();
         let lastMonth = null;
