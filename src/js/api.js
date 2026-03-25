@@ -30,7 +30,7 @@ const CricketAPI = (() => {
     const CRICAPI_KEY = 'bbf69190-0d70-4665-9b33-523ce96f057e';
 
     /** RapidAPI cricket-live-data key (optional, 500 req/month free) */
-    const RAPIDAPI_KEY = '';
+    const RAPIDAPI_KEY = 'c87af1d2f3mshfe1d884824adfccp12d990jsnf3164cff09ec';
 
     // -------------------------------------------------------------------------
     // Constants shared by both providers
