@@ -110,7 +110,14 @@ const News = (() => {
         const container = document.getElementById('news-list');
         if (!container) return;
 
-        container.innerHTML = '<p class="news-empty">Loading latest news…</p>';
+        // Show skeleton loader while fetching
+        container.innerHTML = Array.from({ length: 4 }, () => `
+            <div class="skeleton-card" aria-hidden="true">
+                <div class="skeleton skeleton--tag"></div>
+                <div class="skeleton skeleton--title"></div>
+                <div class="skeleton skeleton--body"></div>
+                <div class="skeleton skeleton--body skeleton--short"></div>
+            </div>`).join('');
 
         try {
             const url = RSS2JSON_BASE + encodeURIComponent(ESPN_FEED_URL);
@@ -131,6 +138,9 @@ const News = (() => {
 
         } catch (err) {
             console.warn('[News] Live fetch failed, using static data:', err.message);
+            if (typeof Toast !== 'undefined') {
+                Toast.show('Live news unavailable — showing cached updates.', 'warn');
+            }
             render();
         }
     }
