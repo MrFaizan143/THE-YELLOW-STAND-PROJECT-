@@ -604,15 +604,10 @@ const Schedule = (() => {
         // Render probable XIs
         renderProbableXIs();
 
-        // Init Leaflet map (lazy, only once)
-        if (typeof L !== 'undefined') {
+        // Lazy-load Leaflet (CSS + JS) on first visit to the Map page
+        loadLeaflet().then(() => {
             initMap();
-        } else {
-            const leafletScript = document.getElementById('leaflet-js');
-            if (leafletScript) {
-                leafletScript.addEventListener('load', () => { initMap(); }, { once: true });
-            }
-        }
+        });
 
         // Re-apply fav team highlight after IPL schedule finishes rendering
         // (schedule render is async via API calls — small delay is acceptable)
@@ -620,6 +615,43 @@ const Schedule = (() => {
             applyFavTeamHighlight();
             initH2HTooltips();
         }, 700);
+    }
+
+    /**
+     * Dynamically inject the Leaflet CSS and JS bundle the first time the Map
+     * page is visited.  Subsequent calls resolve immediately from the cached
+     * promise so Leaflet is only fetched once per session.
+     * @returns {Promise<void>}
+     */
+    let leafletLoadPromise = null;
+    function loadLeaflet() {
+        if (typeof L !== 'undefined') return Promise.resolve();
+        if (leafletLoadPromise) return leafletLoadPromise;
+
+        leafletLoadPromise = new Promise((resolve, reject) => {
+            // Inject CSS (no callback needed — non-render-blocking for map)
+            if (!document.getElementById('leaflet-css')) {
+                const link = document.createElement('link');
+                link.id   = 'leaflet-css';
+                link.rel  = 'stylesheet';
+                link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+                link.setAttribute('integrity', 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=');
+                link.setAttribute('crossorigin', '');
+                document.head.appendChild(link);
+            }
+
+            // Inject JS
+            const script = document.createElement('script');
+            script.id  = 'leaflet-js';
+            script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+            script.setAttribute('integrity', 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLs=');
+            script.setAttribute('crossorigin', '');
+            script.onload  = () => resolve();
+            script.onerror = (e) => reject(e);
+            document.head.appendChild(script);
+        });
+
+        return leafletLoadPromise;
     }
 
     /**

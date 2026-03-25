@@ -96,8 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
             theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
     }
 
-    // Restore saved preference (default: dark)
-    const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
+    // Restore saved preference; fall back to OS preference, then dark
+    const savedTheme = localStorage.getItem(THEME_KEY)
+        || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
     applyTheme(savedTheme);
 
     if (toggleBtn) {
@@ -111,9 +112,74 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Register service worker for PWA install + offline support
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch(err => {
+        navigator.serviceWorker.register('/sw.js').then(reg => {
+            // Listen for a new SW waiting to activate
+            reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                if (!newWorker) return;
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        showUpdateBanner();
+                    }
+                });
+            });
+        }).catch(err => {
             console.warn('Service worker registration failed:', err);
         });
     }
+
+    // -------------------------------------------------------------------------
+    // SW update banner
+    // -------------------------------------------------------------------------
+    function showUpdateBanner() {
+        const banner   = document.getElementById('sw-update-banner');
+        const reloadBtn  = document.getElementById('sw-update-reload');
+        const dismissBtn = document.getElementById('sw-update-dismiss');
+        if (!banner) return;
+        banner.hidden = false;
+        if (reloadBtn) {
+            reloadBtn.addEventListener('click', () => {
+                navigator.serviceWorker.getRegistration().then(reg => {
+                    if (reg && reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                });
+                window.location.reload();
+            }, { once: true });
+        }
+        if (dismissBtn) {
+            dismissBtn.addEventListener('click', () => { banner.hidden = true; }, { once: true });
+        }
+    }
 });
+
+// =============================================================================
+// Toast notification helper — callable from any module
+// =============================================================================
+const Toast = (() => {
+    /**
+     * Show a brief toast notification.
+     * @param {string} message  - Text to display.
+     * @param {'info'|'warn'|'error'} [type='info']
+     * @param {number} [duration=4000]  - Auto-dismiss delay in ms.
+     */
+    function show(message, type = 'info', duration = 4000) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast--${type}`;
+        toast.textContent = message;
+        toast.setAttribute('role', 'status');
+
+        container.appendChild(toast);
+        // Trigger enter animation
+        requestAnimationFrame(() => { toast.classList.add('toast--visible'); });
+
+        setTimeout(() => {
+            toast.classList.remove('toast--visible');
+            toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+        }, duration);
+    }
+
+    return { show };
+})();
 

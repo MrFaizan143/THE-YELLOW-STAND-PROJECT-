@@ -7,7 +7,7 @@
  *   • Navigation requests   → network-first with cached index.html fallback
  */
 
-const CACHE_VERSION = 'tys-v5';
+const CACHE_VERSION = 'tys-v6';
 const FONT_CACHE    = 'tys-fonts-v1';
 
 /** All local assets that make up the app shell */
@@ -90,8 +90,13 @@ self.addEventListener('fetch', event => {
 });
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Message — allow clients to trigger skipWaiting (for update banner)
 // ---------------------------------------------------------------------------
+self.addEventListener('message', event => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
 
 /** Cache-first: serve from cache; fetch & store on miss */
 async function cacheFirst(request) {

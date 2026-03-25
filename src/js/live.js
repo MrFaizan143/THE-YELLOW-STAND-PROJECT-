@@ -66,6 +66,17 @@ const Live = (() => {
     // Rendering
     // -------------------------------------------------------------------------
 
+    /** Return n skeleton placeholder cards for the loading state */
+    function buildSkeletonCards(n) {
+        return Array.from({ length: n }, () => `
+            <div class="skeleton-card" aria-hidden="true">
+                <div class="skeleton skeleton--tag"></div>
+                <div class="skeleton skeleton--title"></div>
+                <div class="skeleton skeleton--body"></div>
+                <div class="skeleton skeleton--body skeleton--short"></div>
+            </div>`).join('');
+    }
+
     /** Render the Live page into #live-content */
     function render() {
         const container = document.getElementById('live-content');
@@ -83,7 +94,7 @@ const Live = (() => {
             </div>
 
             <div id="live-matches-list" aria-live="polite" aria-label="Live matches">
-                <p class="fixtures-status">Fetching live scores…</p>
+                ${buildSkeletonCards(3)}
             </div>
 
             <div class="live-legend">
@@ -119,7 +130,7 @@ const Live = (() => {
         if (!listEl) return;
 
         if (!silent) {
-            listEl.innerHTML = '<p class="fixtures-status">Fetching live scores…</p>';
+            listEl.innerHTML = buildSkeletonCards(3);
         }
 
         const matches = await CricketAPI.fetchAllCurrentMatches();
