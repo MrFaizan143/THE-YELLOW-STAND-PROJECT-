@@ -113,7 +113,7 @@ const Live = (() => {
             </div>
 
             <div class="live-legend">
-                <span class="tag" style="display:inline-block;margin-bottom:0">Data: cricapi.com · Updates every 30s · </span>
+                <span class="tag" style="display:inline-block;margin-bottom:0">Data: cricapi.com · Updates every 90 s · </span>
                 <a class="live-legend-link" href="https://www.fancode.com/cricket" target="_blank" rel="noopener noreferrer">Watch live on FanCode ▶</a>
             </div>`;
 
@@ -142,7 +142,7 @@ const Live = (() => {
 
         fetchAndRender();
 
-        // Poll every 30 seconds — skip when tab is hidden to save battery / API quota
+        // Poll every 90 seconds — skip when tab is hidden to save battery / API quota
         if (pollIntervalId) clearInterval(pollIntervalId);
         pollIntervalId = setInterval(() => {
             if (!document.hidden && document.getElementById('live-content')) {
@@ -150,7 +150,7 @@ const Live = (() => {
             } else if (!document.getElementById('live-content')) {
                 clearInterval(pollIntervalId);
             }
-        }, 30_000);
+        }, 90_000);
 
         // Resume immediately when the tab becomes visible again
         document.addEventListener('visibilitychange', _onVisibilityChange, { passive: true });
@@ -244,8 +244,8 @@ const Live = (() => {
                 </div>`).join('')
             : '<p class="live-score-na">Score not yet available</p>';
 
-        // Win percentage bar (show if available in API response)
-        const winPct = m.tossChoice ? buildWinPctBar(m) : '';
+        // Win / Required Run Rate bar (shown when chasing in 2nd innings)
+        const winPct = (Array.isArray(m.score) && m.score.length >= 2) ? buildWinPctBar(m) : '';
 
         // Format badge
         const fmtLabel = women ? `Women · ${fmt}` : ipl ? 'IPL' : fmt;
@@ -298,11 +298,51 @@ const Live = (() => {
         </div>`;
     }
 
-    /** Build a simple win-percentage bar if toss / match state info is available */
+    /**
+     * Build a Required Run Rate (RRR) progress bar for the second innings of a T20 / ODI.
+     * Shows how many runs the chasing team has scored towards the target and the RRR needed.
+     * Returns an empty string when not applicable (first innings, Test, or match decided).
+     */
     function buildWinPctBar(m) {
-        // cricapi.com free tier doesn't expose a numeric win%, but we can show
-        // a generic probability bar if the API ever includes matchWinner fields.
-        return '';
+        const scores = Array.isArray(m.score) ? m.score : [];
+        if (scores.length < 2) return '';
+        const fmt = detectFormat(m);
+        if (fmt === 'test' || fmt === 'other') return '';
+
+        const inn1 = scores[0];
+        const inn2 = scores[1];
+        if (!inn2 || inn2.r == null || inn2.o == null) return '';
+
+        function toBalls(overs) {
+            const parts = String(overs).split('.');
+            return parseInt(parts[0], 10) * 6 + (parseInt(parts[1], 10) || 0);
+        }
+
+        const totalOvers = fmt === 'odi' ? 50 : 20;
+        const totalBalls = totalOvers * 6;
+        const target     = (inn1.r || 0) + 1;
+        const scored     = inn2.r || 0;
+        const ballsFaced = toBalls(inn2.o);
+        const ballsLeft  = totalBalls - ballsFaced;
+        const needed     = target - scored;
+
+        // Don't show bar once the result is decided
+        if (needed <= 0 || ballsLeft <= 0 || (inn2.w || 0) >= 10) return '';
+
+        const rrr = ((needed / ballsLeft) * 6).toFixed(2);
+        const pct = Math.min(Math.round((scored / target) * 100), 100);
+
+        return `
+        <div style="margin:var(--space-2) 0">
+            <div style="background:rgba(255,255,255,.12);border-radius:4px;height:6px;overflow:hidden">
+                <div style="background:var(--color-yellow,#F5B800);width:${pct}%;height:100%;transition:width .5s ease"></div>
+            </div>
+            <p style="font-size:.72rem;color:var(--color-text-muted,#aaa);margin-top:var(--space-1)">
+                Need <strong style="color:inherit">${needed}</strong> off
+                <strong style="color:inherit">${ballsLeft}</strong> balls &nbsp;·&nbsp;
+                RRR <strong style="color:var(--color-yellow,#F5B800)">${rrr}</strong>
+            </p>
+        </div>`;
     }
 
     // -------------------------------------------------------------------------

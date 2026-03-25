@@ -68,9 +68,106 @@ const CricketAPI = (() => {
         return CRICAPI_KEY.length > 0;
     }
 
+    // -------------------------------------------------------------------------
+    // Fetch utilities & API budget trackers
+    // -------------------------------------------------------------------------
+
+    /** Wraps fetch() with a 10-second AbortController timeout */
+    async function fetchWithTimeout(url, options = {}, ms = 10_000) {
+        const ctrl  = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), ms);
+        try {
+            const res = await fetch(url, { ...options, signal: ctrl.signal });
+            clearTimeout(timer);
+            return res;
+        } catch (err) {
+            clearTimeout(timer);
+            throw err;
+        }
+    }
+
+    /**
+     * Tracks cricapi.com daily call count in localStorage.
+     * Warns at 80 % (80/100) and 95 % (95/100) of the free-tier daily limit.
+     */
+    const _budgetCricapi = (() => {
+        const KEY_N = 'tys_ca_n', KEY_D = 'tys_ca_d';
+        const today = new Date().toISOString().slice(0, 10);
+        let n = 0;
+        if (localStorage.getItem(KEY_D) === today) {
+            n = parseInt(localStorage.getItem(KEY_N) || '0', 10);
+        } else {
+            try { localStorage.setItem(KEY_D, today); localStorage.setItem(KEY_N, '0'); } catch (_) {}
+        }
+        function track() {
+            n++;
+            try { localStorage.setItem(KEY_N, String(n)); } catch (_) {}
+            if (n === 80) console.warn('[TYS] cricapi budget: 80 / 100 calls used today.');
+            if (n >= 95)  console.warn(`[TYS] cricapi budget: ${n} / 100 — approaching daily limit!`);
+        }
+        return { track, count: () => n };
+    })();
+
+    /**
+     * Tracks RapidAPI monthly call count in localStorage.
+     * Warns at 80 % (400/500) and 95 % (475/500) of the free-tier monthly limit.
+     */
+    const _budgetRapid = (() => {
+        const KEY_N = 'tys_ra_n', KEY_M = 'tys_ra_m';
+        const thisMonth = new Date().toISOString().slice(0, 7);
+        let n = 0;
+        if (localStorage.getItem(KEY_M) === thisMonth) {
+            n = parseInt(localStorage.getItem(KEY_N) || '0', 10);
+        } else {
+            try { localStorage.setItem(KEY_M, thisMonth); localStorage.setItem(KEY_N, '0'); } catch (_) {}
+        }
+        function track() {
+            n++;
+            try { localStorage.setItem(KEY_N, String(n)); } catch (_) {}
+            if (n === 400) console.warn('[TYS] RapidAPI budget: 400 / 500 calls used this month.');
+            if (n >= 475)  console.warn(`[TYS] RapidAPI budget: ${n} / 500 — approaching monthly limit!`);
+        }
+        return { track, count: () => n };
+    })();
+
+    // -------------------------------------------------------------------------
+    // In-memory live match cache — shared by Hub polling and Live page (60-second TTL)
+    // In-flight deduplication ensures concurrent callers share a single request.
+    // -------------------------------------------------------------------------
+
+    const LIVE_CACHE_TTL = 60_000;
+    const _liveCache = { data: null, fetchedAt: 0, pending: null };
+
+    // -------------------------------------------------------------------------
+    // localStorage fixtures cache — avoids repeat 3-page IPL schedule fetches (6-hour TTL)
+    // -------------------------------------------------------------------------
+
+    const FIXTURES_CACHE_KEY = 'tys_ipl_fixtures_v2';
+    const FIXTURES_CACHE_TTL = 6 * 3_600_000;   // 6 hours
+
+    function getFixturesFromCache() {
+        try {
+            const raw = localStorage.getItem(FIXTURES_CACHE_KEY);
+            if (!raw) return null;
+            const { data, ts } = JSON.parse(raw);
+            if (Date.now() - ts < FIXTURES_CACHE_TTL) return data;
+        } catch (_) {}
+        return null;
+    }
+
+    function saveFixturesToCache(data) {
+        try {
+            localStorage.setItem(FIXTURES_CACHE_KEY, JSON.stringify({ data, ts: Date.now() }));
+        } catch (_) {}
+    }
+
+    /** In-flight deduplication handle for IPL fixture fetches */
+    let _fixturesInFlight = null;
+
     /** Generic GET helper — returns parsed JSON or throws */
     async function request(path) {
-        const res = await fetch(`${BASE_URL}${path}`, { method: 'GET', headers: HEADERS });
+        _budgetRapid.track();
+        const res = await fetchWithTimeout(`${BASE_URL}${path}`, { method: 'GET', headers: HEADERS });
         if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
         return res.json();
     }
@@ -213,16 +310,43 @@ const CricketAPI = (() => {
     // cricapi.com helpers (free tier — recommended)
     // -------------------------------------------------------------------------
 
-    /** Generic GET for cricapi.com endpoints */
+    /** Generic GET for cricapi.com endpoints — with 10-second timeout and daily budget tracking */
     async function cricapiRequest(path) {
+        _budgetCricapi.track();
         const sep = path.includes('?') ? '&' : '?';
-        const res = await fetch(`${CRICAPI_BASE}${path}${sep}apikey=${encodeURIComponent(CRICAPI_KEY)}`);
+        const url = `${CRICAPI_BASE}${path}${sep}apikey=${encodeURIComponent(CRICAPI_KEY)}`;
+        const res = await fetchWithTimeout(url);
         if (!res.ok) throw new Error(`cricapi ${res.status}: ${path}`);
         const json = await res.json();
         if (json.status !== 'success' && json.status !== 'ok') {
             throw new Error(`cricapi error: ${json.reason || json.status}`);
         }
         return json;
+    }
+
+    /**
+     * Shared live-match fetch with 60-second in-memory cache and in-flight deduplication.
+     * Both Hub polling (app.js) and the Live page (live.js) call through here so they
+     * never make more than one cricapi /currentMatches request per 60-second window.
+     */
+    async function _fetchCurrentMatchesCached() {
+        const now = Date.now();
+        if (_liveCache.data !== null && (now - _liveCache.fetchedAt) < LIVE_CACHE_TTL) {
+            return _liveCache.data;
+        }
+        if (_liveCache.pending) return _liveCache.pending;
+
+        _liveCache.pending = cricapiRequest('/currentMatches').then(data => {
+            const list = extractList(data);
+            _liveCache.data      = list;
+            _liveCache.fetchedAt = Date.now();
+            _liveCache.pending   = null;
+            return list;
+        }).catch(err => {
+            _liveCache.pending = null;
+            throw err;
+        });
+        return _liveCache.pending;
     }
 
     /**
@@ -328,85 +452,109 @@ const CricketAPI = (() => {
 
     /**
      * Fetch all IPL 2026 fixtures from cricapi.com, normalised to full match format.
-     * Fetches three pages (offset 0, 25, 50) to cover the full IPL season.
-     * Returns an empty array if the key is not configured or all calls fail.
+     * Results are cached in localStorage for 6 hours — avoids spending 3 cricapi calls
+     * on every schedule page visit. In-flight de-duplication prevents parallel fetches
+     * (e.g. router lazy-render + live page) from each issuing their own 3-request burst.
      */
     async function fetchAllIPLFixtures() {
         if (!isCricapiConfigured()) return [];
-        try {
-            const [page1, page2, page3] = await Promise.all([
-                cricapiRequest('/matches?offset=0'),
-                cricapiRequest('/matches?offset=25'),
-                cricapiRequest('/matches?offset=50')
-            ]);
 
-            const all = [
-                ...extractList(page1),
-                ...extractList(page2),
-                ...extractList(page3)
-            ];
+        // Return cached result if still fresh (saves 3 cricapi calls)
+        const cached = getFixturesFromCache();
+        if (cached) return cached;
 
-            // De-duplicate by match id
-            const seen = new Set();
-            const unique = all.filter(m => {
-                if (!m.id || seen.has(m.id)) return false;
-                seen.add(m.id);
-                return true;
-            });
+        // Return the existing in-flight promise so concurrent callers share one fetch
+        if (_fixturesInFlight) return _fixturesInFlight;
 
-            return unique
-                .filter(isIPLMatch)
-                .map(normaliseCricapiMatchFull)
-                .sort((a, b) => {
-                    if (!a.iso) return 1;
-                    if (!b.iso) return -1;
-                    return new Date(a.iso) - new Date(b.iso);
+        _fixturesInFlight = (async () => {
+            try {
+                const [page1, page2, page3] = await Promise.all([
+                    cricapiRequest('/matches?offset=0'),
+                    cricapiRequest('/matches?offset=25'),
+                    cricapiRequest('/matches?offset=50')
+                ]);
+
+                const all = [
+                    ...extractList(page1),
+                    ...extractList(page2),
+                    ...extractList(page3)
+                ];
+
+                // De-duplicate by match id
+                const seen = new Set();
+                const unique = all.filter(m => {
+                    if (!m.id || seen.has(m.id)) return false;
+                    seen.add(m.id);
+                    return true;
                 });
-        } catch (err) {
-            console.warn('[CricketAPI] fetchAllIPLFixtures failed:', err.message);
-            return [];
-        }
+
+                const result = unique
+                    .filter(isIPLMatch)
+                    .map(normaliseCricapiMatchFull)
+                    .sort((a, b) => {
+                        if (!a.iso) return 1;
+                        if (!b.iso) return -1;
+                        return new Date(a.iso) - new Date(b.iso);
+                    });
+
+                saveFixturesToCache(result);
+                return result;
+            } catch (err) {
+                console.warn('[CricketAPI] fetchAllIPLFixtures failed:', err.message);
+                return [];
+            } finally {
+                _fixturesInFlight = null;
+            }
+        })();
+
+        return _fixturesInFlight;
     }
 
     /**
-     * Fetch upcoming + current CSK fixtures from cricapi.com, normalised to TYS format.
-     * Fetches two pages (offset 0 and 25) to cover a full IPL season.
-     * Returns an empty array if the key is not configured or any call fails.
+     * Fetch upcoming + current CSK fixtures, normalised to TYS format.
+     * Leverages the IPL fixtures cache from fetchAllIPLFixtures so that navigating to
+     * the schedule page does not spend additional cricapi calls for CSK-only data.
+     * Falls back to an empty array (and lets fetchCSKFixtures try RapidAPI) if the
+     * IPL fixture fetch fails or returns no results.
      */
     async function fetchCSKFixturesViaCricapi() {
         if (!isCricapiConfigured()) return [];
         try {
-            // Two pages of 25 to capture the full IPL season
-            const [page1, page2] = await Promise.all([
-                cricapiRequest('/matches?offset=0'),
-                cricapiRequest('/matches?offset=25')
-            ]);
-
-            const all = [
-                ...extractList(page1),
-                ...extractList(page2)
-            ];
-
-            return all
-                .filter(m => isCSKMatch(m) && /ipl|indian premier/i.test(
-                    (m.seriesName || m.name || '')
-                ))
-                .map(normaliseCricapiFixture);
+            // Reuse the full IPL fixtures — cache hit costs 0 extra API calls
+            const iplFixtures = await fetchAllIPLFixtures();
+            if (iplFixtures.length > 0) {
+                return iplFixtures
+                    .filter(m => m.isCSK)
+                    .map(m => ({
+                        id:     m.id,
+                        d:      m.d,
+                        t:      m.t,
+                        o:      m.team1Short === 'CSK' ? m.team2 : m.team1,
+                        v:      m.v,
+                        b:      m.b,
+                        iso:    m.iso,
+                        status: m.status,
+                        score:  m.score
+                    }));
+            }
         } catch (err) {
             console.warn('[CricketAPI] fetchCSKFixturesViaCricapi failed:', err.message);
-            return [];
         }
+        return [];
     }
 
     /**
      * Fetch the live/current CSK match from cricapi.com.
+     * Uses the shared 60-second live cache (_fetchCurrentMatchesCached) so the Hub
+     * polling loop and the Live page never make duplicate /currentMatches requests
+     * within the same 60-second window — critical for the 100 calls/day free tier.
      * Returns null if no CSK match is in progress or the key is not configured.
      */
     async function fetchCSKLiveMatch() {
         if (!isCricapiConfigured()) return null;
         try {
-            const data = await cricapiRequest('/currentMatches');
-            const live = extractList(data).find(m =>
+            const list = await _fetchCurrentMatchesCached();
+            const live = list.find(m =>
                 isCSKMatch(m) && /ipl|indian premier/i.test(m.seriesName || m.name || '')
             );
             return live ? normaliseCricapiFixture(live) : null;
@@ -444,18 +592,43 @@ const CricketAPI = (() => {
     }
 
     /**
-     * Fetch recent CSK results from the API, normalised to TYS format.
-     * Returns an empty array if the API key is not configured or the call fails.
+     * Fetch recent CSK results.
+     * Uses RapidAPI /results as primary source (saves cricapi calls).
+     * Falls back to completed CSK matches derived from the IPL fixtures cache if
+     * RapidAPI is not configured or the request fails.
      */
     async function fetchCSKResults() {
-        if (!isConfigured()) return [];
-        try {
-            const data = await getResults();
-            return extractList(data).filter(isCSKMatch).map(normaliseFixture);
-        } catch (err) {
-            console.warn('[CricketAPI] fetchCSKResults failed:', err.message);
-            return [];
+        // Primary: RapidAPI /results (conserves cricapi daily quota)
+        if (isConfigured()) {
+            try {
+                const data = await getResults();
+                const results = extractList(data).filter(isCSKMatch).map(normaliseFixture);
+                if (results.length > 0) return results;
+            } catch (err) {
+                console.warn('[CricketAPI] fetchCSKResults (RapidAPI) failed:', err.message);
+            }
         }
+
+        // Fallback: derive from IPL fixtures cache (no extra API calls)
+        const cached = getFixturesFromCache();
+        if (cached) {
+            const now = new Date();
+            return cached
+                .filter(m => m.isCSK && m.iso && new Date(m.iso) < now && m.status)
+                .map(m => ({
+                    id:     m.id,
+                    d:      m.d,
+                    t:      m.t,
+                    o:      m.team1Short === 'CSK' ? m.team2 : m.team1,
+                    v:      m.v,
+                    b:      m.b,
+                    iso:    m.iso,
+                    status: m.status,
+                    score:  m.score
+                }));
+        }
+
+        return [];
     }
 
     /**
@@ -475,14 +648,14 @@ const CricketAPI = (() => {
 
     /**
      * Fetch all currently active / live matches from cricapi.com.
-     * Returns a raw array of match objects (not normalised) so the Live module
-     * can extract type, series, and detailed score information.
+     * Shares the 60-second live cache with fetchCSKLiveMatch so the Hub and Live
+     * page never make more than one /currentMatches request per minute between them.
+     * Returns a raw array of match objects (not normalised) for the Live module.
      */
     async function fetchAllCurrentMatches() {
         if (!isCricapiConfigured()) return [];
         try {
-            const data = await cricapiRequest('/currentMatches?offset=0');
-            return extractList(data);
+            return await _fetchCurrentMatchesCached();
         } catch (err) {
             console.warn('[CricketAPI] fetchAllCurrentMatches failed:', err.message);
             return [];
@@ -502,6 +675,17 @@ const CricketAPI = (() => {
             console.warn('[CricketAPI] fetchMatchInfo failed:', err.message);
             return null;
         }
+    }
+
+    /**
+     * Returns current API call counts for debugging quota usage.
+     * Call CricketAPI.getAPIBudget() in the browser console to inspect.
+     */
+    function getAPIBudget() {
+        return {
+            cricapi:  { used: _budgetCricapi.count(), limit: 100,  period: 'day'   },
+            rapidapi: { used: _budgetRapid.count(),   limit: 500,  period: 'month' }
+        };
     }
 
     /** Public API */
@@ -525,7 +709,8 @@ const CricketAPI = (() => {
         fetchCSKFixturesBySeries,
         fetchAllIPLFixtures,
         fetchAllCurrentMatches,
-        fetchMatchInfo
+        fetchMatchInfo,
+        getAPIBudget
     };
 
 })();
