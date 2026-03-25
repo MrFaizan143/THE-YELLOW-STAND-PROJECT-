@@ -27,37 +27,57 @@ document.addEventListener('DOMContentLoaded', () => {
     if (CricketAPI.isCricapiConfigured()) {
         const liveScoreEl = document.getElementById('hub-live-score');
 
-        function updateLiveScore() {
-            CricketAPI.fetchCSKLiveMatch().then(match => {
-                if (!liveScoreEl) return;
-                if (match && match.score) {
-                    liveScoreEl.innerHTML = `
-                        <span class="tag live-tag">🔴 LIVE</span>
-                        <p class="hub-live-score-teams">CSK vs ${match.o}</p>
-                        <p class="hub-live-score-text">${match.score}</p>
-                        <p class="hub-live-score-status">${match.status || ''}</p>`;
-                    liveScoreEl.style.display = '';
-
-                    // Also update the matching fixture row in the schedule page
-                    if (typeof Schedule !== 'undefined') {
-                        Schedule.updateLiveInSchedule(match);
-                    }
-                } else {
-                    liveScoreEl.style.display = 'none';
-                }
-            }).catch(() => {});
-        }
-
         if (liveScoreEl) {
-            updateLiveScore();
-            const hubPollId = setInterval(() => {
-                // Skip polling when the tab is hidden to save battery and API quota
-                if (!document.hidden) updateLiveScore();
-            }, 60_000);
+            // Adaptive polling: 90 s while a CSK match is live; backs off to 5 min after
+            // 3 consecutive empty results — conserves the 100 calls/day cricapi budget.
+            // The shared live-match cache in api.js ensures the Live page and Hub never
+            // make duplicate /currentMatches requests within the same 60-second window.
+            let hubMissCount = 0;
+            let hubPollTimer = null;
 
-            // Clean up the interval if the page is ever fully hidden for a long time
+            function scheduleHubPoll(delayMs) {
+                clearTimeout(hubPollTimer);
+                hubPollTimer = setTimeout(() => {
+                    if (!document.hidden) updateLiveScore();
+                }, delayMs);
+            }
+
+            function updateLiveScore() {
+                CricketAPI.fetchCSKLiveMatch().then(match => {
+                    if (!liveScoreEl) return;
+                    if (match && match.score) {
+                        liveScoreEl.innerHTML = `
+                            <span class="tag live-tag">🔴 LIVE</span>
+                            <p class="hub-live-score-teams">CSK vs ${match.o}</p>
+                            <p class="hub-live-score-text">${match.score}</p>
+                            <p class="hub-live-score-status">${match.status || ''}</p>`;
+                        liveScoreEl.style.display = '';
+
+                        if (typeof Schedule !== 'undefined') {
+                            Schedule.updateLiveInSchedule(match);
+                        }
+
+                        hubMissCount = 0;
+                        scheduleHubPoll(90_000);   // Active match: poll every 90 s
+                    } else {
+                        liveScoreEl.style.display = 'none';
+                        hubMissCount++;
+                        // After 3 consecutive misses, back off to 5-minute checks
+                        scheduleHubPoll(hubMissCount >= 3 ? 300_000 : 90_000);
+                    }
+                }).catch(() => {
+                    scheduleHubPoll(180_000);  // On error: retry in 3 min
+                });
+            }
+
+            updateLiveScore();
+
+            // Resume immediately when the tab becomes visible again
             document.addEventListener('visibilitychange', () => {
-                if (!document.hidden) updateLiveScore();
+                if (!document.hidden) {
+                    clearTimeout(hubPollTimer);
+                    updateLiveScore();
+                }
             }, { passive: true });
         }
     }
