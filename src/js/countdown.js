@@ -39,13 +39,18 @@ const Countdown = (() => {
         }
     }
 
+    /** Build inner HTML for a single digit block */
+    function block(value, unit) {
+        return `<div class="cd-block"><span class="cd-digit">${value}</span><span class="cd-unit">${unit}</span></div>`;
+    }
+
     function tick() {
         const el = document.getElementById('timer');
         if (!el) return;
 
         const iso = getNextISO();
         if (!iso) {
-            el.textContent = 'Season Complete';
+            el.innerHTML = '<span class="cd-message">Season Complete</span>';
             el.setAttribute('aria-label', 'IPL 2026 season complete');
             stop();
             return;
@@ -54,7 +59,7 @@ const Countdown = (() => {
         const gap = new Date(iso).getTime() - Date.now();
 
         if (gap <= 0) {
-            el.textContent = 'LIVE NOW';
+            el.innerHTML = '<span class="cd-message cd-message--live">🔴 MATCH DAY</span>';
             el.setAttribute('aria-label', 'Match is live now');
             return;
         }
@@ -64,9 +69,18 @@ const Countdown = (() => {
         const mins  = Math.floor((gap % 3_600_000) / 60_000);
         const secs  = Math.floor((gap % 60_000) / 1_000);
 
-        const text  = `${days}d ${pad(hours)}h ${pad(mins)}m ${pad(secs)}s`;
-        el.textContent = text;
-        el.setAttribute('aria-label', `Time until next match: ${text}`);
+        const label = `${days}d ${pad(hours)}h ${pad(mins)}m ${pad(secs)}s`;
+        el.innerHTML = `
+            <div class="cd-blocks">
+                ${block(String(days), 'D')}
+                <span class="cd-sep">:</span>
+                ${block(pad(hours), 'H')}
+                <span class="cd-sep">:</span>
+                ${block(pad(mins), 'M')}
+                <span class="cd-sep">:</span>
+                ${block(pad(secs), 'S')}
+            </div>`;
+        el.setAttribute('aria-label', `Time until next match: ${label}`);
     }
 
     function start() {

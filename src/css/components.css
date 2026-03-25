@@ -172,6 +172,65 @@ h1 {
     font-weight: var(--font-weight-bold);
 }
 
+/* Digit-block countdown layout */
+.cd-blocks {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.cd-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    min-width: 58px;
+}
+
+.cd-digit {
+    font-family: var(--font-mono);
+    font-size: 1.9rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.cd-unit {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    color: var(--color-yellow);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: var(--space-1);
+}
+
+.cd-sep {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    line-height: 1;
+    align-self: flex-start;
+    padding-top: var(--space-3);
+}
+
+.cd-message {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    letter-spacing: 1px;
+}
+
+.cd-message--live {
+    color: #ef4444;
+    animation: live-pulse 1.4s ease-in-out infinite;
+}
 
 /* --------------------------------------------------------------------------
    Hub Live Score Card
