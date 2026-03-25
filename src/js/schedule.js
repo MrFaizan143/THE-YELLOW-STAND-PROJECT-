@@ -4,7 +4,6 @@
  * Handles all interactive enhancements on the Map/Schedule page:
  *   • Venue map         — Leaflet.js markers for each CSK fixture venue
  *   • Venue sidebar     — click a map pin to see filtered fixtures + travel links
- *   • Weather overlay   — OpenWeatherMap Rain Threat badges on fixture cards
  *   • H2H tooltips      — hover over a fixture to see head-to-head history
  *   • Follow My Team    — highlight and flag matches by favourite team
  *   • Push notifications — Notification API alerts 15 min before each match
@@ -29,7 +28,6 @@ const Schedule = (() => {
 
     let leafletMap          = null;   // Leaflet.js map instance
     let mapMarkers          = {};     // venueKey → { marker, matches }
-    let weatherCache        = {};     // fixture iso → weather object
     let notifTimers         = [];     // setTimeout handles for pending notifications
     let scheduleCountdownId = null;   // setInterval handle for in-page countdown
 
@@ -305,9 +303,6 @@ const Schedule = (() => {
 
             mapMarkers[key] = { marker, matches };
         });
-
-        // Apply any weather data that was already fetched
-        applyWeatherToMap();
     }
 
     // =========================================================================
@@ -358,84 +353,6 @@ const Schedule = (() => {
 
         // Auto-scroll to sidebar on mobile
         sidebar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    // =========================================================================
-    // Weather Overlay
-    // =========================================================================
-
-    async function loadWeather() {
-        if (!CricketAPI.isWeatherConfigured()) return;
-
-        const now      = Date.now();
-        const upcoming = (DATA.fixtures || []).filter(f => f.iso && new Date(f.iso).getTime() > now);
-        if (upcoming.length === 0) return;
-
-        try {
-            const results = await CricketAPI.fetchWeatherForFixtures(upcoming);
-            upcoming.forEach((f, i) => {
-                if (results[i]) weatherCache[f.iso] = results[i];
-            });
-            applyWeatherBadges();
-            applyWeatherToMap();
-        } catch (err) {
-            console.warn('[Schedule] loadWeather failed:', err.message);
-        }
-    }
-
-    /**
-     * Applies weather badges to fixture rows in #fixture-list.
-     * Should be called after the fixture list is rendered.
-     */
-    function applyWeatherBadges() {
-        const container = document.getElementById('fixture-list');
-        if (!container) return;
-
-        container.querySelectorAll('.fixture-item[data-idx]').forEach(row => {
-            const idx = parseInt(row.dataset.idx, 10);
-            if (isNaN(idx)) return;
-            const f = DATA.fixtures[idx];
-            if (!f || !f.iso) return;
-            const weather = weatherCache[f.iso];
-            if (!weather) return;
-
-            // Remove existing badge before (re-)adding
-            const existing = row.querySelector('.weather-badge');
-            if (existing) existing.remove();
-
-            const badge = document.createElement('span');
-            if (weather.isRainThreat) {
-                badge.className   = 'weather-badge weather-badge--rain';
-                badge.textContent = `🌧 Rain Threat (${weather.rainProb}%)`;
-                badge.title       = weather.description || 'Rain forecast near match time';
-            } else if (weather.temp !== null) {
-                badge.className   = 'weather-badge';
-                badge.textContent = `☀ ${weather.temp}°C · ${weather.description || ''}`.trim();
-            }
-
-            if (badge.textContent) {
-                const info = row.querySelector('.fixture-info');
-                if (info) info.appendChild(badge);
-            }
-        });
-    }
-
-    /** Adds rain-threat indicator to map marker icons */
-    function applyWeatherToMap() {
-        const now = Date.now();
-        Object.entries(mapMarkers).forEach(([, { marker, matches }]) => {
-            const firstFuture = matches.find(({ f }) => !f.iso || new Date(f.iso).getTime() > now);
-            if (!firstFuture) return;
-            const weather = weatherCache[firstFuture.f.iso];
-            if (!weather || !weather.isRainThreat) return;
-
-            // Add rain class to the div-icon element
-            const el = marker.getElement && marker.getElement();
-            if (el) {
-                const pin = el.querySelector('.map-pin');
-                if (pin) pin.classList.add('map-pin--rain');
-            }
-        });
     }
 
     // =========================================================================
@@ -687,16 +604,13 @@ const Schedule = (() => {
         // Render probable XIs
         renderProbableXIs();
 
-        // Load weather forecasts
-        loadWeather();
-
         // Init Leaflet map (lazy, only once)
         if (typeof L !== 'undefined') {
             initMap();
         } else {
             const leafletScript = document.getElementById('leaflet-js');
             if (leafletScript) {
-                leafletScript.addEventListener('load', () => { initMap(); loadWeather(); }, { once: true });
+                leafletScript.addEventListener('load', () => { initMap(); }, { once: true });
             }
         }
 
@@ -710,11 +624,10 @@ const Schedule = (() => {
 
     /**
      * Called by render.js after the CSK fixture list is (re-)rendered.
-     * Re-binds tooltips and weather badges.
+     * Re-binds tooltips.
      */
     function onFixturesRendered() {
         initH2HTooltips();
-        applyWeatherBadges();
         renderProbableXIs();
     }
 

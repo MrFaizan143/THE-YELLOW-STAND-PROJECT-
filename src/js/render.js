@@ -279,7 +279,7 @@ const Render = (() => {
             }
         }
 
-        // Notify the Schedule module so it can re-bind H2H tooltips and weather badges
+        // Notify the Schedule module so it can re-bind H2H tooltips
         if (typeof Schedule !== 'undefined' && Schedule.onFixturesRendered) {
             Schedule.onFixturesRendered();
         }
@@ -446,35 +446,31 @@ const Render = (() => {
         if (!container) return;
 
         const nextIdx = Results.nextFixtureIndex();
-        let venue, city, pitch, weather;
+        let venue, city, pitch;
 
         if (nextIdx >= 0) {
             const f   = DATA.fixtures[nextIdx];
             const vp  = f.v.split(',');
             venue     = vp[0].trim();
             city      = vp.length > 1 ? vp[1].trim() : vp[0].trim();
-            // Use static nextMatch pitch/weather for first match, generic otherwise
+            // Use static nextMatch pitch for first match, generic otherwise
             if (nextIdx === 0) {
                 pitch   = DATA.nextMatch.pitch;
-                weather = DATA.nextMatch.weather;
             } else {
                 pitch   = 'Pitch info closer to match day';
-                weather = 'Weather info closer to match day';
             }
         } else {
             // Season over — show last-known data
             venue   = DATA.nextMatch.venue;
             city    = DATA.nextMatch.city;
             pitch   = '—';
-            weather = '—';
         }
 
         container.innerHTML = `
             <span class="tag">Next Venue</span>
             <p class="hub-info-label">${venue}</p>
             <p class="hub-info-meta">${city}</p>
-            <p class="hub-info-score">${pitch}</p>
-            <p class="hub-info-score">${weather}</p>`;
+            <p class="hub-info-score">${pitch}</p>`;
     }
 
     /** Renders squad grid + staff list into #squad-content */

@@ -13,8 +13,7 @@ const DATA = {
         label: "March 30 vs RR",
         venue: "Barsapara Cricket Stadium",
         city: "Guwahati",
-        pitch: "Expected to be a batting-friendly surface",
-        weather: "Partly cloudy, ~28 °C"
+        pitch: "Expected to be a batting-friendly surface"
     },
 
     /**
@@ -169,7 +168,7 @@ const DATA = {
     },
 
     /**
-     * IPL 2026 venue geocoordinates — used for the interactive map and weather overlay.
+     * IPL 2026 venue geocoordinates — used for the interactive map.
      * Key matches the `v` field in fixtures (exact string).
      */
     venueInfo: {
