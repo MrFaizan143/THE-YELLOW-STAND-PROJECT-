@@ -488,7 +488,7 @@ const FanPredictions = (() => {
 
 const CricketQuiz = (() => {
 
-    const CAT_COLORS = { CSK: '#FDB913', IPL: '#a78bfa', Cricket: '#34d399' };
+    const CAT_COLORS = { CSK: '#F5B800', IPL: '#a78bfa', Cricket: '#34d399' };
 
     let questions  = [];   // shuffled subset for this session
     let current    = 0;    // index of current question
@@ -530,7 +530,7 @@ const CricketQuiz = (() => {
         }
 
         const q        = questions[current];
-        const catColor = CAT_COLORS[q.cat] || '#FDB913';
+        const catColor = CAT_COLORS[q.cat] || '#F5B800';
         const progress = `${current + 1} / ${questions.length}`;
 
         const optButtons = q.opts.map((opt, i) => `
