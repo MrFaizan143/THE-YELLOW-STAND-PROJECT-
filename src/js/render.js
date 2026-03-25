@@ -707,7 +707,9 @@ const Render = (() => {
         const container = document.getElementById('ipl-schedule-list');
         if (!container) return;
 
-        const matches = Array.isArray(liveData) && liveData.length > 0 ? liveData : null;
+        const matches = Array.isArray(liveData) && liveData.length > 0
+            ? liveData
+            : (Array.isArray(DATA.iplSchedule) && DATA.iplSchedule.length > 0 ? DATA.iplSchedule : null);
 
         if (!matches) {
             container.innerHTML = '<p class="fixtures-status">IPL schedule data unavailable. Check back once the season is live.</p>';

@@ -428,14 +428,14 @@ const Tools = (() => {
 
             if (isNaN(scored) || isNaN(conceded) || decFaced <= 0 || decBowled <= 0) {
                 nrrResult.textContent = '—';
+                nrrResult.classList.remove('tool-result--positive', 'tool-result--negative');
                 return;
             }
 
             const nrr = (scored / decFaced) - (conceded / decBowled);
             nrrResult.textContent = (nrr >= 0 ? '+' : '') + fmt(nrr);
-            nrrResult.style.color = nrr >= 0
-                ? '#4ade80'
-                : '#f87171';
+            nrrResult.classList.toggle('tool-result--positive', nrr >= 0);
+            nrrResult.classList.toggle('tool-result--negative', nrr < 0);
         }
 
         [nrrScored, nrrOvers, nrrBalls, nrrConceded, nrrBowled, nrrBowledBalls]
@@ -590,7 +590,10 @@ const Tools = (() => {
                 resetCard(btn.closest('.tool-card'));
                 // Reset NRR result colour
                 const res = btn.closest('.tool-card').querySelector('.tool-result');
-                if (res) res.style.color = '';
+                if (res) {
+                    res.style.color = '';
+                    res.classList.remove('tool-result--positive', 'tool-result--negative');
+                }
             });
         });
 

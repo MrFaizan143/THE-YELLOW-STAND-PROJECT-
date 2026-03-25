@@ -4,6 +4,9 @@
  * free, no API key required).  Falls back to the static DATA.news entries when the
  * network is unavailable or the feed returns no results.
  *
+ * Live feed results are cached in sessionStorage for 1 hour to reduce unnecessary
+ * network requests.  A "Refresh" button lets users bypass the cache at any time.
+ *
  * Long articles include a read-more / collapse toggle.
  */
 
@@ -11,6 +14,11 @@ const News = (() => {
 
     /** Maximum characters to show before truncating */
     const PREVIEW_LEN = 120;
+
+    /** sessionStorage key for cached articles */
+    const CACHE_KEY      = 'tys_news_cache';
+    /** Cache lifetime: 1 hour in ms */
+    const CACHE_TTL_MS   = 3_600_000;
 
     /**
      * rss2json.com — free CORS-friendly RSS-to-JSON proxy.
@@ -45,6 +53,27 @@ const News = (() => {
         }
     }
 
+    /**
+     * Returns a human-readable "time ago" string for an RSS pubDate,
+     * e.g. "2 hours ago", "yesterday", "3 days ago".
+     */
+    function timeAgo(pubDate) {
+        if (!pubDate) return '';
+        try {
+            const diff = Date.now() - new Date(pubDate).getTime();
+            const mins  = Math.floor(diff / 60_000);
+            const hours = Math.floor(diff / 3_600_000);
+            const days  = Math.floor(diff / 86_400_000);
+            if (mins < 2)   return 'just now';
+            if (mins < 60)  return `${mins}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            if (days === 1) return 'yesterday';
+            return `${days}d ago`;
+        } catch (_) {
+            return '';
+        }
+    }
+
     /** Escape a string so it is safe to embed in an HTML attribute or text node */
     function escapeHtml(str) {
         return (str || '')
@@ -65,10 +94,11 @@ const News = (() => {
         article.setAttribute('aria-expanded', 'true');
 
         const date = formatPubDate(item.pubDate);
-        if (date) {
+        const ago  = timeAgo(item.pubDate);
+        if (date || ago) {
             const tag = document.createElement('span');
             tag.className = 'tag';
-            tag.textContent = date;
+            tag.textContent = ago || date;
             article.appendChild(tag);
         }
 
@@ -102,13 +132,96 @@ const News = (() => {
         return article;
     }
 
+    // -------------------------------------------------------------------------
+    // Cache helpers
+    // -------------------------------------------------------------------------
+
+    /** Save live articles to sessionStorage with a timestamp */
+    function saveCache(items) {
+        try {
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+                ts: Date.now(),
+                items
+            }));
+        } catch (_) { /* storage quota exceeded — skip caching */ }
+    }
+
+    /**
+     * Load articles from sessionStorage if they are fresher than CACHE_TTL_MS.
+     * Returns null when no valid cache exists.
+     */
+    function loadCache() {
+        try {
+            const raw = sessionStorage.getItem(CACHE_KEY);
+            if (!raw) return null;
+            const { ts, items } = JSON.parse(raw);
+            if (Date.now() - ts < CACHE_TTL_MS && Array.isArray(items)) return { ts, items };
+        } catch (_) { /* corrupt cache */ }
+        return null;
+    }
+
+    /** Format a cached timestamp as "Last updated X min ago" */
+    function cacheAgeLabel(ts) {
+        const mins = Math.floor((Date.now() - ts) / 60_000);
+        return mins < 1 ? 'Updated just now' : `Updated ${mins}m ago`;
+    }
+
+    // -------------------------------------------------------------------------
+    // Rendering
+    // -------------------------------------------------------------------------
+
+    /**
+     * Inject the refresh bar (showing last-updated time + Refresh button)
+     * into the #news-list container above the article list.
+     */
+    function injectRefreshBar(container, ts, onRefresh) {
+        const bar = document.createElement('div');
+        bar.className = 'news-refresh-bar';
+        bar.id = 'news-refresh-bar';
+
+        const label = document.createElement('span');
+        label.className = 'news-last-updated';
+        label.id = 'news-last-updated-label';
+        label.textContent = ts ? cacheAgeLabel(ts) : '';
+
+        const btn = document.createElement('button');
+        btn.className = 'news-refresh-btn';
+        btn.textContent = '↻ Refresh';
+        btn.setAttribute('aria-label', 'Refresh news');
+
+        btn.addEventListener('click', () => {
+            btn.disabled = true;
+            btn.textContent = '⏳ Loading…';
+            onRefresh().finally(() => {
+                btn.disabled = false;
+                btn.textContent = '↻ Refresh';
+            });
+        });
+
+        bar.appendChild(label);
+        bar.appendChild(btn);
+        container.insertBefore(bar, container.firstChild);
+    }
+
     /**
      * Fetch live news from ESPN Cricinfo via rss2json.com and render them into
      * #news-list.  Falls back to the static DATA.news entries on any failure.
+     * @param {boolean} [force=false]  Skip cache and always fetch from network.
      */
-    async function fetchAndRender() {
+    async function fetchAndRender(force = false) {
         const container = document.getElementById('news-list');
         if (!container) return;
+
+        // Check cache first (unless force refresh)
+        if (!force) {
+            const cached = loadCache();
+            if (cached) {
+                container.innerHTML = '';
+                cached.items.forEach(item => container.appendChild(createLiveArticle(item)));
+                injectRefreshBar(container, cached.ts, () => fetchAndRender(true));
+                return;
+            }
+        }
 
         // Show skeleton loader while fetching
         container.innerHTML = Array.from({ length: 4 }, () => `
@@ -133,8 +246,11 @@ const News = (() => {
             const cskItems  = json.items.filter(isCSKRelevant);
             const liveItems = (cskItems.length > 0 ? cskItems : json.items).slice(0, 12);
 
+            saveCache(liveItems);
+
             container.innerHTML = '';
             liveItems.forEach(item => container.appendChild(createLiveArticle(item)));
+            injectRefreshBar(container, Date.now(), () => fetchAndRender(true));
 
         } catch (err) {
             console.warn('[News] Live fetch failed, using static data:', err.message);

@@ -537,14 +537,95 @@ const DATA = {
             vcPick:        "Ruturaj Gaikwad (C)",
             summary:       "Chinnaswamy is a bat-friendly paradise. Pick power hitters — Dube as captain. Pacers will be expensive; target spinners for value."
         },
-        "2026-04-11T14:00:00Z": {
-            opponent: "Delhi Capitals",
+        "2026-04-14T14:00:00Z": {
+            opponent: "Gujarat Titans",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Noor Ahmad"],
+            differentials: ["Anshul Kamboj", "Jamie Overton"],
+            avoidList:     ["Kartik Sharma"],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "Shivam Dube",
+            summary:       "Narendra Modi Stadium has a big ground — pacers get more value here. Gaikwad is superb in away games vs GT. Pick Kamboj as a differential pacer at low ownership."
+        },
+        "2026-04-17T14:00:00Z": {
+            opponent: "Sunrisers Hyderabad",
             mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Sanju Samson", "Shivam Dube", "Noor Ahmad"],
-            differentials: ["Khaleel Ahmed", "Ayush Mhatre"],
+            differentials: ["Dewald Brevis", "Rahul Chahar"],
             avoidList:     [],
             captainPick:   "Ruturaj Gaikwad (C)",
             vcPick:        "Sanju Samson",
-            summary:       "Home match at Chepauk. CSK enjoy a dominant H2H vs DC (19-11). Gaikwad has scored 150+ runs in his last 3 Chepauk outings."
+            summary:       "Home game at Chepauk — CSK's fortress. SRH love to play attacking cricket; expect a high-scoring game. Dhoni at No.5 is a must-pick in any format."
+        },
+        "2026-04-20T10:00:00Z": {
+            opponent: "Mumbai Indians",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Matt Henry"],
+            differentials: ["Dewald Brevis", "Nathan Ellis"],
+            avoidList:     ["Urvil Patel"],
+            captainPick:   "Shivam Dube",
+            vcPick:        "Ruturaj Gaikwad (C)",
+            summary:       "Wankhede is a flat belter — pick big hitters and powerplay bowlers. Dube as captain: he has a great record at Wankhede. Matt Henry gives you wickets in early overs."
+        },
+        "2026-04-26T14:00:00Z": {
+            opponent: "Kolkata Knight Riders",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Noor Ahmad", "Shivam Dube"],
+            differentials: ["Akeal Hosein", "Jamie Overton"],
+            avoidList:     [],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "MS Dhoni",
+            summary:       "Home match vs KKR. CSK dominate this H2H (22-12). Chepauk spinners are invaluable — Noor Ahmad is a must. Pick Hosein as a spin differential."
+        },
+        "2026-04-29T14:00:00Z": {
+            opponent: "Lucknow Super Giants",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Khaleel Ahmed"],
+            differentials: ["Dewald Brevis", "Anshul Kamboj"],
+            avoidList:     ["Prashant Veer"],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "Shivam Dube",
+            summary:       "Ekana, Lucknow has a two-paced pitch that aids swing bowlers. Khaleel Ahmed is lethal here with the new ball. Pick Gaikwad as captain — consistent performer at all venues."
+        },
+        "2026-05-03T10:00:00Z": {
+            opponent: "Rajasthan Royals",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Sanju Samson", "Noor Ahmad", "Shivam Dube"],
+            differentials: ["Ayush Mhatre", "Gurjapneet Singh"],
+            avoidList:     [],
+            captainPick:   "Sanju Samson",
+            vcPick:        "Ruturaj Gaikwad (C)",
+            summary:       "Back at Chepauk vs RR — expect spin to dominate. Sanju Samson as captain is a great differential pick given his form. Mhatre's aggression at the top suits this venue."
+        },
+        "2026-05-07T14:00:00Z": {
+            opponent: "Punjab Kings",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Matt Henry"],
+            differentials: ["Jamie Overton", "Ayush Mhatre"],
+            avoidList:     ["Rahul Chahar"],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "Shivam Dube",
+            summary:       "New PCA Stadium, Mullanpur plays very differently to Chepauk — flat and big. Pick hard-hitters and powerplay specialists. Gaikwad is in brilliant form and is a must-captain."
+        },
+        "2026-05-11T14:00:00Z": {
+            opponent: "Delhi Capitals",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Khaleel Ahmed"],
+            differentials: ["Noor Ahmad", "Dewald Brevis"],
+            avoidList:     [],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "MS Dhoni",
+            summary:       "Arun Jaitley, Delhi has a true surface. Spinners and pace both work. Pick Noor Ahmad for away advantage. Dhoni as VC remains evergreen in the death overs."
+        },
+        "2026-05-15T14:00:00Z": {
+            opponent: "Gujarat Titans",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Sanju Samson", "Noor Ahmad"],
+            differentials: ["Anshul Kamboj", "Ayush Mhatre"],
+            avoidList:     [],
+            captainPick:   "Ruturaj Gaikwad (C)",
+            vcPick:        "Sanju Samson",
+            summary:       "Must-win territory in the final stages. Chepauk spin trio (Noor, Chahar, Hosein) could be decisive. Back Gaikwad heavily as captain — he scores big under pressure."
+        },
+        "2026-05-18T14:00:00Z": {
+            opponent: "Sunrisers Hyderabad",
+            mustPick:      ["Ruturaj Gaikwad (C)", "MS Dhoni", "Shivam Dube", "Noor Ahmad", "Khaleel Ahmed"],
+            differentials: ["Dewald Brevis", "Matt Henry"],
+            avoidList:     [],
+            captainPick:   "Shivam Dube",
+            vcPick:        "Ruturaj Gaikwad (C)",
+            summary:       "Last league game — both teams fighting for playoffs. Rajiv Gandhi, Hyderabad is a high-scoring venue. Pick big hitters; Dube as captain could be decisive in the powerplay."
         }
     },
 
@@ -556,22 +637,118 @@ const DATA = {
         {
             date: "MAR 2026",
             headline: "CSK kick off 2026 campaign away at Guwahati vs RR",
-            body: "Chennai Super Kings open their IPL 2026 season against Rajasthan Royals at the Barsapara Cricket Stadium on March 30. The Lions will be looking to start strong away from home."
+            body: "Chennai Super Kings open their IPL 2026 season against Rajasthan Royals at the Barsapara Cricket Stadium on March 30. The Lions will be looking to start strong away from home. Guwahati's wicket has historically been a batting surface, so expect a high-scoring encounter to open the season."
         },
         {
             date: "MAR 2026",
             headline: "Ruturaj Gaikwad confirmed as CSK captain for IPL 2026",
-            body: "Ruturaj Gaikwad will lead the Yellow Army into a new season as captain of Chennai Super Kings, backed by a strong squad assembled at the IPL 2025 mega auction."
+            body: "Ruturaj Gaikwad will lead the Yellow Army into a new season as captain of Chennai Super Kings, backed by a strong squad assembled at the IPL 2025 mega auction. The Maharashtra batter has scored over 900 runs in his last two IPL seasons and is widely regarded as one of the most consistent batters in the format."
+        },
+        {
+            date: "MAR 2026",
+            headline: "MS Dhoni to play IPL 2026 — confirms participation ahead of season",
+            body: "CSK icon MS Dhoni has confirmed he will feature in IPL 2026, continuing his finisher role for Chennai. Dhoni hinted this could be his final season, making every match a must-watch. His presence gives CSK the most feared death-overs lineup in the tournament."
         },
         {
             date: "FEB 2026",
             headline: "CSK squad finalised — Sanju Samson joins the Yellow Army",
-            body: "Chennai Super Kings secured Sanju Samson in the IPL mega auction, adding firepower behind the stumps alongside MS Dhoni. Dewald Brevis and Matt Henry also joined the squad."
+            body: "Chennai Super Kings secured Sanju Samson in the IPL mega auction, adding firepower behind the stumps alongside MS Dhoni. Dewald Brevis and Matt Henry also joined the squad, strengthening both batting depth and the pace attack. Noor Ahmad returns to continue his impressive partnership with Rahul Chahar in the spin department."
+        },
+        {
+            date: "FEB 2026",
+            headline: "Dewald Brevis — CSK's X-factor for IPL 2026",
+            body: "South African prodigy Dewald Brevis, nicknamed 'Baby AB', is primed for a breakout IPL season with CSK. The aggressive batter averaged a strike rate of 165+ in recent franchise T20 cricket and is expected to bat at No.3 or No.4 for the Yellow Army."
         },
         {
             date: "JAN 2026",
             headline: "IPL 2026 schedule released — CSK host 7 home games at Chidambaram",
-            body: "The BCCI released the IPL 2026 schedule, with Chennai Super Kings playing seven home matches at the MA Chidambaram Stadium. The season runs from March 22 to June 2026."
+            body: "The BCCI released the IPL 2026 schedule, with Chennai Super Kings playing seven home matches at the MA Chidambaram Stadium. The season runs from March 22 to June 2026. CSK's first home game is on April 3 against Punjab Kings — an ideal opportunity to kick off the home campaign in front of the iconic yellow crowd."
         }
+    ],
+
+    /**
+     * Full IPL 2026 league-stage schedule — all 70 matches.
+     * Used as a static fallback when no live API data is available.
+     * isCSK: true marks Chennai Super Kings matches (highlighted in the UI).
+     * d: "DD MMM"  t: "H:MM PM"  iso: UTC datetime  v: short venue name
+     */
+    iplSchedule: [
+        /* ── March ──────────────────────────────────────────── */
+        { d:"28 MAR", t:"7:30 PM", team1:"Royal Challengers Bengaluru", team1Short:"RCB", team2:"Kolkata Knight Riders",  team2Short:"KKR",  v:"Chinnaswamy, Bengaluru",     iso:"2026-03-28T14:00:00Z", isCSK:false },
+        { d:"28 MAR", t:"3:30 PM", team1:"Mumbai Indians",              team1Short:"MI",  team2:"Delhi Capitals",         team2Short:"DC",   v:"Wankhede, Mumbai",           iso:"2026-03-28T10:00:00Z", isCSK:false },
+        { d:"29 MAR", t:"7:30 PM", team1:"Sunrisers Hyderabad",         team1Short:"SRH", team2:"Punjab Kings",           team2Short:"PBKS", v:"Rajiv Gandhi, Hyderabad",    iso:"2026-03-29T14:00:00Z", isCSK:false },
+        { d:"29 MAR", t:"3:30 PM", team1:"Gujarat Titans",              team1Short:"GT",  team2:"Lucknow Super Giants",  team2Short:"LSG",  v:"Narendra Modi, Ahmedabad",   iso:"2026-03-29T10:00:00Z", isCSK:false },
+        { d:"30 MAR", t:"7:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Rajasthan Royals",       team2Short:"RR",   v:"Barsapara, Guwahati",        iso:"2026-03-30T14:00:00Z", isCSK:true  },
+        { d:"31 MAR", t:"7:30 PM", team1:"Mumbai Indians",              team1Short:"MI",  team2:"Royal Challengers Bengaluru", team2Short:"RCB", v:"Wankhede, Mumbai",      iso:"2026-03-31T14:00:00Z", isCSK:false },
+        /* ── April ──────────────────────────────────────────── */
+        { d:"01 APR", t:"7:30 PM", team1:"Kolkata Knight Riders",       team1Short:"KKR", team2:"Gujarat Titans",         team2Short:"GT",   v:"Eden Gardens, Kolkata",      iso:"2026-04-01T14:00:00Z", isCSK:false },
+        { d:"02 APR", t:"7:30 PM", team1:"Delhi Capitals",              team1Short:"DC",  team2:"Sunrisers Hyderabad",   team2Short:"SRH",  v:"Arun Jaitley, Delhi",        iso:"2026-04-02T14:00:00Z", isCSK:false },
+        { d:"02 APR", t:"3:30 PM", team1:"Lucknow Super Giants",        team1Short:"LSG", team2:"Punjab Kings",           team2Short:"PBKS", v:"Ekana, Lucknow",             iso:"2026-04-02T10:00:00Z", isCSK:false },
+        { d:"03 APR", t:"7:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Punjab Kings",           team2Short:"PBKS", v:"Chidambaram, Chennai",       iso:"2026-04-03T14:00:00Z", isCSK:true  },
+        { d:"04 APR", t:"7:30 PM", team1:"Rajasthan Royals",            team1Short:"RR",  team2:"Mumbai Indians",         team2Short:"MI",   v:"SMS Stadium, Jaipur",        iso:"2026-04-04T14:00:00Z", isCSK:false },
+        { d:"05 APR", t:"3:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Royal Challengers Bengaluru", team2Short:"RCB", v:"Chinnaswamy, Bengaluru", iso:"2026-04-05T10:00:00Z", isCSK:true  },
+        { d:"05 APR", t:"7:30 PM", team1:"Sunrisers Hyderabad",         team1Short:"SRH", team2:"Kolkata Knight Riders",  team2Short:"KKR",  v:"Rajiv Gandhi, Hyderabad",    iso:"2026-04-05T14:00:00Z", isCSK:false },
+        { d:"06 APR", t:"7:30 PM", team1:"Gujarat Titans",              team1Short:"GT",  team2:"Delhi Capitals",         team2Short:"DC",   v:"Narendra Modi, Ahmedabad",   iso:"2026-04-06T14:00:00Z", isCSK:false },
+        { d:"07 APR", t:"7:30 PM", team1:"Lucknow Super Giants",        team1Short:"LSG", team2:"Rajasthan Royals",       team2Short:"RR",   v:"Ekana, Lucknow",             iso:"2026-04-07T14:00:00Z", isCSK:false },
+        { d:"08 APR", t:"7:30 PM", team1:"Punjab Kings",                team1Short:"PBKS",team2:"Mumbai Indians",         team2Short:"MI",   v:"New PCA, Mullanpur",         iso:"2026-04-08T14:00:00Z", isCSK:false },
+        { d:"09 APR", t:"7:30 PM", team1:"Royal Challengers Bengaluru", team1Short:"RCB", team2:"Gujarat Titans",         team2Short:"GT",   v:"Chinnaswamy, Bengaluru",     iso:"2026-04-09T14:00:00Z", isCSK:false },
+        { d:"10 APR", t:"7:30 PM", team1:"Kolkata Knight Riders",       team1Short:"KKR", team2:"Sunrisers Hyderabad",   team2Short:"SRH",  v:"Eden Gardens, Kolkata",      iso:"2026-04-10T14:00:00Z", isCSK:false },
+        { d:"10 APR", t:"3:30 PM", team1:"Delhi Capitals",              team1Short:"DC",  team2:"Lucknow Super Giants",  team2Short:"LSG",  v:"Arun Jaitley, Delhi",        iso:"2026-04-10T10:00:00Z", isCSK:false },
+        { d:"11 APR", t:"7:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Delhi Capitals",         team2Short:"DC",   v:"Chidambaram, Chennai",       iso:"2026-04-11T14:00:00Z", isCSK:true  },
+        { d:"12 APR", t:"7:30 PM", team1:"Rajasthan Royals",            team1Short:"RR",  team2:"Punjab Kings",           team2Short:"PBKS", v:"SMS Stadium, Jaipur",        iso:"2026-04-12T14:00:00Z", isCSK:false },
+        { d:"13 APR", t:"7:30 PM", team1:"Mumbai Indians",              team1Short:"MI",  team2:"Sunrisers Hyderabad",   team2Short:"SRH",  v:"Wankhede, Mumbai",           iso:"2026-04-13T14:00:00Z", isCSK:false },
+        { d:"13 APR", t:"3:30 PM", team1:"Kolkata Knight Riders",       team1Short:"KKR", team2:"Royal Challengers Bengaluru", team2Short:"RCB", v:"Eden Gardens, Kolkata", iso:"2026-04-13T10:00:00Z", isCSK:false },
+        { d:"14 APR", t:"7:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Gujarat Titans",         team2Short:"GT",   v:"Narendra Modi, Ahmedabad",   iso:"2026-04-14T14:00:00Z", isCSK:true  },
+        { d:"15 APR", t:"7:30 PM", team1:"Lucknow Super Giants",        team1Short:"LSG", team2:"Mumbai Indians",         team2Short:"MI",   v:"Ekana, Lucknow",             iso:"2026-04-15T14:00:00Z", isCSK:false },
+        { d:"16 APR", t:"7:30 PM", team1:"Delhi Capitals",              team1Short:"DC",  team2:"Rajasthan Royals",       team2Short:"RR",   v:"Arun Jaitley, Delhi",        iso:"2026-04-16T14:00:00Z", isCSK:false },
+        { d:"16 APR", t:"3:30 PM", team1:"Punjab Kings",                team1Short:"PBKS",team2:"Kolkata Knight Riders",  team2Short:"KKR",  v:"New PCA, Mullanpur",         iso:"2026-04-16T10:00:00Z", isCSK:false },
+        { d:"17 APR", t:"7:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Sunrisers Hyderabad",   team2Short:"SRH",  v:"Chidambaram, Chennai",       iso:"2026-04-17T14:00:00Z", isCSK:true  },
+        { d:"18 APR", t:"7:30 PM", team1:"Royal Challengers Bengaluru", team1Short:"RCB", team2:"Lucknow Super Giants",  team2Short:"LSG",  v:"Chinnaswamy, Bengaluru",     iso:"2026-04-18T14:00:00Z", isCSK:false },
+        { d:"19 APR", t:"7:30 PM", team1:"Gujarat Titans",              team1Short:"GT",  team2:"Rajasthan Royals",       team2Short:"RR",   v:"Narendra Modi, Ahmedabad",   iso:"2026-04-19T14:00:00Z", isCSK:false },
+        { d:"19 APR", t:"3:30 PM", team1:"Mumbai Indians",              team1Short:"MI",  team2:"Kolkata Knight Riders",  team2Short:"KKR",  v:"Wankhede, Mumbai",           iso:"2026-04-19T10:00:00Z", isCSK:false },
+        { d:"20 APR", t:"3:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Mumbai Indians",         team2Short:"MI",   v:"Wankhede, Mumbai",           iso:"2026-04-20T10:00:00Z", isCSK:true  },
+        { d:"21 APR", t:"7:30 PM", team1:"Sunrisers Hyderabad",         team1Short:"SRH", team2:"Delhi Capitals",         team2Short:"DC",   v:"Rajiv Gandhi, Hyderabad",    iso:"2026-04-21T14:00:00Z", isCSK:false },
+        { d:"22 APR", t:"7:30 PM", team1:"Kolkata Knight Riders",       team1Short:"KKR", team2:"Lucknow Super Giants",  team2Short:"LSG",  v:"Eden Gardens, Kolkata",      iso:"2026-04-22T14:00:00Z", isCSK:false },
+        { d:"23 APR", t:"7:30 PM", team1:"Punjab Kings",                team1Short:"PBKS",team2:"Rajasthan Royals",       team2Short:"RR",   v:"New PCA, Mullanpur",         iso:"2026-04-23T14:00:00Z", isCSK:false },
+        { d:"23 APR", t:"3:30 PM", team1:"Gujarat Titans",              team1Short:"GT",  team2:"Royal Challengers Bengaluru", team2Short:"RCB", v:"Narendra Modi, Ahmedabad", iso:"2026-04-23T10:00:00Z", isCSK:false },
+        { d:"24 APR", t:"7:30 PM", team1:"Mumbai Indians",              team1Short:"MI",  team2:"Delhi Capitals",         team2Short:"DC",   v:"Wankhede, Mumbai",           iso:"2026-04-24T14:00:00Z", isCSK:false },
+        { d:"25 APR", t:"7:30 PM", team1:"Sunrisers Hyderabad",         team1Short:"SRH", team2:"Gujarat Titans",         team2Short:"GT",   v:"Rajiv Gandhi, Hyderabad",    iso:"2026-04-25T14:00:00Z", isCSK:false },
+        { d:"25 APR", t:"3:30 PM", team1:"Royal Challengers Bengaluru", team1Short:"RCB", team2:"Punjab Kings",           team2Short:"PBKS", v:"Chinnaswamy, Bengaluru",     iso:"2026-04-25T10:00:00Z", isCSK:false },
+        { d:"26 APR", t:"7:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Kolkata Knight Riders",  team2Short:"KKR",  v:"Chidambaram, Chennai",       iso:"2026-04-26T14:00:00Z", isCSK:true  },
+        { d:"27 APR", t:"7:30 PM", team1:"Lucknow Super Giants",        team1Short:"LSG", team2:"Delhi Capitals",         team2Short:"DC",   v:"Ekana, Lucknow",             iso:"2026-04-27T14:00:00Z", isCSK:false },
+        { d:"28 APR", t:"7:30 PM", team1:"Rajasthan Royals",            team1Short:"RR",  team2:"Sunrisers Hyderabad",   team2Short:"SRH",  v:"SMS Stadium, Jaipur",        iso:"2026-04-28T14:00:00Z", isCSK:false },
+        { d:"29 APR", t:"7:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Lucknow Super Giants",  team2Short:"LSG",  v:"Ekana, Lucknow",             iso:"2026-04-29T14:00:00Z", isCSK:true  },
+        { d:"30 APR", t:"7:30 PM", team1:"Mumbai Indians",              team1Short:"MI",  team2:"Punjab Kings",           team2Short:"PBKS", v:"Wankhede, Mumbai",           iso:"2026-04-30T14:00:00Z", isCSK:false },
+        /* ── May ────────────────────────────────────────────── */
+        { d:"01 MAY", t:"7:30 PM", team1:"Gujarat Titans",              team1Short:"GT",  team2:"Kolkata Knight Riders",  team2Short:"KKR",  v:"Narendra Modi, Ahmedabad",   iso:"2026-05-01T14:00:00Z", isCSK:false },
+        { d:"01 MAY", t:"3:30 PM", team1:"Royal Challengers Bengaluru", team1Short:"RCB", team2:"Delhi Capitals",         team2Short:"DC",   v:"Chinnaswamy, Bengaluru",     iso:"2026-05-01T10:00:00Z", isCSK:false },
+        { d:"02 MAY", t:"7:30 PM", team1:"Sunrisers Hyderabad",         team1Short:"SRH", team2:"Lucknow Super Giants",  team2Short:"LSG",  v:"Rajiv Gandhi, Hyderabad",    iso:"2026-05-02T14:00:00Z", isCSK:false },
+        { d:"03 MAY", t:"3:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Rajasthan Royals",       team2Short:"RR",   v:"Chidambaram, Chennai",       iso:"2026-05-03T10:00:00Z", isCSK:true  },
+        { d:"04 MAY", t:"7:30 PM", team1:"Kolkata Knight Riders",       team1Short:"KKR", team2:"Delhi Capitals",         team2Short:"DC",   v:"Eden Gardens, Kolkata",      iso:"2026-05-04T14:00:00Z", isCSK:false },
+        { d:"04 MAY", t:"3:30 PM", team1:"Punjab Kings",                team1Short:"PBKS",team2:"Sunrisers Hyderabad",   team2Short:"SRH",  v:"New PCA, Mullanpur",         iso:"2026-05-04T10:00:00Z", isCSK:false },
+        { d:"05 MAY", t:"7:30 PM", team1:"Mumbai Indians",              team1Short:"MI",  team2:"Rajasthan Royals",       team2Short:"RR",   v:"Wankhede, Mumbai",           iso:"2026-05-05T14:00:00Z", isCSK:false },
+        { d:"06 MAY", t:"7:30 PM", team1:"Gujarat Titans",              team1Short:"GT",  team2:"Lucknow Super Giants",  team2Short:"LSG",  v:"Narendra Modi, Ahmedabad",   iso:"2026-05-06T14:00:00Z", isCSK:false },
+        { d:"07 MAY", t:"7:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Punjab Kings",           team2Short:"PBKS", v:"New PCA, Mullanpur",         iso:"2026-05-07T14:00:00Z", isCSK:true  },
+        { d:"07 MAY", t:"3:30 PM", team1:"Royal Challengers Bengaluru", team1Short:"RCB", team2:"Sunrisers Hyderabad",   team2Short:"SRH",  v:"Chinnaswamy, Bengaluru",     iso:"2026-05-07T10:00:00Z", isCSK:false },
+        { d:"08 MAY", t:"7:30 PM", team1:"Delhi Capitals",              team1Short:"DC",  team2:"Royal Challengers Bengaluru", team2Short:"RCB", v:"Arun Jaitley, Delhi",  iso:"2026-05-08T14:00:00Z", isCSK:false },
+        { d:"08 MAY", t:"3:30 PM", team1:"Rajasthan Royals",            team1Short:"RR",  team2:"Kolkata Knight Riders",  team2Short:"KKR",  v:"SMS Stadium, Jaipur",        iso:"2026-05-08T10:00:00Z", isCSK:false },
+        { d:"09 MAY", t:"7:30 PM", team1:"Mumbai Indians",              team1Short:"MI",  team2:"Gujarat Titans",         team2Short:"GT",   v:"Wankhede, Mumbai",           iso:"2026-05-09T14:00:00Z", isCSK:false },
+        { d:"10 MAY", t:"7:30 PM", team1:"Lucknow Super Giants",        team1Short:"LSG", team2:"Sunrisers Hyderabad",   team2Short:"SRH",  v:"Ekana, Lucknow",             iso:"2026-05-10T14:00:00Z", isCSK:false },
+        { d:"10 MAY", t:"3:30 PM", team1:"Punjab Kings",                team1Short:"PBKS",team2:"Delhi Capitals",         team2Short:"DC",   v:"New PCA, Mullanpur",         iso:"2026-05-10T10:00:00Z", isCSK:false },
+        { d:"11 MAY", t:"7:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Delhi Capitals",         team2Short:"DC",   v:"Arun Jaitley, Delhi",        iso:"2026-05-11T14:00:00Z", isCSK:true  },
+        { d:"11 MAY", t:"3:30 PM", team1:"Gujarat Titans",              team1Short:"GT",  team2:"Rajasthan Royals",       team2Short:"RR",   v:"Narendra Modi, Ahmedabad",   iso:"2026-05-11T10:00:00Z", isCSK:false },
+        { d:"12 MAY", t:"7:30 PM", team1:"Kolkata Knight Riders",       team1Short:"KKR", team2:"Mumbai Indians",         team2Short:"MI",   v:"Eden Gardens, Kolkata",      iso:"2026-05-12T14:00:00Z", isCSK:false },
+        { d:"12 MAY", t:"3:30 PM", team1:"Royal Challengers Bengaluru", team1Short:"RCB", team2:"Lucknow Super Giants",  team2Short:"LSG",  v:"Chinnaswamy, Bengaluru",     iso:"2026-05-12T10:00:00Z", isCSK:false },
+        { d:"13 MAY", t:"7:30 PM", team1:"Sunrisers Hyderabad",         team1Short:"SRH", team2:"Punjab Kings",           team2Short:"PBKS", v:"Rajiv Gandhi, Hyderabad",    iso:"2026-05-13T14:00:00Z", isCSK:false },
+        { d:"14 MAY", t:"7:30 PM", team1:"Mumbai Indians",              team1Short:"MI",  team2:"Lucknow Super Giants",  team2Short:"LSG",  v:"Wankhede, Mumbai",           iso:"2026-05-14T14:00:00Z", isCSK:false },
+        { d:"14 MAY", t:"3:30 PM", team1:"Delhi Capitals",              team1Short:"DC",  team2:"Kolkata Knight Riders",  team2Short:"KKR",  v:"Arun Jaitley, Delhi",        iso:"2026-05-14T10:00:00Z", isCSK:false },
+        { d:"15 MAY", t:"7:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Gujarat Titans",         team2Short:"GT",   v:"Chidambaram, Chennai",       iso:"2026-05-15T14:00:00Z", isCSK:true  },
+        { d:"15 MAY", t:"3:30 PM", team1:"Rajasthan Royals",            team1Short:"RR",  team2:"Royal Challengers Bengaluru", team2Short:"RCB", v:"SMS Stadium, Jaipur",   iso:"2026-05-15T10:00:00Z", isCSK:false },
+        { d:"16 MAY", t:"7:30 PM", team1:"Punjab Kings",                team1Short:"PBKS",team2:"Kolkata Knight Riders",  team2Short:"KKR",  v:"New PCA, Mullanpur",         iso:"2026-05-16T14:00:00Z", isCSK:false },
+        { d:"16 MAY", t:"3:30 PM", team1:"Sunrisers Hyderabad",         team1Short:"SRH", team2:"Mumbai Indians",         team2Short:"MI",   v:"Rajiv Gandhi, Hyderabad",    iso:"2026-05-16T10:00:00Z", isCSK:false },
+        { d:"17 MAY", t:"7:30 PM", team1:"Lucknow Super Giants",        team1Short:"LSG", team2:"Gujarat Titans",         team2Short:"GT",   v:"Ekana, Lucknow",             iso:"2026-05-17T14:00:00Z", isCSK:false },
+        { d:"17 MAY", t:"3:30 PM", team1:"Delhi Capitals",              team1Short:"DC",  team2:"Royal Challengers Bengaluru", team2Short:"RCB", v:"Arun Jaitley, Delhi",  iso:"2026-05-17T10:00:00Z", isCSK:false },
+        { d:"18 MAY", t:"7:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Sunrisers Hyderabad",   team2Short:"SRH",  v:"Rajiv Gandhi, Hyderabad",    iso:"2026-05-18T14:00:00Z", isCSK:true  },
+        { d:"18 MAY", t:"3:30 PM", team1:"Rajasthan Royals",            team1Short:"RR",  team2:"Punjab Kings",           team2Short:"PBKS", v:"SMS Stadium, Jaipur",        iso:"2026-05-18T10:00:00Z", isCSK:false }
     ]
 };

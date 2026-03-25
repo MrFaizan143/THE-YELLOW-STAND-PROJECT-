@@ -279,6 +279,25 @@ h1 {
     animation: live-pulse 1.4s ease-in-out infinite;
 }
 
+/* Countdown urgency states */
+.cd-blocks--soon .cd-digit {
+    color: var(--color-yellow);
+}
+
+.cd-blocks--urgent .cd-digit {
+    color: #ef4444;
+}
+
+.cd-blocks--urgent .cd-block {
+    border-color: rgba(239, 68, 68, 0.4);
+    animation: cd-urgent-pulse 1s ease-in-out infinite;
+}
+
+@keyframes cd-urgent-pulse {
+    0%, 100% { box-shadow: none; }
+    50%       { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15); }
+}
+
 /* --------------------------------------------------------------------------
    Hub Live Score Card
    Shown during a CSK match in progress (requires cricapi.com key).
@@ -1472,6 +1491,10 @@ h1 {
     font-weight: var(--font-weight-bold);
     color: var(--color-yellow);
 }
+
+/* NRR positive / negative coloring — theme-aware via CSS variables */
+.tool-result--positive { color: var(--color-positive); }
+.tool-result--negative { color: var(--color-negative); }
 
 
 /* --------------------------------------------------------------------------
@@ -3703,6 +3726,11 @@ h1 {
     box-shadow: var(--shadow-md);
 }
 
+/* Highlight CSK-involved matches with a brand-yellow left accent */
+.live-match-card--csk {
+    border-left: 3px solid var(--color-yellow);
+}
+
 .live-card-top {
     display: flex;
     align-items: center;
@@ -4069,6 +4097,86 @@ h1 {
     font-size: var(--text-base);
     color: var(--color-text);
     margin: 0;
+}
+
+/* Live page refresh bar */
+.live-refresh-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+
+.live-refresh-btn {
+    background: transparent;
+    border: 1px solid var(--color-border-lt);
+    color: var(--color-yellow);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.live-refresh-btn:hover,
+.live-refresh-btn:focus-visible {
+    background: var(--color-surface-deep);
+}
+
+.live-refresh-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.live-last-updated {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.5px;
+}
+
+/* News refresh bar */
+.news-refresh-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.news-refresh-btn {
+    background: transparent;
+    border: 1px solid var(--color-border-lt);
+    color: var(--color-yellow);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.news-refresh-btn:hover,
+.news-refresh-btn:focus-visible {
+    background: var(--color-surface-deep);
+}
+
+.news-last-updated {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
 }
 
 .live-legend {

@@ -52,6 +52,7 @@ const Router = (() => {
                     });
                 } else {
                     Render.fixtures();
+                    Render.iplSchedule();
                 }
                 Render.standings();
             }
