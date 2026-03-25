@@ -1389,6 +1389,97 @@ h1 {
     outline-offset: 2px;
 }
 
+/* Count badge inside the active filter button */
+.fixture-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-full);
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    font-size: 0.5rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0;
+    margin-left: var(--space-1);
+    vertical-align: middle;
+}
+
+
+/* --------------------------------------------------------------------------
+   Season Progress Bar
+   Shown above the fixture list on the Map page.
+-------------------------------------------------------------------------- */
+.season-progress {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.season-progress-track {
+    flex: 1;
+    height: 4px;
+    background: var(--color-border-lt);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.season-progress-fill {
+    height: 100%;
+    background: var(--color-yellow);
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow);
+}
+
+.season-progress-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   Month Separator
+   Month-label divider between fixture groups.
+-------------------------------------------------------------------------- */
+.fixture-month-sep {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: var(--space-2) 0 var(--space-1);
+    margin-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+}
+
+.fixture-month-sep:first-child,
+.fixture-rows > .fixture-month-sep:first-child {
+    border-top: none;
+    margin-top: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   Days-Away Label
+   "in Xd" / "TODAY" / "TOMORROW" shown below match time on the NEXT fixture.
+-------------------------------------------------------------------------- */
+.days-away {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+    letter-spacing: 1px;
+    margin-top: var(--space-1);
+    text-transform: uppercase;
+}
+
 
 /* --------------------------------------------------------------------------
    Squad Search

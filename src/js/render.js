@@ -28,6 +28,9 @@ const Render = (() => {
     /** Last resolved fixture data (live or static) stored for re-filtering */
     let storedFixtureSource = null;
 
+    /** Guards the one-time auto-scroll to the next fixture on initial page load */
+    let autoScrollDone = false;
+
     /** Show a loading placeholder in #fixture-list */
     function fixturesLoading() {
         const container = document.getElementById('fixture-list');
@@ -79,22 +82,39 @@ const Render = (() => {
             }
         });
 
+        // Season progress (based on all source fixtures, not filtered)
+        const totalMatches  = source.length;
+        const playedMatches = source.filter(f => f.iso && new Date(f.iso).getTime() <= now).length;
+        const progressPct   = totalMatches > 0 ? Math.round((playedMatches / totalMatches) * 100) : 0;
+        const progressBar   = `
+        <div class="season-progress" aria-label="Season progress: ${playedMatches} of ${totalMatches} matches played">
+            <div class="season-progress-track" role="progressbar"
+                 aria-valuenow="${playedMatches}" aria-valuemin="0" aria-valuemax="${totalMatches}">
+                <div class="season-progress-fill" style="width:${progressPct}%"></div>
+            </div>
+            <p class="season-progress-label">${playedMatches} / ${totalMatches} played</p>
+        </div>`;
+
         // Filter bar HTML
         const filters = ['all', 'home', 'away', 'upcoming', 'done'];
+        const countSuffix = currentFilter !== 'all'
+            ? ` <span class="fixture-count">${filtered.length}</span>`
+            : '';
         const filterBar = `
         <div class="fixture-filters" role="group" aria-label="Filter fixtures">
             ${filters.map(f => `
             <button class="filter-btn${currentFilter === f ? ' filter-btn--active' : ''}"
-                    data-filter="${f}" aria-pressed="${currentFilter === f}">${f.charAt(0).toUpperCase() + f.slice(1)}</button>
+                    data-filter="${f}" aria-pressed="${currentFilter === f}">${f.charAt(0).toUpperCase() + f.slice(1)}${currentFilter === f ? countSuffix : ''}</button>
             `).join('')}
         </div>`;
 
         if (filtered.length === 0) {
-            container.innerHTML = filterBar + '<p class="fixtures-status">No fixtures match this filter.</p>';
+            container.innerHTML = progressBar + filterBar + '<p class="fixtures-status">No fixtures match this filter.</p>';
             bindFilterButtons(container);
             return;
         }
 
+        let lastMonth = null;
         const rows = filtered.map(({ f, i }) => {
             const result  = savedResults[i];
             const isNext  = i === nextIdx;
@@ -122,7 +142,28 @@ const Render = (() => {
                       aria-label="Add to calendar" title="Add to calendar">📅</a>`
                 : '';
 
-            return `
+            // Days-away label for the next upcoming fixture
+            let daysLabel = '';
+            if (isNext && f.iso) {
+                const daysAway = Math.ceil((new Date(f.iso).getTime() - now) / MS_PER_DAY);
+                if (daysAway <= 0) {
+                    daysLabel = '<span class="days-away">TODAY</span>';
+                } else if (daysAway === 1) {
+                    daysLabel = '<span class="days-away">TOMORROW</span>';
+                } else {
+                    daysLabel = `<span class="days-away">in ${daysAway}d</span>`;
+                }
+            }
+
+            // Month group separator — extract "MAR", "APR", "MAY" from "30 MAR" format
+            const dateParts = f.d.split(' ');
+            const month = dateParts.length >= 2 ? dateParts[1] : '';
+            const monthSep = month !== lastMonth
+                ? `<div class="fixture-month-sep" role="separator" aria-label="${month}">${month}</div>`
+                : '';
+            lastMonth = month;
+
+            const rowHtml = `
             <div class="${classes}" role="listitem" data-idx="${i}">
                 ${isNext ? '<span class="next-badge">NEXT</span>' : ''}
                 <div class="fixture-info">
@@ -137,6 +178,7 @@ const Render = (() => {
                     <div class="fixture-meta">
                         <p class="date">${f.d}</p>
                         <p class="time">${f.t} IST</p>
+                        ${daysLabel}
                         ${calBtn}
                     </div>
                     <button class="result-btn${result ? ' has-result' : ''}"
@@ -144,9 +186,10 @@ const Render = (() => {
                             title="${resultTitle}">${resultLabel}</button>
                 </div>
             </div>`;
+            return monthSep + rowHtml;
         }).join('');
 
-        container.innerHTML = filterBar + `<div class="fixture-rows" role="list">${rows}</div>`;
+        container.innerHTML = progressBar + filterBar + `<div class="fixture-rows" role="list">${rows}</div>`;
 
         bindFilterButtons(container);
 
@@ -168,12 +211,15 @@ const Render = (() => {
             });
         });
 
-        // Auto-scroll to the next fixture on first render
-        const nextRow = container.querySelector('.fixture-next');
-        if (nextRow) {
-            requestAnimationFrame(() => {
-                nextRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            });
+        // Auto-scroll to the next fixture only on the initial render
+        if (!autoScrollDone) {
+            const nextRow = container.querySelector('.fixture-next');
+            if (nextRow) {
+                autoScrollDone = true;
+                requestAnimationFrame(() => {
+                    nextRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                });
+            }
         }
     }
 
@@ -189,6 +235,9 @@ const Render = (() => {
 
     /** Duration to add when generating .ics DTEND (3.5 hours in ms) */
     const MATCH_DURATION_MS = 3.5 * 3_600_000;
+
+    /** Milliseconds in one day — used for days-away calculations */
+    const MS_PER_DAY = 86_400_000;
 
     /**
      * Builds an .ics calendar file content as a data: URI for a fixture.
