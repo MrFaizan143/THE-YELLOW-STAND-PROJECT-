@@ -9,7 +9,9 @@
     /* -----------------------------------------------------------------------
        Brand Colors
     ----------------------------------------------------------------------- */
-    --color-yellow:       #FDB913;   /* Primary brand accent */
+    --color-yellow:       #F5B800;   /* Primary brand accent — warmer, more refined gold */
+    --color-yellow-dim:   rgba(245, 184, 0, 0.12);   /* Subtle tinted background */
+    --color-yellow-glow:  rgba(245, 184, 0, 0.18);   /* Glow / halo */
     --color-black:        #000000;
     --color-white:        #ffffff;
 
@@ -17,28 +19,39 @@
        Background / Surface Scale
        Light → dark: surface-mid → surface → surface-deep → bg
     ----------------------------------------------------------------------- */
-    --color-bg:           #050505;   /* Page background (near-black) */
-    --color-surface:      #0e0e0e;   /* Card / raised surface */
-    --color-surface-mid:  #111111;   /* Slightly lighter surface (countdown) */
-    --color-surface-deep: #080808;   /* Deeper surface (staff items) */
+    --color-bg:           #060608;   /* Page background (near-black with slight blue tint) */
+    --color-surface:      #0d0d10;   /* Card / raised surface */
+    --color-surface-mid:  #111116;   /* Slightly lighter surface (countdown) */
+    --color-surface-deep: #080809;   /* Deeper surface (staff items) */
 
     /* -----------------------------------------------------------------------
        Text
     ----------------------------------------------------------------------- */
-    --color-text:         #ffffff;
-    --color-text-muted:   #555555;
+    --color-text:         #f0f0f2;   /* Slightly off-white for reduced eye strain */
+    --color-text-muted:   #505060;
+    --color-text-subtle:  #333340;   /* Very dim text for decorative elements */
 
     /* -----------------------------------------------------------------------
        Borders
     ----------------------------------------------------------------------- */
-    --color-border:       #1a1a1a;
-    --color-border-lt:    #222222;
+    --color-border:       #18181f;
+    --color-border-lt:    #222230;
+    --color-border-hover: #35354a;
 
     /* -----------------------------------------------------------------------
        Transparent overlays (used by nav glass)
     ----------------------------------------------------------------------- */
-    --color-overlay-nav:  rgba(10, 10, 10, 0.8);
-    --color-overlay-nav-border: rgba(255, 255, 255, 0.1);
+    --color-overlay-nav:        rgba(8, 8, 12, 0.82);
+    --color-overlay-nav-border: rgba(255, 255, 255, 0.07);
+
+    /* -----------------------------------------------------------------------
+       Shadows
+    ----------------------------------------------------------------------- */
+    --shadow-sm:    0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md:    0 4px 16px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
+    --shadow-lg:    0 8px 32px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-glow:  0 0 0 1px var(--color-yellow), 0 0 20px var(--color-yellow-glow);
+    --shadow-glow-sm: 0 0 0 1px rgba(245,184,0,0.5), 0 0 12px var(--color-yellow-dim);
 
     /* -----------------------------------------------------------------------
        Typography
@@ -76,9 +89,9 @@
        Border Radius
     ----------------------------------------------------------------------- */
     --radius-sm:   10px;
-    --radius-md:   12px;
-    --radius-lg:   16px;
-    --radius-xl:   24px;
+    --radius-md:   14px;
+    --radius-lg:   18px;
+    --radius-xl:   26px;
     --radius-pill: 50px;
     --radius-full: 100px;
 
@@ -91,9 +104,10 @@
     /* -----------------------------------------------------------------------
        Transitions
     ----------------------------------------------------------------------- */
-    --transition-fast: 0.2s;
-    --transition-base: 0.3s;
+    --transition-fast: 0.18s;
+    --transition-base: 0.28s;
     --transition-slow: 0.4s;
+    --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
 
     /* -----------------------------------------------------------------------
        Backward-compatible aliases
@@ -115,17 +129,23 @@
    ========================================================================== */
 
 [data-theme="light"] {
-    --color-bg:           #f5f5f0;
+    --color-bg:           #f4f4f0;
     --color-surface:      #ffffff;
-    --color-surface-mid:  #fefefe;
-    --color-surface-deep: #ececec;
+    --color-surface-mid:  #fafafa;
+    --color-surface-deep: #ebebeb;
 
-    --color-text:         #0a0a0a;
-    --color-text-muted:   #888888;
+    --color-text:         #0a0a0c;
+    --color-text-muted:   #80808a;
+    --color-text-subtle:  #c8c8d0;
 
-    --color-border:       #e0e0e0;
-    --color-border-lt:    #d0d0d0;
+    --color-border:       #e2e2ea;
+    --color-border-lt:    #d0d0dc;
+    --color-border-hover: #b8b8cc;
 
-    --color-overlay-nav:  rgba(245, 245, 240, 0.85);
-    --color-overlay-nav-border: rgba(0, 0, 0, 0.12);
+    --color-overlay-nav:        rgba(244, 244, 240, 0.88);
+    --color-overlay-nav-border: rgba(0, 0, 0, 0.1);
+
+    --shadow-sm:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md:    0 4px 16px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.06);
+    --shadow-lg:    0 8px 32px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08);
 }
