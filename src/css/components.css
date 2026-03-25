@@ -2627,3 +2627,758 @@ h1 {
     color: var(--color-yellow);
     border-color: rgba(253, 185, 19, 0.3);
 }
+
+
+/* ==========================================================================
+   CSK Legacy — Trophy gallery and all-time records on the Pride page.
+   ========================================================================== */
+
+/* Banner: "5× IPL Champions 🦁" */
+.legacy-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    background: linear-gradient(135deg, rgba(253, 185, 19, 0.12), rgba(253, 185, 19, 0.04));
+    border: 1px solid rgba(253, 185, 19, 0.35);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5) var(--space-6);
+    margin-bottom: var(--space-6);
+}
+
+.legacy-title-count {
+    font-family: var(--font-mono);
+    font-size: clamp(2.2rem, 7vw, 3.5rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+    line-height: 1;
+}
+
+.legacy-title-label {
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.legacy-title-emoji {
+    font-size: 2rem;
+    margin-left: auto;
+}
+
+/* Trophy grid — one card per IPL title */
+.legacy-trophy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+}
+
+.legacy-trophy-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    text-align: center;
+    transition: border-color var(--transition-base), transform var(--transition-base);
+    animation: fadeUp var(--transition-slow) ease;
+}
+
+.legacy-trophy-card:hover {
+    border-color: rgba(253, 185, 19, 0.5);
+    transform: translateY(-2px);
+}
+
+.legacy-trophy-year {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+    margin-bottom: var(--space-1);
+}
+
+.legacy-trophy-trophy {
+    font-size: 2rem;
+    margin-bottom: var(--space-2);
+    line-height: 1;
+}
+
+.legacy-trophy-final {
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--space-1);
+}
+
+.legacy-trophy-result {
+    font-size: var(--text-xxs);
+    color: #4ade80;
+    margin-bottom: var(--space-1);
+}
+
+.legacy-trophy-venue {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    line-height: 1.4;
+    margin-bottom: var(--space-1);
+}
+
+.legacy-trophy-captain {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+/* Records grid */
+.legacy-records-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+}
+
+.legacy-record-item {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    text-align: center;
+}
+
+.legacy-record-value {
+    font-family: var(--font-mono);
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+    margin-bottom: var(--space-1);
+    word-break: break-word;
+}
+
+.legacy-record-label {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+
+/* ==========================================================================
+   Cricket Trivia Quiz
+   ========================================================================== */
+
+.quiz-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    margin-bottom: var(--space-6);
+    animation: fadeUp var(--transition-slow) ease;
+}
+
+.quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+}
+
+.quiz-progress {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+}
+
+.quiz-score-display {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+    margin-bottom: var(--space-3);
+}
+
+/* Progress bar */
+.quiz-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--color-border-lt);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: var(--space-5);
+}
+
+.quiz-progress-fill {
+    height: 100%;
+    background: var(--color-yellow);
+    border-radius: var(--radius-full);
+    transition: width var(--transition-base);
+}
+
+.quiz-question {
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    line-height: 1.5;
+    margin-bottom: var(--space-5);
+}
+
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.quiz-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-5);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+}
+
+.quiz-option:hover:not(:disabled) {
+    border-color: var(--color-yellow);
+    background: rgba(253, 185, 19, 0.06);
+}
+
+.quiz-option:disabled {
+    cursor: default;
+}
+
+.quiz-option--correct {
+    border-color: #4ade80 !important;
+    background: rgba(74, 222, 128, 0.1) !important;
+}
+
+.quiz-option--wrong {
+    border-color: #f87171 !important;
+    background: rgba(248, 113, 113, 0.1) !important;
+}
+
+.quiz-option-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    background: var(--color-border-lt);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+}
+
+.quiz-option--correct .quiz-option-letter {
+    background: #4ade80;
+    color: #000;
+}
+
+.quiz-option--wrong .quiz-option-letter {
+    background: #f87171;
+    color: #000;
+}
+
+.quiz-option-text {
+    flex: 1;
+}
+
+.quiz-feedback {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-3);
+    min-height: 0;
+    transition: all var(--transition-fast);
+}
+
+.quiz-feedback:empty {
+    display: none;
+}
+
+.quiz-feedback--correct {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.08);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.quiz-feedback--wrong {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.08);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.quiz-next-btn {
+    width: 100%;
+    background: var(--color-yellow);
+    color: var(--color-black);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    transition: opacity var(--transition-fast);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.quiz-next-btn:hover { opacity: 0.88; }
+
+/* End-of-quiz result card */
+.quiz-card--result {
+    text-align: center;
+}
+
+.quiz-result-medal {
+    font-size: 3.5rem;
+    margin: var(--space-4) 0 var(--space-3);
+    line-height: 1;
+}
+
+.quiz-result-label {
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    margin-bottom: var(--space-4);
+}
+
+.quiz-result-score {
+    font-family: var(--font-mono);
+    font-size: clamp(2.5rem, 10vw, 4rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+    line-height: 1;
+    margin-bottom: var(--space-2);
+}
+
+.quiz-result-denom {
+    font-size: 1.5rem;
+    color: var(--color-text-muted);
+}
+
+.quiz-result-pct {
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    margin-bottom: var(--space-6);
+}
+
+.quiz-play-again-btn {
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-6);
+    color: var(--color-yellow);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.quiz-play-again-btn:hover {
+    border-color: var(--color-yellow);
+    background: rgba(253, 185, 19, 0.06);
+}
+
+
+/* ==========================================================================
+   Toss Tracker
+   ========================================================================== */
+
+.toss-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    margin-bottom: var(--space-6);
+}
+
+.toss-desc {
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-5);
+}
+
+/* Summary stats row */
+.toss-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+    padding: var(--space-4);
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.toss-stat-item {
+    text-align: center;
+}
+
+.toss-stat-value {
+    font-family: var(--font-mono);
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+    margin-bottom: 2px;
+}
+
+.toss-stat-label {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.toss-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.toss-match-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    flex-wrap: wrap;
+}
+
+.toss-match-info {
+    min-width: 60px;
+}
+
+.toss-opponent {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+}
+
+.toss-date {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+}
+
+.toss-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+.toss-won-group,
+.toss-elect-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.toss-group-label {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: var(--font-mono);
+    min-width: 36px;
+}
+
+.toss-btn,
+.toss-elect-btn {
+    padding: 5px 10px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border-lt);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.toss-btn:hover,
+.toss-elect-btn:hover {
+    border-color: var(--color-yellow);
+    color: var(--color-yellow);
+}
+
+.toss-btn--active-won {
+    border-color: #4ade80 !important;
+    background: rgba(74, 222, 128, 0.12) !important;
+    color: #4ade80 !important;
+}
+
+.toss-btn--active-lost {
+    border-color: #f87171 !important;
+    background: rgba(248, 113, 113, 0.12) !important;
+    color: #f87171 !important;
+}
+
+.toss-elect--active {
+    border-color: var(--color-yellow) !important;
+    background: rgba(253, 185, 19, 0.12) !important;
+    color: var(--color-yellow) !important;
+}
+
+
+/* ==========================================================================
+   Match Journal
+   ========================================================================== */
+
+.journal-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    margin-bottom: var(--space-6);
+}
+
+.journal-desc {
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-3);
+}
+
+.journal-count {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-yellow);
+    margin-bottom: var(--space-5);
+}
+
+.journal-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.journal-match-row {
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+}
+
+.journal-match-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.journal-opponent {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+}
+
+.journal-date {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+}
+
+.journal-badge {
+    font-size: var(--text-xxs);
+    font-family: var(--font-mono);
+    font-weight: var(--font-weight-bold);
+    padding: 2px 7px;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface-deep);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: auto;
+}
+
+.journal-badge--upcoming {
+    border-color: rgba(253, 185, 19, 0.4);
+    color: var(--color-yellow);
+}
+
+.journal-textarea {
+    width: 100%;
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    padding: var(--space-3) var(--space-4);
+    resize: vertical;
+    line-height: 1.5;
+    transition: border-color var(--transition-fast);
+}
+
+.journal-textarea:focus {
+    outline: none;
+    border-color: rgba(253, 185, 19, 0.5);
+}
+
+.journal-textarea::placeholder {
+    color: var(--color-text-muted);
+}
+
+.journal-char-count {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    text-align: right;
+    margin-top: var(--space-1);
+}
+
+
+/* ==========================================================================
+   Batting & Bowling Stats — new tool cards
+   ========================================================================== */
+
+.tool-disclaimer {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-3);
+    line-height: 1.5;
+}
+
+
+/* ==========================================================================
+   Player Comparison Tool
+   ========================================================================== */
+
+.compare-card {
+    /* extends .tool-card */
+}
+
+.compare-selects {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+    flex-wrap: wrap;
+}
+
+.compare-select {
+    flex: 1;
+    min-width: 120px;
+}
+
+.compare-vs {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow);
+    white-space: nowrap;
+}
+
+.compare-result {
+    animation: fadeUp var(--transition-slow) ease;
+}
+
+.compare-same-warning {
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    text-align: center;
+    padding: var(--space-4);
+}
+
+.compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.compare-player-col {
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    text-align: center;
+}
+
+.compare-player-flag {
+    font-size: 1.8rem;
+    line-height: 1;
+    margin-bottom: var(--space-2);
+}
+
+.compare-player-name {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    word-break: break-word;
+    line-height: 1.3;
+}
+
+.compare-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.compare-stat-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.compare-stat-row:last-child {
+    border-bottom: none;
+}
+
+.compare-stat-row:nth-child(odd) {
+    background: var(--color-surface-mid);
+}
+
+.compare-stat-label {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+    font-family: var(--font-mono);
+    white-space: nowrap;
+}
+
+.compare-stat-val {
+    font-size: var(--text-base);
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+.compare-stat-val:first-child { text-align: right; }
+.compare-stat-val:last-child  { text-align: left; }

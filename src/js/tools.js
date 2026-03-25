@@ -29,6 +29,12 @@ const Tools = (() => {
         const container = document.getElementById('tools-content');
         if (!container) return;
 
+        // Build player options for comparison tool
+        const playerNames = DATA.playerDetails ? Object.keys(DATA.playerDetails) : [];
+        const playerOpts  = playerNames.map(n =>
+            `<option value="${n}">${n}</option>`
+        ).join('');
+
         container.innerHTML = `
 
             <!-- ── Run Rate Calculator ──────────────────────────────── -->
@@ -137,6 +143,136 @@ const Tools = (() => {
                     <span class="tool-result" id="nrr-result">—</span>
                 </div>
                 <button class="tool-reset-btn" data-card="nrr" aria-label="Reset NRR calculator">Reset</button>
+            </div>
+
+            <!-- ── Batting Stats Calculator ─────────────────────────── -->
+            <h2 class="section-heading" aria-label="Batting Statistics">Batting Stats</h2>
+
+            <div class="tool-card" aria-label="Batting statistics calculator">
+                <p class="tag">Batting Stats</p>
+                <p class="tool-desc">Calculate batting average and strike rate.</p>
+                <div class="tool-fields">
+                    <div class="tool-field">
+                        <label class="tool-label" for="bat-runs">Total Runs</label>
+                        <input id="bat-runs" class="tool-input" type="number" min="0" placeholder="e.g. 450" inputmode="numeric">
+                    </div>
+                    <div class="tool-field">
+                        <label class="tool-label" for="bat-dismissals">Dismissals</label>
+                        <input id="bat-dismissals" class="tool-input" type="number" min="0" placeholder="e.g. 10" inputmode="numeric">
+                    </div>
+                    <div class="tool-field">
+                        <label class="tool-label" for="bat-balls">Balls Faced</label>
+                        <input id="bat-balls" class="tool-input" type="number" min="0" placeholder="e.g. 350" inputmode="numeric">
+                    </div>
+                </div>
+                <div class="tool-result-row">
+                    <span class="tool-result-label">Batting Average</span>
+                    <span class="tool-result" id="bat-avg-result">—</span>
+                </div>
+                <div class="tool-result-row">
+                    <span class="tool-result-label">Strike Rate</span>
+                    <span class="tool-result" id="bat-sr-result">—</span>
+                </div>
+                <button class="tool-reset-btn" data-card="bat" aria-label="Reset batting stats calculator">Reset</button>
+            </div>
+
+            <!-- ── Bowling Stats Calculator ──────────────────────────── -->
+            <h2 class="section-heading" aria-label="Bowling Statistics">Bowling Stats</h2>
+
+            <div class="tool-card" aria-label="Bowling statistics calculator">
+                <p class="tag">Bowling Stats</p>
+                <p class="tool-desc">Calculate bowling average, economy rate, and strike rate.</p>
+                <div class="tool-fields">
+                    <div class="tool-field">
+                        <label class="tool-label" for="bowl-runs">Runs Conceded</label>
+                        <input id="bowl-runs" class="tool-input" type="number" min="0" placeholder="e.g. 320" inputmode="numeric">
+                    </div>
+                    <div class="tool-field">
+                        <label class="tool-label" for="bowl-wickets">Wickets</label>
+                        <input id="bowl-wickets" class="tool-input" type="number" min="0" placeholder="e.g. 12" inputmode="numeric">
+                    </div>
+                    <div class="tool-field">
+                        <label class="tool-label" for="bowl-overs">Overs Bowled</label>
+                        <input id="bowl-overs" class="tool-input" type="number" min="0" placeholder="e.g. 40" inputmode="numeric">
+                    </div>
+                    <div class="tool-field">
+                        <label class="tool-label" for="bowl-balls">Balls</label>
+                        <input id="bowl-balls" class="tool-input" type="number" min="0" max="5" placeholder="0" inputmode="numeric">
+                    </div>
+                </div>
+                <div class="tool-result-row">
+                    <span class="tool-result-label">Bowling Average</span>
+                    <span class="tool-result" id="bowl-avg-result">—</span>
+                </div>
+                <div class="tool-result-row">
+                    <span class="tool-result-label">Economy Rate</span>
+                    <span class="tool-result" id="bowl-eco-result">—</span>
+                </div>
+                <div class="tool-result-row">
+                    <span class="tool-result-label">Bowling Strike Rate</span>
+                    <span class="tool-result" id="bowl-sr-result">—</span>
+                </div>
+                <button class="tool-reset-btn" data-card="bowl" aria-label="Reset bowling stats calculator">Reset</button>
+            </div>
+
+            <!-- ── Par Score (Simplified D/L) Calculator ─────────────── -->
+            <h2 class="section-heading" aria-label="Par Score Calculator">Par Score</h2>
+
+            <div class="tool-card" aria-label="Par score calculator">
+                <p class="tag">Par Score Estimator</p>
+                <p class="tool-desc">Estimate the revised D/L par score after a rain interruption (simplified linear model).</p>
+                <div class="tool-nrr-group">
+                    <p class="tool-nrr-label">Team 1 innings</p>
+                    <div class="tool-fields">
+                        <div class="tool-field">
+                            <label class="tool-label" for="par-t1-score">Team 1 Score</label>
+                            <input id="par-t1-score" class="tool-input" type="number" min="0" placeholder="e.g. 180" inputmode="numeric">
+                        </div>
+                        <div class="tool-field">
+                            <label class="tool-label" for="par-t1-overs">Overs Batted</label>
+                            <input id="par-t1-overs" class="tool-input" type="number" min="1" max="50" placeholder="20" inputmode="numeric">
+                        </div>
+                    </div>
+                </div>
+                <div class="tool-nrr-group">
+                    <p class="tool-nrr-label">Team 2 revised innings</p>
+                    <div class="tool-fields">
+                        <div class="tool-field">
+                            <label class="tool-label" for="par-t2-overs">Overs Available</label>
+                            <input id="par-t2-overs" class="tool-input" type="number" min="1" max="50" placeholder="15" inputmode="numeric">
+                        </div>
+                    </div>
+                </div>
+                <div class="tool-result-row">
+                    <span class="tool-result-label">Par Score</span>
+                    <span class="tool-result" id="par-result">—</span>
+                </div>
+                <div class="tool-result-row">
+                    <span class="tool-result-label">Revised Target</span>
+                    <span class="tool-result" id="par-target">—</span>
+                </div>
+                <p class="tool-disclaimer">⚠ Simplified linear estimate. Official results use the full DLS resource tables.</p>
+                <button class="tool-reset-btn" data-card="par" aria-label="Reset par score calculator">Reset</button>
+            </div>
+
+            <!-- ── Player Comparison ─────────────────────────────────── -->
+            <h2 class="section-heading" aria-label="Player Comparison">Player Comparison</h2>
+
+            <div class="tool-card compare-card" aria-label="CSK player comparison tool">
+                <p class="tag">Compare Players</p>
+                <p class="tool-desc">Select two CSK squad members to compare their profile side by side.</p>
+                <div class="compare-selects">
+                    <select id="compare-p1" class="fan-select compare-select" aria-label="Player 1">
+                        <option value="">— Player 1 —</option>
+                        ${playerOpts}
+                    </select>
+                    <span class="compare-vs" aria-hidden="true">VS</span>
+                    <select id="compare-p2" class="fan-select compare-select" aria-label="Player 2">
+                        <option value="">— Player 2 —</option>
+                        ${playerOpts}
+                    </select>
+                </div>
+                <div id="compare-result" class="compare-result" aria-live="polite" aria-label="Comparison result"></div>
             </div>
 
             <!-- ── Free Cricket Resources ───────────────────────────── -->
@@ -283,6 +419,149 @@ const Tools = (() => {
 
         [nrrScored, nrrOvers, nrrBalls, nrrConceded, nrrBowled, nrrBowledBalls]
             .forEach(inp => inp.addEventListener('input', calcNRR));
+
+        // ── Batting Stats ────────────────────────────────────────────
+        const batRuns       = document.getElementById('bat-runs');
+        const batDismissals = document.getElementById('bat-dismissals');
+        const batBalls      = document.getElementById('bat-balls');
+        const batAvgResult  = document.getElementById('bat-avg-result');
+        const batSrResult   = document.getElementById('bat-sr-result');
+
+        function calcBatStats() {
+            const runs  = parseInt(batRuns.value, 10);
+            const dism  = parseInt(batDismissals.value, 10);
+            const balls = parseInt(batBalls.value, 10);
+
+            batAvgResult.textContent = (!isNaN(runs) && !isNaN(dism) && dism > 0)
+                ? fmt(runs / dism)
+                : '—';
+
+            batSrResult.textContent = (!isNaN(runs) && !isNaN(balls) && balls > 0)
+                ? fmt((runs / balls) * 100)
+                : '—';
+        }
+
+        [batRuns, batDismissals, batBalls].forEach(inp => inp.addEventListener('input', calcBatStats));
+
+        // ── Bowling Stats ────────────────────────────────────────────
+        const bowlRuns     = document.getElementById('bowl-runs');
+        const bowlWickets  = document.getElementById('bowl-wickets');
+        const bowlOvers    = document.getElementById('bowl-overs');
+        const bowlBalls    = document.getElementById('bowl-balls');
+        const bowlAvgRes   = document.getElementById('bowl-avg-result');
+        const bowlEcoRes   = document.getElementById('bowl-eco-result');
+        const bowlSrRes    = document.getElementById('bowl-sr-result');
+
+        function calcBowlStats() {
+            const runs     = parseInt(bowlRuns.value, 10);
+            const wickets  = parseInt(bowlWickets.value, 10);
+            const decOvers = oversToDecimal(bowlOvers.value, bowlBalls.value);
+            const totalBalls = decOvers > 0 ? Math.round(decOvers * 6) : 0;
+
+            bowlAvgRes.textContent = (!isNaN(runs) && !isNaN(wickets) && wickets > 0)
+                ? fmt(runs / wickets)
+                : '—';
+
+            bowlEcoRes.textContent = (!isNaN(runs) && decOvers > 0)
+                ? fmt(runs / decOvers)
+                : '—';
+
+            bowlSrRes.textContent  = (!isNaN(wickets) && wickets > 0 && totalBalls > 0)
+                ? fmt(totalBalls / wickets)
+                : '—';
+        }
+
+        [bowlRuns, bowlWickets, bowlOvers, bowlBalls]
+            .forEach(inp => inp.addEventListener('input', calcBowlStats));
+
+        // ── Par Score ────────────────────────────────────────────────
+        const parT1Score  = document.getElementById('par-t1-score');
+        const parT1Overs  = document.getElementById('par-t1-overs');
+        const parT2Overs  = document.getElementById('par-t2-overs');
+        const parResult   = document.getElementById('par-result');
+        const parTarget   = document.getElementById('par-target');
+
+        function calcPar() {
+            const t1Score = parseInt(parT1Score.value, 10);
+            const t1Overs = parseFloat(parT1Overs.value);
+            const t2Overs = parseFloat(parT2Overs.value);
+
+            if (isNaN(t1Score) || isNaN(t1Overs) || isNaN(t2Overs)
+                    || t1Overs <= 0 || t2Overs <= 0) {
+                parResult.textContent = '—';
+                parTarget.textContent = '—';
+                return;
+            }
+
+            // Simplified linear resource model: par proportional to overs ratio
+            const par    = Math.round(t1Score * (t2Overs / t1Overs));
+            const target = par + 1;
+
+            parResult.textContent = par.toString();
+            parTarget.textContent = target.toString();
+        }
+
+        [parT1Score, parT1Overs, parT2Overs].forEach(inp => inp.addEventListener('input', calcPar));
+
+        // ── Player Comparison ────────────────────────────────────────
+        const sel1       = document.getElementById('compare-p1');
+        const sel2       = document.getElementById('compare-p2');
+        const compareRes = document.getElementById('compare-result');
+
+        function renderComparison() {
+            const p1Name = sel1 ? sel1.value : '';
+            const p2Name = sel2 ? sel2.value : '';
+
+            if (!compareRes) return;
+
+            if (!p1Name || !p2Name) {
+                compareRes.innerHTML = '';
+                return;
+            }
+
+            if (p1Name === p2Name) {
+                compareRes.innerHTML = '<p class="compare-same-warning">Select two different players to compare.</p>';
+                return;
+            }
+
+            const d1 = (DATA.playerDetails && DATA.playerDetails[p1Name]) || {};
+            const d2 = (DATA.playerDetails && DATA.playerDetails[p2Name]) || {};
+
+            function statRow(label, v1, v2) {
+                return `
+                <div class="compare-stat-row">
+                    <span class="compare-stat-val">${v1 || '—'}</span>
+                    <span class="compare-stat-label">${label}</span>
+                    <span class="compare-stat-val">${v2 || '—'}</span>
+                </div>`;
+            }
+
+            compareRes.innerHTML = `
+                <div class="compare-grid" aria-label="Player comparison">
+                    <div class="compare-player-col compare-player-col--left">
+                        <p class="compare-player-flag" aria-hidden="true">${d1.flag || '🏏'}</p>
+                        <p class="compare-player-name">${p1Name}</p>
+                    </div>
+                    <div class="compare-player-col compare-player-col--right">
+                        <p class="compare-player-flag" aria-hidden="true">${d2.flag || '🏏'}</p>
+                        <p class="compare-player-name">${p2Name}</p>
+                    </div>
+                </div>
+                <div class="compare-stats">
+                    ${statRow('Nationality',      d1.nat,              d2.nat)}
+                    ${statRow('Role',              d1.role,             d2.role)}
+                    ${statRow('Jersey No.',        d1.jersey != null ? '#' + d1.jersey : null, d2.jersey != null ? '#' + d2.jersey : null)}
+                    ${statRow('Age',               d1.age   != null ? d1.age + ' yrs'  : null, d2.age   != null ? d2.age + ' yrs'  : null)}
+                    ${statRow('Batting',           d1.bat,              d2.bat)}
+                    ${statRow('Bowling',           d1.bowl,             d2.bowl)}
+                    ${statRow('Captain/VC',
+                        /\(C\)/.test(p1Name) ? 'Captain' : (d1.vc ? 'Vice-captain' : '—'),
+                        /\(C\)/.test(p2Name) ? 'Captain' : (d2.vc ? 'Vice-captain' : '—'))}
+                </div>`;
+        }
+
+        if (sel1) sel1.addEventListener('change', renderComparison);
+        if (sel2) sel2.addEventListener('change', renderComparison);
 
         // ── Reset buttons ────────────────────────────────────────────
         document.querySelectorAll('.tool-reset-btn').forEach(btn => {
