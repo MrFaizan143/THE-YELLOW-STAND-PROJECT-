@@ -97,6 +97,62 @@ const DATA = {
     ],
 
     /**
+     * Management section — ownership, coaching panel, and support staff
+     * shown on the Pride page under a dedicated "Management" heading.
+     */
+    management: {
+        ownership: [
+            {
+                role:   "Chairman & Owner",
+                name:   "N. Srinivasan",
+                org:    "India Cements Ltd.",
+                bio:    "Driving force behind CSK's founding and five IPL titles. Former BCCI President and ICC Chairman.",
+                emoji:  "👑"
+            },
+            {
+                role:   "CEO",
+                name:   "Kasi Viswanathan",
+                org:    "Chennai Super Kings",
+                bio:    "Oversees the commercial, operational, and strategic direction of the franchise.",
+                emoji:  "🏢"
+            }
+        ],
+        coaching: [
+            {
+                role:   "Head Coach",
+                name:   "Stephen Fleming",
+                nat:    "🇳🇿",
+                detail: "12-year partnership with CSK. Former New Zealand captain. Architect of the most successful franchise coaching era in IPL history."
+            },
+            {
+                role:   "Batting Coach",
+                name:   "Michael Hussey",
+                nat:    "🇦🇺",
+                detail: "Known as 'Mr. Cricket'. Former Australian Test great and one of the finest tacticians of batting in the shortest format."
+            },
+            {
+                role:   "Bowling Consultant",
+                name:   "Eric Simons",
+                nat:    "🇿🇦",
+                detail: "Former South African all-rounder and coach. Oversees the bowling unit's game plans and development."
+            },
+            {
+                role:   "Fielding Coach",
+                name:   "James Foster",
+                nat:    "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+                detail: "Former England wicketkeeper. Responsible for CSK's sharp fielding standards and safe hands culture."
+            }
+        ],
+        support: [
+            { role: "Team Manager",             name: "R. Radhakrishnan" },
+            { role: "Team Doctor",              name: "Dr. Thottapillil"  },
+            { role: "Physiotherapist",          name: "Tommy Simsek"      },
+            { role: "Strength & Conditioning",  name: "Raj Bapat"         },
+            { role: "Video Analyst",            name: "Jonathan Rose"     }
+        ]
+    },
+
+    /**
      * Extra player details keyed by the exact name strings used in squad above.
      * nat: 3-letter country code displayed as a flag badge.
      * flag: Unicode emoji flag.

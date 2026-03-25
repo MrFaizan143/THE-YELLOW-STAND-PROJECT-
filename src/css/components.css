@@ -583,6 +583,112 @@ h1 {
 }
 
 
+
+/* --------------------------------------------------------------------------
+   Management — Ownership & Coaching Panel cards on the Pride page.
+-------------------------------------------------------------------------- */
+
+/* Ownership grid */
+.mgmt-ownership-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.mgmt-owner-card {
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-yellow);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.mgmt-owner-emoji {
+    font-size: 1.6rem;
+    line-height: 1;
+    margin-bottom: var(--space-2);
+}
+
+.mgmt-owner-name {
+    font-weight: 800;
+    font-size: var(--text-base);
+    color: var(--color-text);
+}
+
+.mgmt-owner-role {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-yellow);
+    text-transform: uppercase;
+}
+
+.mgmt-owner-org {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.mgmt-owner-bio {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin-top: var(--space-2);
+}
+
+/* Coaching panel grid */
+.mgmt-coaching-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.mgmt-coach-card {
+    background: var(--color-surface-deep);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    border-left: 3px solid var(--color-yellow);
+}
+
+.mgmt-coach-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-2);
+}
+
+.mgmt-coach-nat {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.mgmt-coach-name {
+    font-weight: 800;
+    font-size: var(--text-base);
+    color: var(--color-text);
+    flex: 1;
+    min-width: 120px;
+}
+
+.mgmt-coach-role {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-yellow);
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.mgmt-coach-detail {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    line-height: 1.55;
+}
+
+
+
 /* --------------------------------------------------------------------------
    Jersey Preview
    CSS-only jersey silhouette using clip-path, styled in brand yellow.

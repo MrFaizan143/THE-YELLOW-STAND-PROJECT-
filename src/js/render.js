@@ -815,9 +815,60 @@ const Render = (() => {
             </div>`;
     }
 
+    /**
+     * Renders the CSK Management section into #management-content.
+     * Shows franchise ownership, coaching panel, and support staff.
+     * Called once when the Pride page is first visited.
+     */
+    function management() {
+        const container = document.getElementById('management-content');
+        if (!container || !DATA.management) return;
+
+        const { ownership, coaching, support } = DATA.management;
+
+        let html = '';
+
+        // --- Ownership ---
+        html += `<h2 class="squad-category-title">🏆 Franchise Ownership</h2>`;
+        html += `<div class="mgmt-ownership-grid">`;
+        html += ownership.map(o => `
+            <div class="mgmt-owner-card">
+                <span class="mgmt-owner-emoji" aria-hidden="true">${o.emoji}</span>
+                <p class="mgmt-owner-name">${o.name}</p>
+                <p class="mgmt-owner-role">${o.role}</p>
+                <p class="mgmt-owner-org">${o.org}</p>
+                <p class="mgmt-owner-bio">${o.bio}</p>
+            </div>`).join('');
+        html += `</div>`;
+
+        // --- Coaching Panel ---
+        html += `<h2 class="squad-category-title">🧠 Coaching Panel</h2>`;
+        html += `<div class="mgmt-coaching-grid">`;
+        html += coaching.map(c => `
+            <div class="mgmt-coach-card">
+                <div class="mgmt-coach-header">
+                    <span class="mgmt-coach-nat" aria-label="Nationality">${c.nat}</span>
+                    <p class="mgmt-coach-name">${c.name}</p>
+                    <p class="mgmt-coach-role">${c.role}</p>
+                </div>
+                <p class="mgmt-coach-detail">${c.detail}</p>
+            </div>`).join('');
+        html += `</div>`;
+
+        // --- Support Staff ---
+        html += `<h2 class="squad-category-title">🩺 Support Staff</h2>`;
+        html += support.map(s => `
+            <div class="staff-item">
+                <span class="staff-role">${s.role}</span>
+                <span>${s.name}</span>
+            </div>`).join('');
+
+        container.innerHTML = html;
+    }
+
     /** Public API */
     return { fixtures, fixturesLoading, fixturesError, squad, standings, iplSchedule,
-             lastResult, venueInfo, updateHubRecord, legacy };
+             lastResult, venueInfo, updateHubRecord, legacy, management };
 
 })();
 
