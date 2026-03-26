@@ -634,6 +634,129 @@ const Schedule = (() => {
     }
 
     // =========================================================================
+    // Schedule Controls — Date Picker, Team Filter, View Toggle
+    // =========================================================================
+
+    /** Active filter state for the full IPL schedule list */
+    let _activeDateFilter = 'all';
+    let _activeTeamFilter = 'all';
+    let _activeViewMode   = 'list';
+
+    /**
+     * Applies the current date / team / view filters to #ipl-schedule-list cards.
+     * Cards not matching the active filters are hidden via `aria-hidden` + CSS class.
+     */
+    function _applyScheduleFilters() {
+        const container = document.getElementById('ipl-schedule-list');
+        if (!container) return;
+
+        const rows = container.querySelector('.ipl-schedule-rows');
+        if (!rows) return;
+
+        // View mode: list vs grid
+        rows.classList.toggle('view--grid', _activeViewMode === 'grid');
+
+        // Show / hide cards based on date + team filter
+        rows.querySelectorAll('.ipl-match-card').forEach(card => {
+            const cardDate  = card.dataset.date  || '';
+            const team1     = card.dataset.team1Short || '';
+            const team2     = card.dataset.team2Short || '';
+
+            const dateMatch = _activeDateFilter === 'all' || cardDate === _activeDateFilter;
+            const teamMatch = _activeTeamFilter === 'all' || team1 === _activeTeamFilter || team2 === _activeTeamFilter;
+
+            const visible = dateMatch && teamMatch;
+            card.classList.toggle('ipl-match--hidden', !visible);
+            card.setAttribute('aria-hidden', visible ? 'false' : 'true');
+        });
+
+        // Show / hide month separators: hide if all cards in that month are hidden
+        let prevSep = null;
+        rows.childNodes.forEach(node => {
+            if (!(node instanceof Element)) return;
+            if (node.classList.contains('fixture-month-sep') || node.classList.contains('fav-section-sep')) {
+                prevSep = node;
+                // Reset visibility first, re-evaluate below
+                node.classList.remove('ipl-match--hidden');
+            } else if (node.classList.contains('ipl-match-card') && prevSep) {
+                if (!node.classList.contains('ipl-match--hidden')) {
+                    prevSep = null; // At least one visible card — separator stays
+                }
+            }
+        });
+        // Second pass: hide separators with no visible cards after them
+        let lastSepNode = null;
+        const children = [...rows.childNodes].filter(n => n instanceof Element);
+        children.forEach((node, idx) => {
+            if (node.classList.contains('fixture-month-sep') || node.classList.contains('fav-section-sep')) {
+                // Check if the previous separator had any visible cards
+                if (lastSepNode) {
+                    const hasVisible = children.slice(children.indexOf(lastSepNode) + 1, idx)
+                        .some(c => c.classList.contains('ipl-match-card') && !c.classList.contains('ipl-match--hidden'));
+                    if (!hasVisible) lastSepNode.classList.add('ipl-match--hidden');
+                }
+                lastSepNode = node;
+            }
+        });
+        // Check last separator
+        if (lastSepNode) {
+            const lastSepIdx = children.indexOf(lastSepNode);
+            const hasVisible = children.slice(lastSepIdx + 1)
+                .some(c => c.classList.contains('ipl-match-card') && !c.classList.contains('ipl-match--hidden'));
+            if (!hasVisible) lastSepNode.classList.add('ipl-match--hidden');
+        }
+    }
+
+    /**
+     * Binds click events on the date picker chips, team filter chips, and
+     * view toggle buttons rendered inside #ipl-schedule-list by render.js.
+     * Safe to call multiple times — re-binds after each re-render.
+     */
+    function initScheduleControls() {
+        const container = document.getElementById('ipl-schedule-list');
+        if (!container) return;
+
+        // Use event delegation on the container to avoid re-attaching listeners
+        // on every re-render. A single delegated handler covers all control clicks.
+        if (!container._scheduleControlsBound) {
+            container._scheduleControlsBound = true;
+
+            container.addEventListener('click', e => {
+                const btn = e.target.closest('[data-date], [data-team], [data-view]');
+                if (!btn) return;
+
+                if (btn.matches('.date-chip')) {
+                    _activeDateFilter = btn.dataset.date || 'all';
+                    container.querySelectorAll('.date-chip').forEach(b => {
+                        b.classList.toggle('date-chip--active', b === btn);
+                        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+                    });
+                    _applyScheduleFilters();
+
+                } else if (btn.matches('.team-filter-chip')) {
+                    _activeTeamFilter = btn.dataset.team || 'all';
+                    container.querySelectorAll('.team-filter-chip').forEach(b => {
+                        b.classList.toggle('team-filter-chip--active', b === btn);
+                        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+                    });
+                    _applyScheduleFilters();
+
+                } else if (btn.matches('.view-btn')) {
+                    _activeViewMode = btn.dataset.view || 'list';
+                    container.querySelectorAll('.view-btn').forEach(b => {
+                        b.classList.toggle('view-btn--active', b === btn);
+                        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+                    });
+                    _applyScheduleFilters();
+                }
+            });
+        }
+
+        // Apply saved state immediately (e.g. after a re-render)
+        _applyScheduleFilters();
+    }
+
+    // =========================================================================
     // Init
     // =========================================================================
 
@@ -664,6 +787,7 @@ const Schedule = (() => {
         setTimeout(() => {
             applyFavTeamHighlight();
             initH2HTooltips();
+            initScheduleControls();
         }, 700);
     }
 
@@ -683,7 +807,8 @@ const Schedule = (() => {
         onFixturesRendered,
         applyFavTeamHighlight,
         updateLiveInSchedule,
-        renderFavTeamSelector
+        renderFavTeamSelector,
+        initScheduleControls
     };
 
 })();
