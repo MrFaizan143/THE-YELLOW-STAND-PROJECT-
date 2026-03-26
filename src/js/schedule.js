@@ -128,11 +128,8 @@ const Schedule = (() => {
             const t1 = card.dataset.team1Short;
             const t2 = card.dataset.team2Short;
             const isFavMatch = t1 === favTeam || t2 === favTeam;
-            if (isFavMatch && hasLive) {
-                card.classList.add('ipl-match--live');
-            } else if (!hasLive || card.classList.contains('ipl-match--live')) {
-                card.classList.remove('ipl-match--live');
-            }
+            const shouldBeLive = hasLive && isFavMatch;
+            card.classList.toggle('ipl-match--live', shouldBeLive);
         });
     }
 
