@@ -21,6 +21,7 @@ const Schedule = (() => {
     const FAV_TEAM_KEY  = 'tys_fav_team';
     const NOTIF_KEY     = 'tys_notif_enabled';
     const ALL_TEAMS     = ['CSK', 'MI', 'RCB', 'KKR', 'DC', 'RR', 'PBKS', 'SRH', 'GT', 'LSG'];
+    const MIN_NOTIFICATION_LEAD_MINUTES = 10;
 
     // =========================================================================
     // State
@@ -140,7 +141,10 @@ const Schedule = (() => {
     }
 
     async function requestNotifPermission() {
-        if (!('Notification' in window)) return;
+        if (!('Notification' in window)) {
+            if (typeof Toast !== 'undefined') Toast.show('Notifications are not supported on this device', 'warn');
+            return;
+        }
         try {
             const perm = await Notification.requestPermission();
             if (perm === 'granted') {
@@ -148,6 +152,7 @@ const Schedule = (() => {
                 scheduleNotifications();
             } else {
                 localStorage.removeItem(NOTIF_KEY);
+                if (typeof Toast !== 'undefined') Toast.show('Notifications blocked — enable in browser settings', 'warn');
             }
         } catch (_) { /* Safari may not return a promise */ }
         updateNotifBell();
@@ -167,7 +172,10 @@ const Schedule = (() => {
         const favTeam    = getFavTeam();
         const fixtures   = DATA.fixtures || [];
         const now        = Date.now();
-        const ALERT_MS   = 15 * 60 * 1000; // 15 minutes
+        const leadMin    = (typeof FanProfile !== 'undefined' && FanProfile.getNotificationLeadMinutes)
+            ? FanProfile.getNotificationLeadMinutes()
+            : 15;
+        const ALERT_MS   = Math.max(MIN_NOTIFICATION_LEAD_MINUTES, leadMin) * 60 * 1000; // safety floor aligned with allowed lead times
 
         fixtures.forEach(f => {
             if (!f.iso) return;

@@ -220,13 +220,21 @@ const Render = (() => {
                 : '';
             lastMonth = month;
 
+            const startMs = f.iso ? new Date(f.iso).getTime() : null;
+            const isLive  = typeof f.status === 'string' && /live|stumps|innings/i.test(f.status);
+            const isSoon  = startMs && startMs > now && (startMs - now) <= SOON_THRESHOLD_HOURS * MS_PER_HOUR;
+            const alertBadge = getFixtureBadge(isLive, isSoon);
+
             const rowHtml = `
             <div class="${classes}" role="listitem" data-idx="${i}">
                 ${isNext ? '<span class="next-badge">NEXT</span>' : ''}
                 <div class="fixture-info">
                     <div class="fixture-title-row">
                         <p class="opponent">${f.o}</p>
-                        ${homeBadge}
+                        <span class="fixture-badge-wrap">
+                            ${alertBadge}
+                            ${homeBadge}
+                        </span>
                     </div>
                     <p class="venue">${f.v}</p>
                     ${dirLink ? `<span class="fixture-travel-row">${dirLink}</span>` : ''}
@@ -267,6 +275,7 @@ const Render = (() => {
                 venueInfo();
                 // Refresh countdown label
                 if (typeof Countdown !== 'undefined') Countdown.updateLabel();
+                renderInsights();
             });
         });
 
@@ -318,8 +327,10 @@ const Render = (() => {
     /** Duration to add when generating .ics DTEND (3.5 hours in ms) */
     const MATCH_DURATION_MS = 3.5 * 3_600_000;
 
-    /** Milliseconds in one day — used for days-away calculations */
-    const MS_PER_DAY = 86_400_000;
+    /** Milliseconds helpers */
+    const MS_PER_HOUR = 3_600_000;
+    const MS_PER_DAY  = 86_400_000;
+    const SOON_THRESHOLD_HOURS = 3;
 
     /**
      * Builds an .ics calendar file content as a data: URI for a fixture.
@@ -479,6 +490,122 @@ const Render = (() => {
             <p class="hub-info-label">${venue}</p>
             <p class="hub-info-meta">${city}</p>
             <p class="hub-info-score">${pitch}</p>`;
+    }
+
+    function getFixtureBadge(isLive, isSoon) {
+        if (isLive) return '<span class="fixture-badge fixture-badge--live">LIVE</span>';
+        if (isSoon) return '<span class="fixture-badge fixture-badge--soon">STARTS SOON</span>';
+        return '';
+    }
+
+    // =========================================================================
+    // Insights (Hub + Fan)
+    // =========================================================================
+
+    const FORM_EMPTY = '–';
+    const RECENT_FORM_COUNT = 5;
+
+    function computeInsights() {
+        const fixtures = DATA.fixtures || [];
+        const results  = Results.load();
+        const played   = fixtures.map((f, i) => ({
+            f,
+            result: results[i],
+            startMs: f && f.iso ? new Date(f.iso).getTime() : null
+        })).filter(({ startMs, result }) =>
+            !!result && startMs && startMs <= Date.now()
+        );
+
+        const tally = Results.tally();
+        const recentForm = played.slice(-RECENT_FORM_COUNT).map(p => p.result);
+
+        let winStreak = 0;
+        for (let i = played.length - 1; i >= 0; i--) {
+            if (played[i].result === 'W') winStreak++;
+            else break;
+        }
+
+        const venueStats = {};
+        const oppStats   = {};
+        played.forEach(({ f, result }) => {
+            const vKey = f.v || 'Venue';
+            const oKey = f.o || 'Opponent';
+            if (!venueStats[vKey]) venueStats[vKey] = { w: 0, l: 0 };
+            if (!oppStats[oKey])   oppStats[oKey]   = { w: 0, l: 0 };
+            if (result === 'W') {
+                venueStats[vKey].w++; oppStats[oKey].w++;
+            } else if (result === 'L') {
+                venueStats[vKey].l++; oppStats[oKey].l++;
+            }
+        });
+
+        function bestRecord(map) {
+            const entries = Object.entries(map);
+            if (entries.length === 0) return null;
+            entries.sort((a, b) => {
+                const aGames = a[1].w + a[1].l;
+                const bGames = b[1].w + b[1].l;
+                const aPct   = aGames > 0 ? a[1].w / aGames : 0;
+                const bPct   = bGames > 0 ? b[1].w / bGames : 0;
+                if (bPct !== aPct) return bPct - aPct;
+                return b[1].w - a[1].w;
+            });
+            const [key, rec] = entries[0];
+            return { key, ...rec };
+        }
+
+        return {
+            tally,
+            recentForm,
+            winStreak,
+            bestVenue: bestRecord(venueStats),
+            bestOpponent: bestRecord(oppStats)
+        };
+    }
+
+    function pluralize(count, singular, plural) {
+        return `${count} ${count === 1 ? singular : plural}`;
+    }
+
+    function renderInsights() {
+        const hub = document.getElementById('hub-insights');
+        const fan = document.getElementById('fan-insights');
+        if (!hub && !fan) return;
+
+        const data = computeInsights();
+        const formDots = data.recentForm.length
+            ? data.recentForm.map(r => {
+                const clsKey = (r || 'na').toLowerCase();
+                const label  = r || FORM_EMPTY;
+                return `<span class="form-dot form-dot--${clsKey}">${label}</span>`;
+            }).join('')
+            : '<span class="insight-muted">No results logged</span>';
+
+        const venueLabel = data.bestVenue
+            ? `${data.bestVenue.key} · ${data.bestVenue.w}W-${data.bestVenue.l}L`
+            : 'No venue data yet';
+        const oppLabel = data.bestOpponent
+            ? `${data.bestOpponent.key} · ${data.bestOpponent.w}W-${data.bestOpponent.l}L`
+            : 'No opponent data yet';
+
+        const cards = [
+            { title: 'Form', value: formDots, isRich: true, hint: 'Last 5 recorded results' },
+            { title: 'Win Streak', value: `${pluralize(data.winStreak, 'match', 'matches')}` },
+            { title: 'Best Venue', value: venueLabel },
+            { title: 'Best vs', value: oppLabel },
+            { title: 'Season Record', value: `${data.tally.W}W · ${data.tally.L}L · ${data.tally.N}NR` }
+        ];
+
+        const html = cards.map(c => `
+            <article class="insight-card">
+                <p class="tag">${c.title}</p>
+                <div class="insight-value">${c.isRich ? c.value : `<strong>${c.value}</strong>`}</div>
+                ${c.hint ? `<p class="insight-hint">${c.hint}</p>` : ''}
+            </article>
+        `).join('');
+
+        if (hub) hub.innerHTML = html;
+        if (fan) fan.innerHTML = html;
     }
 
     /** Renders squad grid + staff list into #squad-content */
@@ -884,8 +1011,6 @@ const Render = (() => {
 
     /** Public API */
     return { fixtures, fixturesLoading, fixturesError, squad, standings, iplSchedule,
-             lastResult, venueInfo, updateHubRecord, legacy, management };
+             lastResult, venueInfo, updateHubRecord, legacy, management, renderInsights };
 
 })();
-
-

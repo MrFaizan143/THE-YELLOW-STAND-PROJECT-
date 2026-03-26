@@ -8,15 +8,19 @@
 const FanProfile = (() => {
 
     const STORAGE_KEY = 'tys_fan_profile';
+    const ALLOWED_LEADS = [10, 15, 30, 60]; // minutes before match start for reminders
 
     const DEFAULT_NAME_PLACEHOLDER = 'YOUR NAME';
 
     const defaults = {
-        fanName:      '',
-        jerseyNumber: '7',   /* MS Dhoni's iconic number — a fitting default */
-        favPlayer:    '',
-        squadRole:    'Batters',
-        winStreak:    0
+        fanName:           '',
+        jerseyNumber:      '7',   /* MS Dhoni's iconic number — a fitting default */
+        favPlayer:         '',
+        squadRole:         'Batters',
+        winStreak:         0,
+        notifLeadMinutes:  15,
+        timezonePref:      'local', // 'local' | 'ist'
+        favVenue:          ''
     };
 
     let state = { ...defaults };
@@ -82,6 +86,7 @@ const FanProfile = (() => {
 
         const players        = getAllPlayers();
         const squadCategories = Object.keys(DATA.squad);   // Batters, Keepers, All-Rounders, Bowlers
+        const venues         = Object.keys(DATA.venueInfo || {});
 
         const playerOptions = players.map(p =>
             `<option value="${esc(p)}" ${state.favPlayer === p ? 'selected' : ''}>${esc(p)}</option>`
@@ -89,6 +94,10 @@ const FanProfile = (() => {
 
         const roleOptions = squadCategories.map(r =>
             `<option value="${esc(r)}" ${state.squadRole === r ? 'selected' : ''}>${esc(r)}</option>`
+        ).join('');
+
+        const venueOptions = [''].concat(venues).map(v =>
+            `<option value="${esc(v)}" ${state.favVenue === v ? 'selected' : ''}>${v ? esc(v) : '— Pick a venue —'}</option>`
         ).join('');
 
         const displayName   = esc((state.fanName || DEFAULT_NAME_PLACEHOLDER).toUpperCase());
@@ -143,6 +152,31 @@ const FanProfile = (() => {
                     </div>
                 </div>
 
+                <div class="profile-field">
+                    <label class="tag" for="notif-lead">Match Reminder</label>
+                    <select id="notif-lead" class="fan-select">
+                        ${ALLOWED_LEADS.map(min =>
+                            `<option value="${min}" ${state.notifLeadMinutes === min ? 'selected' : ''}>${min} minutes before</option>`
+                        ).join('')}
+                    </select>
+                    <p class="field-hint">Controls the notification lead time on the Schedule page.</p>
+                </div>
+
+                <div class="profile-field">
+                    <label class="tag" for="fav-venue">Favorite Venue</label>
+                    <select id="fav-venue" class="fan-select">
+                        ${venueOptions}
+                    </select>
+                </div>
+
+                <div class="profile-field">
+                    <label class="tag" for="time-zone">Time Display</label>
+                    <select id="time-zone" class="fan-select">
+                        <option value="local" ${state.timezonePref === 'local' ? 'selected' : ''}>Use my timezone</option>
+                        <option value="ist" ${state.timezonePref === 'ist' ? 'selected' : ''}>Always show in IST</option>
+                    </select>
+                </div>
+
             </div>
         `;
 
@@ -159,6 +193,9 @@ const FanProfile = (() => {
         const streakDown = document.getElementById('streak-down');
         const streakVal  = document.getElementById('streak-val');
         const favInfo    = document.getElementById('fav-player-info');
+        const notifLead  = document.getElementById('notif-lead');
+        const favVenue   = document.getElementById('fav-venue');
+        const tzSelect   = document.getElementById('time-zone');
 
         /** Sync jersey number state to DOM and storage */
         function applyJerseyNumber(val) {
@@ -208,6 +245,26 @@ const FanProfile = (() => {
             streakVal.textContent = state.winStreak;
             save();
         });
+
+        notifLead.addEventListener('change', () => {
+            const val = parseInt(notifLead.value, 10);
+            if (!isNaN(val) && ALLOWED_LEADS.includes(val)) {
+                state.notifLeadMinutes = val;
+                save();
+            } else {
+                notifLead.value = state.notifLeadMinutes || defaults.notifLeadMinutes;
+            }
+        });
+
+        favVenue.addEventListener('change', () => {
+            state.favVenue = favVenue.value;
+            save();
+        });
+
+        tzSelect.addEventListener('change', () => {
+            state.timezonePref = tzSelect.value === 'ist' ? 'ist' : 'local';
+            save();
+        });
     }
 
     /** Called once on DOMContentLoaded to pre-load saved state */
@@ -215,8 +272,16 @@ const FanProfile = (() => {
         load();
     }
 
+    function getNotificationLeadMinutes() {
+        return state.notifLeadMinutes || defaults.notifLeadMinutes;
+    }
+
+    function getProfile() {
+        return { ...state };
+    }
+
     /** Public API */
-    return { init, render };
+    return { init, render, getNotificationLeadMinutes, getProfile };
 
 })();
 
