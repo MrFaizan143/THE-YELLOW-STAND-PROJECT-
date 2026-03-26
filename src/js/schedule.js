@@ -151,8 +151,8 @@ const Schedule = (() => {
 
         const renderFromList = (list = null) => {
             _fixturesLoading = false;
+            _fixturesLoaded = true;
             const canRender = typeof Render !== 'undefined' && typeof Render.fixtures === 'function';
-            _fixturesLoaded = canRender;
             if (canRender) {
                 if (Array.isArray(list) && list.length > 0) {
                     Render.fixtures(list);
@@ -163,7 +163,7 @@ const Schedule = (() => {
         };
 
         const handleFixturesError = err => {
-            console.warn('[Schedule] fixtures fetch failed via CricketAPI.fetchCSKFixtures:', err);
+            console.warn('[Schedule] fixtures fetch failed:', err);
             renderFromList();
         };
 
