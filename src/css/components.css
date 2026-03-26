@@ -707,7 +707,6 @@ h1 {
     position: relative;
     transition: border-color var(--transition-fast), box-shadow var(--transition-fast),
                 transform var(--transition-fast), background var(--transition-fast);
-    will-change: transform, box-shadow;
 }
 
 .venue-card--next {

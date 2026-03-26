@@ -231,7 +231,7 @@ const Schedule = (() => {
         const fixtures = DATA.fixtures || [];
         const now      = Date.now();
         const nextIdx  = Results.nextFixtureIndex();
-        const preferredVenueKey = nextIdx >= 0 ? (fixtures[nextIdx]?.v || null) : null;
+        const preferredVenueKey = nextIdx >= 0 ? ((fixtures[nextIdx] && fixtures[nextIdx].v) || null) : null;
         if (!activeVenueKey && preferredVenueKey) activeVenueKey = preferredVenueKey;
 
         // Group fixtures by venue
@@ -254,7 +254,7 @@ const Schedule = (() => {
             : (preferredVenueKey && venueGroups[preferredVenueKey] ? preferredVenueKey : null);
         if (effectiveActiveKey) activeVenueKey = effectiveActiveKey;
 
-        const cards = Object.entries(venueGroups).map(([key, { vInfo, matches }]) => {
+        const venueCardsHtml = Object.entries(venueGroups).map(([key, { vInfo, matches }]) => {
             const isNext    = matches.some(({ idx }) => idx === nextIdx);
             const isActive  = activeVenueKey ? activeVenueKey === key : isNext;
             const matchList = matches.map(({ f }) => {
@@ -289,7 +289,7 @@ const Schedule = (() => {
 
         mapEl.innerHTML = `
             <div class="venue-grid" aria-label="Venue list (map unavailable offline)">
-                ${cards || '<p class="fixtures-status">Venue map unavailable.</p>'}
+                ${venueCardsHtml || '<p class="fixtures-status">Venue map unavailable.</p>'}
             </div>`;
         const defaultVenueKey = activeVenueKey && venueGroups[activeVenueKey]
             ? activeVenueKey
