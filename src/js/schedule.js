@@ -173,7 +173,7 @@ const Schedule = (() => {
                 }
             }
         }).catch(err => {
-            console.warn('[Schedule] fixtures fetch failed:', err && err.message ? err.message : err);
+            console.warn('[Schedule] fixtures fetch failed:', err?.message ?? err);
             if (typeof Render !== 'undefined' && Render.fixturesError) {
                 Render.fixturesError('Fixtures unavailable right now.');
             }
