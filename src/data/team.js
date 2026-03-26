@@ -805,6 +805,11 @@ const DATA = {
         { d:"17 MAY", t:"7:30 PM", team1:"Lucknow Super Giants",        team1Short:"LSG", team2:"Gujarat Titans",         team2Short:"GT",   v:"Ekana, Lucknow",             iso:"2026-05-17T14:00:00Z", isCSK:false },
         { d:"17 MAY", t:"3:30 PM", team1:"Delhi Capitals",              team1Short:"DC",  team2:"Royal Challengers Bengaluru", team2Short:"RCB", v:"Arun Jaitley, Delhi",  iso:"2026-05-17T10:00:00Z", isCSK:false },
         { d:"18 MAY", t:"7:30 PM", team1:"Chennai Super Kings",         team1Short:"CSK", team2:"Sunrisers Hyderabad",   team2Short:"SRH",  v:"Rajiv Gandhi, Hyderabad",    iso:"2026-05-18T14:00:00Z", isCSK:true  },
-        { d:"18 MAY", t:"3:30 PM", team1:"Rajasthan Royals",            team1Short:"RR",  team2:"Punjab Kings",           team2Short:"PBKS", v:"SMS Stadium, Jaipur",        iso:"2026-05-18T10:00:00Z", isCSK:false }
+        { d:"18 MAY", t:"3:30 PM", team1:"Rajasthan Royals",            team1Short:"RR",  team2:"Punjab Kings",           team2Short:"PBKS", v:"SMS Stadium, Jaipur",        iso:"2026-05-18T10:00:00Z", isCSK:false },
+        /* ── Playoffs ───────────────────────────────────────── */
+        { d:"20 MAY", t:"7:30 PM", team1:"TBD (1st)",                   team1Short:"TBD", team2:"TBD (2nd)",              team2Short:"TBD",  v:"TBD",                        iso:"2026-05-20T14:00:00Z", isCSK:false, status:"Qualifier 1" },
+        { d:"21 MAY", t:"7:30 PM", team1:"TBD (3rd)",                   team1Short:"TBD", team2:"TBD (4th)",              team2Short:"TBD",  v:"TBD",                        iso:"2026-05-21T14:00:00Z", isCSK:false, status:"Eliminator" },
+        { d:"24 MAY", t:"7:30 PM", team1:"TBD",                         team1Short:"TBD", team2:"TBD",                    team2Short:"TBD",  v:"TBD",                        iso:"2026-05-24T14:00:00Z", isCSK:false, status:"Qualifier 2" },
+        { d:"01 JUN", t:"7:30 PM", team1:"TBD",                         team1Short:"TBD", team2:"TBD",                    team2Short:"TBD",  v:"TBD",                        iso:"2026-06-01T14:00:00Z", isCSK:false, status:"Final" }
     ]
 };

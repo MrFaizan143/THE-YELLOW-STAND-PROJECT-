@@ -136,10 +136,67 @@ const CricketAPI = (() => {
     // -------------------------------------------------------------------------
     // In-memory live match cache — shared by Hub polling and Live page (60-second TTL)
     // In-flight deduplication ensures concurrent callers share a single request.
+    //
+    // Cross-tab sharing: a BroadcastChannel notifies sibling tabs whenever this
+    // tab fetches fresh data, and a localStorage entry (tys_live_xt_v1) lets
+    // newly-opened tabs immediately reuse data fetched by another tab.  This
+    // prevents every open tab from independently hitting CricAPI and burning
+    // through the 100 free calls/day budget.
     // -------------------------------------------------------------------------
 
-    const LIVE_CACHE_TTL = 60_000;
+    const LIVE_CACHE_TTL    = 60_000;
+    const LIVE_XT_CACHE_KEY = 'tys_live_xt_v1';   // cross-tab localStorage key
+    const LIVE_XT_TTL       = 80_000;              // 80 s — slightly less than poll interval
+
     const _liveCache = { data: null, fetchedAt: 0, pending: null };
+
+    // BroadcastChannel — allows a tab that just fetched data to push it to all
+    // other open tabs so they don't need to make their own API call.
+    const _liveBC = (() => {
+        try {
+            return typeof BroadcastChannel !== 'undefined'
+                ? new BroadcastChannel('tys-live-matches')
+                : null;
+        } catch (_) { return null; }
+    })();
+
+    if (_liveBC) {
+        _liveBC.onmessage = evt => {
+            try {
+                const { data, ts } = evt.data || {};
+                if (Array.isArray(data) && typeof ts === 'number') {
+                    // Another tab just fetched — update our in-memory cache so we
+                    // skip the next network request.
+                    _liveCache.data      = data;
+                    _liveCache.fetchedAt = ts;
+                }
+            } catch (_) {}
+        };
+    }
+
+    /** Persist live-match data to localStorage so newly-opened tabs can read it. */
+    function _saveLiveCrossTab(list) {
+        const ts = Date.now();
+        try {
+            localStorage.setItem(LIVE_XT_CACHE_KEY, JSON.stringify({ data: list, ts }));
+        } catch (_) {}
+        if (_liveBC) {
+            try { _liveBC.postMessage({ data: list, ts }); } catch (_) {}
+        }
+    }
+
+    /** Read cross-tab localStorage cache; returns data array or null if stale/absent. */
+    function _readLiveCrossTab() {
+        try {
+            const raw = localStorage.getItem(LIVE_XT_CACHE_KEY);
+            if (!raw) return null;
+            const { data, ts } = JSON.parse(raw);
+            if (Array.isArray(data) && typeof ts === 'number' && (Date.now() - ts) < LIVE_XT_TTL) {
+                return { data, ts };
+            }
+        } catch (_) {}
+        return null;
+    }
 
     // -------------------------------------------------------------------------
     // localStorage fixtures cache — avoids repeat 3-page IPL schedule fetches (6-hour TTL)
@@ -331,12 +388,29 @@ const CricketAPI = (() => {
      * Shared live-match fetch with 60-second in-memory cache and in-flight deduplication.
      * Both Hub polling (app.js) and the Live page (live.js) call through here so they
      * never make more than one cricapi /currentMatches request per 60-second window.
+     *
+     * Cross-tab deduplication: before hitting the network, this function checks a
+     * shared localStorage entry (written by whichever tab last fetched) so that
+     * multiple open tabs from the same user converge to one upstream API call
+     * per ~80-second window regardless of how many tabs are open.
      */
     async function _fetchCurrentMatchesCached() {
         const now = Date.now();
+
+        // 1. In-memory cache (fastest — same tab, same JS context)
         if (_liveCache.data !== null && (now - _liveCache.fetchedAt) < LIVE_CACHE_TTL) {
             return _liveCache.data;
         }
+
+        // 2. Cross-tab localStorage cache (another tab may have fetched recently)
+        const xt = _readLiveCrossTab();
+        if (xt) {
+            _liveCache.data      = xt.data;
+            _liveCache.fetchedAt = xt.ts;
+            return xt.data;
+        }
+
+        // 3. In-flight deduplication (prevents parallel calls within this tab)
         if (_liveCache.pending) return _liveCache.pending;
 
         _liveCache.pending = cricapiRequest('/currentMatches').then(data => {
@@ -344,6 +418,8 @@ const CricketAPI = (() => {
             _liveCache.data      = list;
             _liveCache.fetchedAt = Date.now();
             _liveCache.pending   = null;
+            // Share with other tabs so they don't need their own API call
+            _saveLiveCrossTab(list);
             return list;
         }).catch(err => {
             _liveCache.pending = null;
