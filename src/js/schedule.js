@@ -395,7 +395,7 @@ const Schedule = (() => {
             card.addEventListener('keydown', e => {
                 if (e.key === 'Enter') {
                     selectVenue(venueKey);
-                } else if (e.key === ' ') {
+                } else if (e.key === ' ' || e.key === 'Spacebar') {
                     e.preventDefault();
                     selectVenue(venueKey);
                 }
