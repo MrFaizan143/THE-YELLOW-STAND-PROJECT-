@@ -238,9 +238,11 @@ const Render = (() => {
                 }
             }
 
-            // Day of week derived from ISO date (IST timezone)
-            const dayShort = f.iso
-                ? new Date(f.iso).toLocaleDateString('en-GB', { weekday: 'short', timeZone: 'Asia/Kolkata' }).toUpperCase()
+            const startMs = f.iso ? new Date(f.iso).getTime() : null;
+
+            // Day of week derived from ISO date (IST timezone) — reuses startMs to avoid a second Date parse
+            const dayShort = startMs
+                ? new Date(startMs).toLocaleDateString('en-GB', { weekday: 'short', timeZone: 'Asia/Kolkata' }).toUpperCase()
                 : '';
 
             // Month group separator — extract "MAR", "APR", "MAY" from "30 MAR" format
@@ -251,7 +253,6 @@ const Render = (() => {
                 : '';
             lastMonth = month;
 
-            const startMs = f.iso ? new Date(f.iso).getTime() : null;
             const isLive  = typeof f.status === 'string' && /live|stumps|innings/i.test(f.status);
             const isSoon  = startMs && startMs > now && (startMs - now) <= SOON_THRESHOLD_HOURS * MS_PER_HOUR;
             const alertBadge = getFixtureBadge(isLive, isSoon);

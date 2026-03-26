@@ -1285,7 +1285,7 @@ h1 {
 
 .fixture-record-label {
     font-family: var(--font-mono);
-    font-size: 0.5rem;
+    font-size: 0.6rem;
     font-weight: var(--font-weight-bold);
     letter-spacing: 1.5px;
     color: var(--color-text-subtle);
@@ -1317,7 +1317,7 @@ h1 {
 -------------------------------------------------------------------------- */
 .fixture-vs-lbl {
     font-family: var(--font-mono);
-    font-size: 0.5rem;
+    font-size: 0.6rem;
     font-weight: var(--font-weight-bold);
     letter-spacing: 1px;
     color: var(--color-text-subtle);
@@ -1333,7 +1333,7 @@ h1 {
 -------------------------------------------------------------------------- */
 .fixture-opp-code {
     font-family: var(--font-mono);
-    font-size: 0.5rem;
+    font-size: 0.6rem;
     font-weight: var(--font-weight-bold);
     letter-spacing: 1px;
     padding: 2px 5px;
@@ -1352,7 +1352,7 @@ h1 {
 -------------------------------------------------------------------------- */
 .fixture-match-num {
     font-family: var(--font-mono);
-    font-size: 0.5rem;
+    font-size: 0.6rem;
     font-weight: var(--font-weight-bold);
     letter-spacing: 1.5px;
     color: var(--color-text-subtle);
@@ -1363,6 +1363,7 @@ h1 {
 
 
 
+/* --------------------------------------------------------------------------
    Points Table (Standings)
    Tabular IPL standings on the Map page.
 -------------------------------------------------------------------------- */
