@@ -35,13 +35,12 @@ const Schedule = (() => {
 
     function setChipActive(chips, value) {
         chips.forEach(chip => {
-            const isActive = chip.dataset.date === value || chip.dataset.team === value;
-            if (chip.dataset.date) {
-                chip.classList.toggle('date-chip--active', isActive);
-            }
-            if (chip.dataset.team) {
-                chip.classList.toggle('team-filter-chip--active', isActive);
-            }
+            const isDateChip = typeof chip.dataset.date !== 'undefined';
+            const isTeamChip = typeof chip.dataset.team !== 'undefined';
+            const isActive   = (isDateChip && chip.dataset.date === value) ||
+                               (isTeamChip && chip.dataset.team === value);
+            if (isDateChip) chip.classList.toggle('date-chip--active', isActive);
+            if (isTeamChip) chip.classList.toggle('team-filter-chip--active', isActive);
             chip.setAttribute('aria-pressed', String(isActive));
         });
     }
