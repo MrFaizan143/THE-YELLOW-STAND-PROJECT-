@@ -1188,6 +1188,182 @@ h1 {
 
 
 /* --------------------------------------------------------------------------
+   Fixtures Section Header
+   Professional header block for the CSK Match Fixtures section, replacing
+   the plain section-heading h2.
+-------------------------------------------------------------------------- */
+.fixtures-section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin: var(--space-8) 0 var(--space-5);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+}
+
+.fixtures-section-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--color-yellow);
+    border-radius: var(--radius-full);
+    transition: width var(--transition-base) ease;
+}
+
+.fixtures-section-header:hover::after {
+    width: 80px;
+}
+
+.fixtures-section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+}
+
+.fixtures-section-title .icon-glyph {
+    color: var(--color-yellow);
+    opacity: 0.8;
+    flex-shrink: 0;
+}
+
+.fixtures-section-chips {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.fixtures-chip {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    color: var(--color-text-muted);
+}
+
+.fixtures-chip--count {
+    background: var(--color-yellow-dim);
+    border-color: rgba(245, 184, 0, 0.25);
+    color: var(--color-yellow);
+}
+
+
+/* --------------------------------------------------------------------------
+   Fixture Record Bar
+   W / L / NR summary shown above the filter bar once any result is logged.
+-------------------------------------------------------------------------- */
+.fixture-record-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.fixture-record-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1.5px;
+    color: var(--color-text-subtle);
+    text-transform: uppercase;
+    margin-right: var(--space-1);
+}
+
+.fixture-record-sep {
+    color: var(--color-text-subtle);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+}
+
+.fixture-record-stat {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.5px;
+}
+
+.fixture-record-w { color: var(--color-positive); }
+.fixture-record-l { color: var(--color-negative); }
+.fixture-record-n { color: var(--color-text-muted); }
+
+
+/* --------------------------------------------------------------------------
+   Fixture "CSK vs" prefix label
+   Small muted label prefixed to the opponent name inside each fixture card.
+-------------------------------------------------------------------------- */
+.fixture-vs-lbl {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1px;
+    color: var(--color-text-subtle);
+    text-transform: uppercase;
+    margin-right: var(--space-1);
+    vertical-align: middle;
+}
+
+
+/* --------------------------------------------------------------------------
+   Fixture Opponent Code Badge
+   Short team abbreviation (RR, PBKS, etc.) shown in the badge row.
+-------------------------------------------------------------------------- */
+.fixture-opp-code {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1px;
+    padding: 2px 5px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-deep);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   Fixture Match Number
+   "M1" – "M14" label shown above the date in the right meta column.
+-------------------------------------------------------------------------- */
+.fixture-match-num {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1.5px;
+    color: var(--color-text-subtle);
+    text-transform: uppercase;
+    text-align: right;
+    margin-bottom: var(--space-1);
+}
+
+
+
+/* --------------------------------------------------------------------------
    Points Table (Standings)
    Tabular IPL standings on the Map page.
 -------------------------------------------------------------------------- */

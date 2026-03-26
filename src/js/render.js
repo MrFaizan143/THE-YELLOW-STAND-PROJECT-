@@ -75,6 +75,10 @@ const Render = (() => {
         const nextIdx      = Results.nextFixtureIndex();
         const now          = Date.now();
 
+        // Update the fixtures count chip in the section header
+        const countChip = document.getElementById('fixtures-chip-count');
+        if (countChip) countChip.textContent = `${source.length} Matches`;
+
         // Apply all active filters (AND logic)
         const filtered = source.map((f, i) => ({ f, i })).filter(({ f, i }) => {
             const result  = savedResults[i];
@@ -114,6 +118,22 @@ const Render = (() => {
             <p class="season-progress-label">${playedMatches} / ${totalMatches} played</p>
         </div>`;
 
+        // W / L / NR record summary (all logged results, not filtered)
+        const allResults  = Object.values(savedResults);
+        const recWins     = allResults.filter(r => r === 'W').length;
+        const recLosses   = allResults.filter(r => r === 'L').length;
+        const recNR       = allResults.filter(r => r === 'N').length;
+        const recPlayed   = recWins + recLosses + recNR;
+        const recordBar   = recPlayed > 0 ? `
+        <div class="fixture-record-bar" aria-label="Season record: ${recWins} wins, ${recLosses} losses, ${recNR} no results">
+            <span class="fixture-record-label">Record</span>
+            <span class="fixture-record-stat fixture-record-w">${recWins}W</span>
+            <span class="fixture-record-sep">·</span>
+            <span class="fixture-record-stat fixture-record-l">${recLosses}L</span>
+            <span class="fixture-record-sep">·</span>
+            <span class="fixture-record-stat fixture-record-n">${recNR}NR</span>
+        </div>` : '';
+
         // Build unique venue list for the venue dropdown
         const allVenues = [...new Set(source.map(f => f.v).filter(Boolean))].sort();
         const venueOptions = allVenues.map(v =>
@@ -149,7 +169,7 @@ const Render = (() => {
         </div>`;
 
         if (filtered.length === 0) {
-            container.innerHTML = progressBar + filterBar + '<p class="fixtures-status">No fixtures match this filter.</p>';
+            container.innerHTML = progressBar + recordBar + filterBar + '<p class="fixtures-status">No fixtures match this filter.</p>';
             Icons.init(container);
             bindFilterButtons(container);
             return;
@@ -177,6 +197,12 @@ const Render = (() => {
 
             const homeBadge = `<span class="fixture-badge fixture-badge--${isHome ? 'home' : 'away'}"
                                      aria-label="${isHome ? 'Home' : 'Away'}">${isHome ? 'HOME' : 'AWAY'}</span>`;
+
+            // Opponent team short code badge
+            const oppCode = TEAM_SHORT[f.o] || '';
+            const oppCodeBadge = oppCode
+                ? `<span class="fixture-opp-code" aria-hidden="true">${oppCode}</span>`
+                : '';
 
             // .ics download calendar button
             const icsBtn = f.iso
@@ -212,6 +238,13 @@ const Render = (() => {
                 }
             }
 
+            const startMs = f.iso ? new Date(f.iso).getTime() : null;
+
+            // Day of week derived from ISO date (IST timezone) — reuses startMs to avoid a second Date parse
+            const dayShort = startMs
+                ? new Date(startMs).toLocaleDateString('en-GB', { weekday: 'short', timeZone: 'Asia/Kolkata' }).toUpperCase()
+                : '';
+
             // Month group separator — extract "MAR", "APR", "MAY" from "30 MAR" format
             const dateParts = f.d.split(' ');
             const month = dateParts.length >= 2 ? dateParts[1] : '';
@@ -220,7 +253,6 @@ const Render = (() => {
                 : '';
             lastMonth = month;
 
-            const startMs = f.iso ? new Date(f.iso).getTime() : null;
             const isLive  = typeof f.status === 'string' && /live|stumps|innings/i.test(f.status);
             const isSoon  = startMs && startMs > now && (startMs - now) <= SOON_THRESHOLD_HOURS * MS_PER_HOUR;
             const alertBadge = getFixtureBadge(isLive, isSoon);
@@ -230,9 +262,10 @@ const Render = (() => {
                 ${isNext ? '<span class="next-badge">NEXT</span>' : ''}
                 <div class="fixture-info">
                     <div class="fixture-title-row">
-                        <p class="opponent">${f.o}</p>
+                        <p class="opponent"><span class="fixture-vs-lbl">CSK vs</span> ${f.o}</p>
                         <span class="fixture-badge-wrap">
                             ${alertBadge}
+                            ${oppCodeBadge}
                             ${homeBadge}
                         </span>
                     </div>
@@ -242,7 +275,8 @@ const Render = (() => {
                 </div>
                 <div class="fixture-right">
                     <div class="fixture-meta">
-                        <p class="date">${f.d}</p>
+                        <p class="fixture-match-num" aria-label="Match ${i + 1}">M${i + 1}</p>
+                        <p class="date">${dayShort ? dayShort + ' · ' : ''}${f.d}</p>
                         <p class="time">${f.t} IST</p>
                         ${daysLabel}
                         <span class="cal-btns">${icsBtn}${gCalBtn}</span>
@@ -255,7 +289,7 @@ const Render = (() => {
             return monthSep + rowHtml;
         }).join('');
 
-        container.innerHTML = progressBar + filterBar + `<div class="fixture-rows" role="list">${rows}</div>`;
+        container.innerHTML = progressBar + recordBar + filterBar + `<div class="fixture-rows" role="list">${rows}</div>`;
         Icons.init(container);
 
         bindFilterButtons(container);
