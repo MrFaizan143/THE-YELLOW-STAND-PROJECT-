@@ -263,13 +263,13 @@ const Schedule = (() => {
         } else if (preferredVenueKey && venueGroups[preferredVenueKey]) {
             defaultVenueKey = preferredVenueKey;
         } else {
-            defaultVenueKey = venueKeys[0] || null;
+            defaultVenueKey = venueKeys[0];
         }
         activeVenueKey = defaultVenueKey;
 
         const venueCardsHtml = Object.entries(venueGroups).map(([key, { vInfo, matches }]) => {
             const isNext    = matches.some(({ idx }) => idx === nextIdx);
-            const isActive  = activeVenueKey ? activeVenueKey === key : isNext;
+            const isActive  = activeVenueKey === key;
             const matchList = matches.map(({ f }) => {
                 const isPast = f.iso && new Date(f.iso).getTime() <= now;
                 return `<li class="venue-match${isPast ? ' venue-match--past' : ''}">
