@@ -24,6 +24,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;800&family=Space+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/css/main.css">
+    <!-- Lucide icon library (MIT) — processed by src/js/icons.js -->
+    <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
 </head>
 <body>
 
@@ -31,20 +33,20 @@
     <div class="wm" aria-hidden="true">THE YELLOW STAND</div>
 
     <!-- Theme Toggle -->
-    <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light mode">☀</button>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light mode"><i data-lucide="sun" aria-hidden="true"></i></button>
 
     <!-- Notification Bell -->
-    <button id="notif-bell" class="notif-bell" aria-label="Enable match notifications" aria-pressed="false">🔕</button>
+    <button id="notif-bell" class="notif-bell" aria-label="Enable match notifications" aria-pressed="false"><i data-lucide="bell-off" aria-hidden="true"></i></button>
 
     <!-- Bottom Navigation -->
     <nav id="main-nav" role="navigation" aria-label="Main navigation">
-        <button class="n-i active" data-page="h" aria-current="page"><span class="n-icon">🏟</span><span class="n-label">Hub</span></button>
-        <button class="n-i" data-page="m"><span class="n-icon">🗺</span><span class="n-label">Map</span></button>
-        <button class="n-i" data-page="p"><span class="n-icon">🦁</span><span class="n-label">Pride</span></button>
-        <button class="n-i" data-page="n"><span class="n-icon">📰</span><span class="n-label">News</span></button>
-        <button class="n-i" data-page="f"><span class="n-icon">🎯</span><span class="n-label">Fan</span></button>
-        <button class="n-i" data-page="t"><span class="n-icon">🔧</span><span class="n-label">Tools</span></button>
-        <button class="n-i" data-page="l"><span class="n-icon">🔴</span><span class="n-label">Live</span></button>
+        <button class="n-i active" data-page="h" aria-current="page"><span class="n-icon"><i data-lucide="home" aria-hidden="true"></i></span><span class="n-label">Hub</span></button>
+        <button class="n-i" data-page="m"><span class="n-icon"><i data-lucide="map" aria-hidden="true"></i></span><span class="n-label">Map</span></button>
+        <button class="n-i" data-page="p"><span class="n-icon"><i data-lucide="shield" aria-hidden="true"></i></span><span class="n-label">Pride</span></button>
+        <button class="n-i" data-page="n"><span class="n-icon"><i data-lucide="newspaper" aria-hidden="true"></i></span><span class="n-label">News</span></button>
+        <button class="n-i" data-page="f"><span class="n-icon"><i data-lucide="target" aria-hidden="true"></i></span><span class="n-label">Fan</span></button>
+        <button class="n-i" data-page="t"><span class="n-icon"><i data-lucide="wrench" aria-hidden="true"></i></span><span class="n-label">Tools</span></button>
+        <button class="n-i" data-page="l"><span class="n-icon"><i data-lucide="activity" aria-hidden="true"></i></span><span class="n-label">Live</span></button>
     </nav>
 
     <!-- Pages -->
@@ -103,7 +105,7 @@
             </div>
 
             <button id="share-btn" class="share-btn" aria-label="Share match info">
-                <span class="share-icon">↑</span> Share
+                <span class="share-icon"><i data-lucide="share-2" aria-hidden="true"></i></span> Share
             </button>
         </section>
 
@@ -130,7 +132,7 @@
             <!-- Probable Playing XIs (shown near match day) -->
             <div id="probable-xi-section"></div>
 
-            <h2 class="section-heading" aria-label="CSK Match Fixtures">🦁 CSK Match Fixtures</h2>
+            <h2 class="section-heading" aria-label="CSK Match Fixtures"><i data-lucide="shield" aria-hidden="true"></i> CSK Match Fixtures</h2>
             <div id="fixture-list"></div>
             <h2 class="section-heading" aria-label="IPL 2026 Full Schedule">Full IPL Schedule</h2>
             <div id="ipl-schedule-list" aria-live="polite" aria-label="IPL 2026 full match schedule">
@@ -187,9 +189,9 @@
 
     <!-- SW Update Banner — shown when a new service worker is waiting -->
     <div id="sw-update-banner" class="sw-update-banner" hidden role="status" aria-live="polite">
-        <span>✨ A new version of TYS is ready.</span>
+        <span><i data-lucide="sparkles" aria-hidden="true"></i> A new version of TYS is ready.</span>
         <button id="sw-update-reload" class="sw-update-btn" aria-label="Reload to apply update">Reload</button>
-        <button id="sw-update-dismiss" class="sw-update-dismiss" aria-label="Dismiss update notice">✕</button>
+        <button id="sw-update-dismiss" class="sw-update-dismiss" aria-label="Dismiss update notice"><i data-lucide="x" aria-hidden="true"></i></button>
     </div>
 
     <!-- Toast notification container -->
@@ -197,7 +199,7 @@
 
     <!-- Pin Score Widget — floating, persists across pages -->
     <div id="pin-score-widget" class="pin-score-widget" hidden aria-live="polite" aria-label="Pinned live score">
-        <span class="pin-widget-label">📌 LIVE</span>
+        <span class="pin-widget-label"><i data-lucide="pin" aria-hidden="true"></i> LIVE</span>
         <span id="pin-teams" class="pin-widget-teams">—</span>
         <span id="pin-score" class="pin-widget-score">—</span>
         <span id="pin-status" class="pin-widget-status"></span>
@@ -210,6 +212,7 @@
     <script src="src/data/team.js"></script>
     <!-- config.js is gitignored — copy config.example.js → config.js and add your keys -->
     <script src="src/js/config.js"></script>
+    <script src="src/js/icons.js"></script>
     <script src="src/js/api.js"></script>
     <script src="src/js/results.js"></script>
     <script src="src/js/render.js"></script>

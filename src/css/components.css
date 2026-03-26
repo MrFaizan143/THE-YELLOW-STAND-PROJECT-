@@ -69,12 +69,20 @@ nav {
     outline-offset: 2px;
 }
 
-/* Nav icon emoji + label text */
+/* Nav icon SVG + label text */
 .n-icon {
     font-size: 1rem;
     line-height: 1;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: transform var(--transition-fast);
+}
+
+.n-icon svg {
+    width: 18px;
+    height: 18px;
+    display: block;
 }
 
 .n-i:hover .n-icon,
@@ -92,6 +100,38 @@ nav {
 @keyframes navPulse {
     0%, 100% { box-shadow: 0 2px 10px rgba(245, 184, 0, 0.35); }
     50%       { box-shadow: 0 4px 22px rgba(245, 184, 0, 0.65); }
+}
+
+/* --------------------------------------------------------------------------
+   Global icon alignment
+   Keeps inline SVG icons vertically centred with adjacent text.
+-------------------------------------------------------------------------- */
+svg[aria-hidden="true"] {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Live dot
+   Small animated red circle used in place of the 🔴 emoji for live
+   match status tags.
+-------------------------------------------------------------------------- */
+.live-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: livePulse 1.4s ease-in-out infinite;
+    vertical-align: middle;
+    margin-right: 3px;
+    flex-shrink: 0;
+}
+
+@keyframes livePulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.35; }
 }
 
 
