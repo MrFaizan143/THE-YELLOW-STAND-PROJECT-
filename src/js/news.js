@@ -8,6 +8,7 @@
  * network requests.  A "Refresh" button lets users bypass the cache at any time.
  *
  * Long articles include a read-more / collapse toggle.
+ * Category filter tabs (All | 🦁 CSK | 🏏 IPL | 🌐 Others) — Crex-style.
  */
 
 const News = (() => {
@@ -19,6 +20,12 @@ const News = (() => {
     const CACHE_KEY      = 'tys_news_cache';
     /** Cache lifetime: 1 hour in ms */
     const CACHE_TTL_MS   = 3_600_000;
+
+    /** Active news category filter */
+    let currentCategory = 'all';
+
+    /** All fetched articles (before category filter) */
+    let allArticles = [];
 
     /**
      * rss2json.com — free CORS-friendly RSS-to-JSON proxy.
@@ -36,6 +43,27 @@ const News = (() => {
     function isCSKRelevant(item) {
         const text = (item.title || '') + ' ' + (item.description || '');
         return /csk|chennai|ipl|indian premier/i.test(text);
+    }
+
+    /** Returns true if an item is specifically about CSK */
+    function isCSKItem(item) {
+        const text = (item.title || '') + ' ' + (item.description || '');
+        return /csk|chennai super kings/i.test(text);
+    }
+
+    /** Returns true if an item is about IPL (but not exclusively CSK) */
+    function isIPLItem(item) {
+        const text = (item.title || '') + ' ' + (item.description || '');
+        return /\bipl\b|indian premier league/i.test(text);
+    }
+
+    /** Returns true if the item matches the active category filter */
+    function matchesCategory(item) {
+        if (currentCategory === 'all')    return true;
+        if (currentCategory === 'csk')    return isCSKItem(item);
+        if (currentCategory === 'ipl')    return isIPLItem(item);
+        if (currentCategory === 'others') return !isCSKItem(item) && !isIPLItem(item);
+        return true;
     }
 
     /**
@@ -87,11 +115,17 @@ const News = (() => {
     /**
      * Build a live news article element using DOM APIs (never innerHTML) for
      * user-supplied text, so that content from the RSS feed cannot inject HTML.
+     * CSK articles get a special yellow border highlight.
      */
     function createLiveArticle(item) {
         const article = document.createElement('article');
-        article.className = 'news-item';
+        const isCsk   = isCSKItem(item);
+        article.className = isCsk ? 'news-item news-item--csk' : 'news-item';
         article.setAttribute('aria-expanded', 'true');
+
+        // Top row: date tag + optional CSK badge
+        const topRow = document.createElement('div');
+        topRow.className = 'news-item-top';
 
         const date = formatPubDate(item.pubDate);
         const ago  = timeAgo(item.pubDate);
@@ -99,8 +133,22 @@ const News = (() => {
             const tag = document.createElement('span');
             tag.className = 'tag';
             tag.textContent = ago || date;
-            article.appendChild(tag);
+            topRow.appendChild(tag);
         }
+
+        if (isCsk) {
+            const cskBadge = document.createElement('span');
+            cskBadge.className = 'news-csk-badge';
+            cskBadge.textContent = '🦁 CSK';
+            topRow.appendChild(cskBadge);
+        } else if (isIPLItem(item)) {
+            const iplBadge = document.createElement('span');
+            iplBadge.className = 'news-ipl-badge';
+            iplBadge.textContent = '🏏 IPL';
+            topRow.appendChild(iplBadge);
+        }
+
+        article.appendChild(topRow);
 
         const h3 = document.createElement('h3');
         h3.className = 'news-headline';
@@ -171,10 +219,45 @@ const News = (() => {
     // -------------------------------------------------------------------------
 
     /**
-     * Inject the refresh bar (showing last-updated time + Refresh button)
-     * into the #news-list container above the article list.
+     * Inject the category filter tabs + refresh bar into #news-list.
+     * Category tabs: All | 🦁 CSK | 🏏 IPL | 🌐 Others
      */
-    function injectRefreshBar(container, ts, onRefresh) {
+    function injectNewsControls(container, ts, onRefresh) {
+        // Category tabs
+        const tabBar = document.createElement('div');
+        tabBar.className = 'news-cat-tabs';
+        tabBar.setAttribute('role', 'tablist');
+        tabBar.setAttribute('aria-label', 'News category filter');
+        tabBar.id = 'news-cat-tabs';
+
+        const cats = [
+            { key: 'all',    label: 'All' },
+            { key: 'csk',    label: '🦁 CSK' },
+            { key: 'ipl',    label: '🏏 IPL' },
+            { key: 'others', label: '🌐 Others' }
+        ];
+
+        cats.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'news-cat-tab' + (cat.key === currentCategory ? ' news-cat-tab--active' : '');
+            btn.textContent = cat.label;
+            btn.dataset.cat = cat.key;
+            btn.setAttribute('role', 'tab');
+            btn.setAttribute('aria-selected', String(cat.key === currentCategory));
+            btn.addEventListener('click', () => {
+                currentCategory = cat.key;
+                tabBar.querySelectorAll('.news-cat-tab').forEach(b => {
+                    b.classList.toggle('news-cat-tab--active', b.dataset.cat === cat.key);
+                    b.setAttribute('aria-selected', String(b.dataset.cat === cat.key));
+                });
+                renderArticleList(container);
+            });
+            tabBar.appendChild(btn);
+        });
+
+        container.insertBefore(tabBar, container.firstChild);
+
+        // Refresh bar
         const bar = document.createElement('div');
         bar.className = 'news-refresh-bar';
         bar.id = 'news-refresh-bar';
@@ -200,7 +283,46 @@ const News = (() => {
 
         bar.appendChild(label);
         bar.appendChild(btn);
-        container.insertBefore(bar, container.firstChild);
+        // Insert refresh bar after the category tabs
+        tabBar.after(bar);
+    }
+
+    /**
+     * Re-render just the article list below the controls using the current
+     * category filter against `allArticles`.
+     */
+    function renderArticleList(container) {
+        // Remove any existing article nodes (keep controls)
+        container.querySelectorAll('.news-item, .news-empty, .news-article-list').forEach(el => el.remove());
+
+        // CSK articles always come first when viewing "All"
+        let items = [...allArticles];
+        if (currentCategory === 'all') {
+            const cskFirst  = items.filter(isCSKItem);
+            const rest      = items.filter(i => !isCSKItem(i));
+            items = [...cskFirst, ...rest];
+        } else {
+            items = items.filter(matchesCategory);
+        }
+
+        if (items.length === 0) {
+            const empty = document.createElement('p');
+            empty.className = 'news-empty';
+            empty.textContent = currentCategory === 'csk'
+                ? 'No CSK news found right now. Check back soon.'
+                : 'No articles in this category yet.';
+            container.appendChild(empty);
+            return;
+        }
+
+        items.forEach(item => container.appendChild(createLiveArticle(item)));
+    }
+
+    /**
+     * @deprecated — kept for internal use. Use injectNewsControls instead.
+     */
+    function injectRefreshBar(container, ts, onRefresh) {
+        injectNewsControls(container, ts, onRefresh);
     }
 
     /**
@@ -216,9 +338,10 @@ const News = (() => {
         if (!force) {
             const cached = loadCache();
             if (cached) {
+                allArticles = cached.items;
                 container.innerHTML = '';
-                cached.items.forEach(item => container.appendChild(createLiveArticle(item)));
-                injectRefreshBar(container, cached.ts, () => fetchAndRender(true));
+                injectNewsControls(container, cached.ts, () => fetchAndRender(true));
+                renderArticleList(container);
                 return;
             }
         }
@@ -244,13 +367,14 @@ const News = (() => {
 
             // Prefer CSK / IPL items; if none match, show all items (still cricket news)
             const cskItems  = json.items.filter(isCSKRelevant);
-            const liveItems = (cskItems.length > 0 ? cskItems : json.items).slice(0, 12);
+            const liveItems = (cskItems.length > 0 ? cskItems : json.items).slice(0, 24);
 
+            allArticles = liveItems;
             saveCache(liveItems);
 
             container.innerHTML = '';
-            liveItems.forEach(item => container.appendChild(createLiveArticle(item)));
-            injectRefreshBar(container, Date.now(), () => fetchAndRender(true));
+            injectNewsControls(container, Date.now(), () => fetchAndRender(true));
+            renderArticleList(container);
 
         } catch (err) {
             console.warn('[News] Live fetch failed, using static data:', err.message);

@@ -759,6 +759,29 @@ const CricketAPI = (() => {
     }
 
     /**
+     * Fetch ball-by-ball commentary for a specific match from cricapi.com.
+     * Uses the /match_bbb endpoint (ball-by-ball).
+     * Returns an array of commentary objects, or [] on failure / missing key.
+     * Each item has: over, ball, batsman, bowler, text, runs, wicket, etc.
+     */
+    async function fetchMatchCommentary(matchId) {
+        if (!isCricapiConfigured() || !matchId) return [];
+        try {
+            const data = await cricapiRequest(`/match_bbb?id=${encodeURIComponent(matchId)}`);
+            const raw = (data && (data.data || data.result)) || null;
+            if (!raw) return [];
+            // cricapi returns commentary inside raw.commentary[] or raw itself is an array
+            if (Array.isArray(raw)) return raw;
+            if (Array.isArray(raw.commentary)) return raw.commentary;
+            if (Array.isArray(raw.bbb)) return raw.bbb;
+            return [];
+        } catch (err) {
+            console.warn('[CricketAPI] fetchMatchCommentary failed:', err.message);
+            return [];
+        }
+    }
+
+    /**
      * Returns current API call counts for debugging quota usage.
      * Call CricketAPI.getAPIBudget() in the browser console to inspect.
      */
@@ -791,6 +814,7 @@ const CricketAPI = (() => {
         fetchAllIPLFixtures,
         fetchAllCurrentMatches,
         fetchMatchInfo,
+        fetchMatchCommentary,
         getAPIBudget
     };
 
