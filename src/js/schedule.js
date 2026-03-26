@@ -2,11 +2,8 @@
  * schedule.js — TYS 2026 Schedule Features
  *
  * Handles all interactive enhancements on the Map/Schedule page:
- *   • Venue map         — venue cards for each CSK fixture venue
- *   • Venue sidebar     — click a venue card to see filtered fixtures + travel links
  *   • Follow My Team    — highlight and flag matches by favourite team
  *   • Inline countdown  — live ticking countdown on the schedule page
- *   • Traveler Mode     — directions + nearby hotels via Google Maps URLs
  */
 
 const Schedule = (() => {
@@ -23,7 +20,6 @@ const Schedule = (() => {
     // =========================================================================
 
     let scheduleCountdownId = null;   // setInterval handle for in-page countdown
-    let activeVenueKey      = null;   // currently highlighted venue in the grid
 
     // =========================================================================
     // Follow My Team
@@ -111,194 +107,6 @@ const Schedule = (() => {
         const sel = container.querySelector('#follow-team-select');
         if (sel) {
             sel.addEventListener('change', () => setFavTeam(sel.value || null));
-        }
-    }
-
-    // =========================================================================
-    // Venue Grid
-    // =========================================================================
-
-    function renderVenueGrid() {
-        const mapEl      = document.getElementById('venue-map');
-        const sidebarEl  = document.getElementById('venue-sidebar');
-        if (!mapEl || !sidebarEl) return;
-
-        const fixtures = DATA.fixtures || [];
-        const now      = Date.now();
-        const nextIdx  = Results.nextFixtureIndex();
-        let preferredVenueKey = null;
-        if (nextIdx >= 0 && fixtures[nextIdx]) {
-            preferredVenueKey = fixtures[nextIdx].v || null;
-        }
-        if (!activeVenueKey && preferredVenueKey) activeVenueKey = preferredVenueKey;
-
-        // Group fixtures by venue
-        const venueGroups = {};
-        fixtures.forEach((f, idx) => {
-            const vInfo = DATA.venueInfo && DATA.venueInfo[f.v];
-            if (!vInfo) return;
-            if (!venueGroups[f.v]) venueGroups[f.v] = { vInfo, matches: [] };
-            venueGroups[f.v].matches.push({ f, idx });
-        });
-
-        const venueKeys = Object.keys(venueGroups);
-        if (venueKeys.length === 0) {
-            mapEl.innerHTML = `
-                <div class="venue-grid">
-                    <p class="fixtures-status">Venue map unavailable.</p>
-                </div>`;
-            sidebarEl.innerHTML = '';
-            sidebarEl.classList.remove('venue-sidebar--open');
-            return;
-        }
-
-        let defaultVenueKey = null;
-        if (activeVenueKey && venueGroups[activeVenueKey]) {
-            defaultVenueKey = activeVenueKey;
-        } else if (preferredVenueKey && venueGroups[preferredVenueKey]) {
-            defaultVenueKey = preferredVenueKey;
-        } else {
-            defaultVenueKey = venueKeys[0];
-        }
-        activeVenueKey = defaultVenueKey;
-
-        const venueCardsHtml = Object.entries(venueGroups).reduce((html, [key, { vInfo, matches }]) => {
-            const isNext    = matches.some(({ idx }) => idx === nextIdx);
-            const isActive  = activeVenueKey === key;
-            const matchList = matches.map(({ f }) => {
-                const isPast = f.iso && new Date(f.iso).getTime() <= now;
-                return `<li class="venue-match${isPast ? ' venue-match--past' : ''}">
-                    <span class="venue-match-date">${f.d}</span>
-                    <span class="venue-match-team">CSK vs ${f.o}</span>
-                    <span class="venue-match-time">${f.t} IST</span>
-                </li>`;
-            }).join('');
-            const dirUrl   = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(vInfo.stadium + ', ' + vInfo.city)}`;
-            const hotelsUrl = `https://www.google.com/maps/search/hotels+near+${encodeURIComponent(vInfo.stadium + ', ' + vInfo.city)}`;
-            return `
-            <article class="venue-card${isNext ? ' venue-card--next' : ''}${isActive ? ' venue-card--active' : ''}"
-                     data-venue-key="${key}" role="button" tabindex="0"
-                     aria-label="Show fixtures for ${vInfo.stadium} in ${vInfo.city}"
-                     aria-pressed="${isActive ? 'true' : 'false'}">
-                <div class="venue-card__header">
-                    <div>
-                        <p class="venue-card__stadium">${vInfo.stadium}</p>
-                        <p class="venue-card__city">${vInfo.city}</p>
-                    </div>
-                    <span class="venue-card__badge">${matches.length} match${matches.length > 1 ? 'es' : ''}</span>
-                </div>
-                <ul class="venue-card__matches">${matchList}</ul>
-                <div class="venue-card__actions">
-                    <a class="travel-btn" href="${dirUrl}" target="_blank" rel="noopener noreferrer">📍 Directions</a>
-                    <a class="travel-btn" href="${hotelsUrl}" target="_blank" rel="noopener noreferrer">🏨 Nearby stays</a>
-                </div>
-            </article>`;
-        }, '');
-
-        mapEl.innerHTML = `
-            <div class="venue-grid" aria-label="Venue list (map unavailable offline)">
-                ${venueCardsHtml}
-            </div>`;
-        _bindVenueCardInteractions(mapEl, venueGroups, defaultVenueKey);
-    }
-
-    // =========================================================================
-    // Venue Sidebar
-    // =========================================================================
-
-    function showVenueSidebar(venueKey, matches, vInfo) {
-        const sidebar = document.getElementById('venue-sidebar');
-        if (!sidebar) return;
-
-        const now     = Date.now();
-        const matchHtml = matches.map(({ f, idx }) => {
-            const isPast = f.iso && new Date(f.iso).getTime() <= now;
-            const badge  = `<span class="fixture-badge fixture-badge--${f.home ? 'home' : 'away'}">${f.home ? 'HOME' : 'AWAY'}</span>`;
-            const dirUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(vInfo.stadium + ', ' + vInfo.city)}`;
-            return `
-            <div class="sidebar-match${isPast ? ' sidebar-match--past' : ''}">
-                <div class="sidebar-match-info">
-                    <p class="sidebar-match-teams">CSK vs ${f.o}</p>
-                    <p class="sidebar-match-meta">${f.d} · ${f.t} IST</p>
-                    ${badge}
-                </div>
-                <a class="travel-btn" href="${dirUrl}" target="_blank" rel="noopener noreferrer"
-                   aria-label="Get directions to ${vInfo.stadium}">🗺 Directions</a>
-            </div>`;
-        }).join('');
-
-        const hotelsUrl = `https://www.google.com/maps/search/hotels+near+${encodeURIComponent(vInfo.stadium + ', ' + vInfo.city)}`;
-
-        sidebar.innerHTML = `
-        <div class="venue-sidebar-header">
-            <div class="venue-sidebar-title">
-                <p class="venue-sidebar-stadium">${vInfo.stadium}</p>
-                <p class="venue-sidebar-city">${vInfo.city}</p>
-            </div>
-            <button class="venue-sidebar-close" id="sidebar-close-btn" aria-label="Close venue details">✕</button>
-        </div>
-        <div class="venue-sidebar-matches">${matchHtml}</div>
-        <a class="travel-btn travel-btn--hotels" href="${hotelsUrl}" target="_blank"
-           rel="noopener noreferrer">🏨 Nearby Hotels</a>`;
-
-        sidebar.classList.add('venue-sidebar--open');
-
-        const closeBtn = document.getElementById('sidebar-close-btn');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => sidebar.classList.remove('venue-sidebar--open'));
-        }
-
-        // Auto-scroll to sidebar on mobile
-        sidebar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    function _bindVenueCardInteractions(mapEl, venueGroups, defaultVenueKey) {
-        const grid = mapEl.querySelector('.venue-grid');
-        if (!grid) return;
-
-        const setActive = venueKey => {
-            if (activeVenueKey === venueKey) return;
-            const prevKey = activeVenueKey;
-            activeVenueKey = venueKey;
-
-            if (prevKey) {
-                const prevCard = grid.querySelector(`.venue-card[data-venue-key="${prevKey}"]`);
-                if (prevCard) {
-                    prevCard.classList.remove('venue-card--active');
-                    prevCard.setAttribute('aria-pressed', 'false');
-                }
-            }
-
-            const nextCard = grid.querySelector(`.venue-card[data-venue-key="${venueKey}"]`);
-            if (nextCard) {
-                nextCard.classList.add('venue-card--active');
-                nextCard.setAttribute('aria-pressed', 'true');
-            }
-        };
-
-        const selectVenue = venueKey => {
-            const group = venueGroups[venueKey];
-            if (!group) return;
-            setActive(venueKey);
-            showVenueSidebar(venueKey, group.matches, group.vInfo);
-        };
-
-        grid.querySelectorAll('.venue-card').forEach(card => {
-            const venueKey = card.dataset.venueKey;
-            if (!venueKey) return;
-            card.addEventListener('click', () => selectVenue(venueKey));
-            card.addEventListener('keydown', e => {
-                if (e.key === 'Enter') {
-                    selectVenue(venueKey);
-                } else if (e.key === ' ') {
-                    e.preventDefault();
-                    selectVenue(venueKey);
-                }
-            });
-        });
-
-        if (defaultVenueKey && venueGroups[defaultVenueKey]) {
-            selectVenue(defaultVenueKey);
         }
     }
 
@@ -529,9 +337,6 @@ const Schedule = (() => {
     function onPageShow() {
         // Start in-page countdown
         startScheduleCountdown();
-
-        // Render venue cards grid
-        renderVenueGrid();
 
         // Re-apply fav team highlight after IPL schedule finishes rendering
         // (schedule render is async via API calls — small delay is acceptable)
