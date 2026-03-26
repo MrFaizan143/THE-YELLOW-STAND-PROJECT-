@@ -1166,6 +1166,102 @@ h1 {
     border-bottom: none;
 }
 
+
+/* --------------------------------------------------------------------------
+   Insights & Badges
+   Lightweight cards for stats + schedule alerts.
+-------------------------------------------------------------------------- */
+.insights-grid {
+    --insight-card-min-width: 180px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--insight-card-min-width), 1fr));
+    gap: var(--space-4);
+    margin: var(--space-6) 0;
+}
+
+.insight-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    box-shadow: var(--shadow-sm);
+}
+
+.insight-value {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    margin: var(--space-2) 0;
+}
+
+.insight-value strong {
+    color: var(--color-yellow);
+}
+
+.insight-hint,
+.insight-muted {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+}
+
+.form-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    margin-right: var(--space-1);
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-pill);
+    font-weight: 800;
+    font-size: var(--text-xs);
+    letter-spacing: 0.5px;
+    border: 1px solid var(--color-border);
+}
+
+.form-dot--w { background: rgba(49, 210, 113, 0.12); border-color: rgba(49,210,113,0.4); color: #57e391; }
+.form-dot--l { background: rgba(255, 86, 86, 0.12); border-color: rgba(255,86,86,0.4); color: #ff8c8c; }
+.form-dot--n,
+.form-dot--nr { background: rgba(180, 180, 180, 0.12); border-color: rgba(180,180,180,0.4); color: var(--color-text-muted); }
+.form-dot--na { background: var(--color-surface); border-color: var(--color-border); color: var(--color-text-muted); }
+
+.field-hint {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    margin-top: calc(-1 * var(--space-1));
+}
+
+.fixture-badge-wrap {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+}
+
+.fixture-badge--live {
+    background: rgba(255, 63, 63, 0.16);
+    color: #ff7b7b;
+    border-color: rgba(255, 63, 63, 0.4);
+}
+
+.fixture-badge--soon {
+    background: rgba(245, 184, 0, 0.14);
+    color: var(--color-yellow);
+    border-color: rgba(245,184,0,0.5);
+}
+
+.hub-live-meta {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+}
+
+.hub-live-score-empty {
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
 .standing-header {
     background: var(--color-surface-deep);
     color: var(--color-text-muted);

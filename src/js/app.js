@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render Hub info cards (last result + next venue — both auto-detected)
     Render.lastResult();
     Render.venueInfo();
+    Render.renderInsights();
 
     // -------------------------------------------------------------------------
     // Live score polling — shown on Hub when a CSK match is in progress
@@ -61,12 +62,35 @@ document.addEventListener('DOMContentLoaded', () => {
             // make duplicate /currentMatches requests within the same 60-second window.
             let hubMissCount = 0;
             let hubPollTimer = null;
+            let lastUpdatedAt = null;
+            const MS_PER_MINUTE = 60_000;
+            const ACTIVE_POLL_MS = 90_000;
+            const BACKOFF_POLL_MS = 300_000;
+            const ERROR_RETRY_MS = 180_000;
+            const UPDATE_REFRESH_MS = 30_000;
+            const MSG_NO_LIVE_MATCH = 'No live CSK match right now.';
+            let lastUpdatedTimer = null;
 
             function scheduleHubPoll(delayMs) {
                 clearTimeout(hubPollTimer);
                 hubPollTimer = setTimeout(() => {
                     if (!document.hidden) updateLiveScore();
                 }, delayMs);
+            }
+
+            function setLastUpdated(ts) {
+                lastUpdatedAt = ts;
+                const upd = liveScoreEl.querySelector('.hub-live-updated');
+                if (upd && ts) {
+                    const delta = Math.max(0, Date.now() - ts);
+                    const mins = Math.floor(delta / MS_PER_MINUTE);
+                    upd.textContent = mins < 1 ? 'Updated just now' : `Updated ${mins}m ago`;
+                }
+                if (!lastUpdatedTimer) {
+                    lastUpdatedTimer = setInterval(() => {
+                        if (lastUpdatedAt) setLastUpdated(lastUpdatedAt);
+                    }, UPDATE_REFRESH_MS);
+                }
             }
 
             function updateLiveScore() {
@@ -78,7 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="tag live-tag"><span class="live-dot" aria-hidden="true"></span>LIVE</span>
                             <p class="hub-live-score-teams">CSK vs ${match.o}</p>
                             <p class="hub-live-score-text">${match.score}</p>
-                            <p class="hub-live-score-status">${match.status || ''}</p>`;
+                            <p class="hub-live-score-status">${match.status || ''}</p>
+                            <div class="hub-live-meta">
+                                <span class="hub-live-updated">Updated just now</span>
+                            </div>`;
                         liveScoreEl.style.display = '';
                         if (navLiveDot) navLiveDot.classList.add('n-live-dot--active');
 
@@ -86,17 +113,27 @@ document.addEventListener('DOMContentLoaded', () => {
                             Schedule.updateLiveInSchedule(match);
                         }
 
+                        setLastUpdated(match.fetchedAt || Date.now());
                         hubMissCount = 0;
-                        scheduleHubPoll(90_000);   // Active match: poll every 90 s
+                        scheduleHubPoll(ACTIVE_POLL_MS);   // Active match: poll every 90 s
                     } else {
-                        liveScoreEl.style.display = 'none';
+                        liveScoreEl.innerHTML = `<p class="hub-live-score-empty">${MSG_NO_LIVE_MATCH}</p>`;
+                        liveScoreEl.style.display = '';
                         if (navLiveDot) navLiveDot.classList.remove('n-live-dot--active');
+                        if (lastUpdatedTimer) {
+                            clearInterval(lastUpdatedTimer);
+                            lastUpdatedTimer = null;
+                        }
+                        lastUpdatedAt = null;
                         hubMissCount++;
                         // After 3 consecutive misses, back off to 5-minute checks
-                        scheduleHubPoll(hubMissCount >= 3 ? 300_000 : 90_000);
+                        scheduleHubPoll(hubMissCount >= 3 ? BACKOFF_POLL_MS : ACTIVE_POLL_MS);
                     }
                 }).catch(() => {
-                    scheduleHubPoll(180_000);  // On error: retry in 3 min
+                    if (typeof Toast !== 'undefined') {
+                        Toast.show('Live score refresh failed. Retrying…', 'warn', 3500);
+                    }
+                    scheduleHubPoll(ERROR_RETRY_MS);  // On error: retry in 3 min
                 });
             }
 
@@ -343,4 +380,3 @@ const Toast = (() => {
 
     return { show };
 })();
-

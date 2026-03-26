@@ -636,7 +636,9 @@ const CricketAPI = (() => {
             const live = list.find(m =>
                 isCSKMatch(m) && /ipl|indian premier/i.test(m.seriesName || m.name || '')
             );
-            return live ? normaliseCricapiFixture(live) : null;
+            if (!live) return null;
+            const fetchedAt = Date.now();
+            return { ...normaliseCricapiFixture(live), fetchedAt };
         } catch (err) {
             console.warn('[CricketAPI] fetchCSKLiveMatch failed:', err.message);
             return null;
