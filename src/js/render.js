@@ -6,6 +6,9 @@
 
 const Render = (() => {
 
+    /** IST is UTC+5:30 — offset in minutes (negative = ahead of UTC) */
+    const IST_OFFSET_MIN = -330;
+
     /** Short-name lookup for IPL teams */
     const TEAM_SHORT = {
         'Rajasthan Royals':           'RR',
@@ -21,6 +24,46 @@ const Render = (() => {
 
     /* Expose for other modules (countdown, etc.) */
     window.TEAM_SHORT = TEAM_SHORT;
+
+    /** Brand color map for all IPL 2026 teams — used by match card badges */
+    const TEAM_COLORS = {
+        CSK:  { bg: '#F5B800', fg: '#000000' },
+        MI:   { bg: '#004BA0', fg: '#ffffff' },
+        RCB:  { bg: '#EC1C24', fg: '#ffffff' },
+        KKR:  { bg: '#3A225D', fg: '#B6985A' },
+        DC:   { bg: '#0078BC', fg: '#ffffff' },
+        RR:   { bg: '#254AA5', fg: '#EA1A85' },
+        PBKS: { bg: '#ED1B24', fg: '#ffffff' },
+        SRH:  { bg: '#FB643A', fg: '#1C1C1C' },
+        GT:   { bg: '#C8A84B', fg: '#1C1C1C' },
+        LSG:  { bg: '#00B4D8', fg: '#002B3C' },
+    };
+
+    /** Renders a colored team badge pill */
+    function _teamBadge(short) {
+        const c = TEAM_COLORS[short] || { bg: '#444', fg: '#fff' };
+        return `<span class="team-badge" style="--tbg:${c.bg};--tfg:${c.fg}" aria-label="${short}">${short}</span>`;
+    }
+
+    /**
+     * Returns the match time in the user's local timezone.
+     * Returns an empty string if the user is already in IST or if the ISO
+     * string is missing.
+     */
+    function _localTime(iso) {
+        if (!iso) return '';
+        try {
+            const userOffsetMin = new Date().getTimezoneOffset();
+            if (userOffsetMin === IST_OFFSET_MIN) return ''; // already IST — no extra line needed
+            const d = new Date(iso);
+            const timeStr = d.toLocaleTimeString(undefined, {
+                hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+            });
+            return `<span class="ipl-match-local-time">${timeStr} (local)</span>`;
+        } catch (_) {
+            return '';
+        }
+    }
 
     /** Currently active fixture filter: 'all' | 'home' | 'away' | 'upcoming' | 'done' */
     let currentFilter = 'all';
@@ -868,9 +911,8 @@ const Render = (() => {
     /**
      * Renders all IPL 2026 fixtures into #ipl-schedule-list.
      * CSK matches are highlighted with the brand-yellow accent.
-     * Matches are grouped by month. Falls back to the static DATA.iplSchedule
-     * when liveData is empty or not provided — this means the schedule is
-     * always populated on first render without waiting for an API response.
+     * Includes: date picker, team filter chips, view toggle, team badges,
+     * localized time, and status CTAs (TICKETS / MATCH CENTRE).
      * @param {Array} [liveData] — normalised full-match fixtures from CricketAPI.fetchAllIPLFixtures()
      */
     function iplSchedule(liveData) {
@@ -890,20 +932,62 @@ const Render = (() => {
         let lastSectionLabel = null;
         let html = '';
 
-        // Regex for detecting playoff-round entries (matches team.js status values)
+        // ── Date picker (unique match dates in schedule order) ────────────────
+        const seenDates = new Set();
+        const uniqueDates = [];
+        matches.forEach(m => { if (m.d && !seenDates.has(m.d)) { seenDates.add(m.d); uniqueDates.push(m.d); } });
+
+        const datePickerHtml = `
+        <div class="schedule-date-picker" role="group" aria-label="Filter by match date">
+            <button class="date-chip date-chip--active" data-date="all" aria-pressed="true">All</button>
+            ${uniqueDates.map(d => `<button class="date-chip" data-date="${d}" aria-pressed="false">${d}</button>`).join('')}
+        </div>`;
+
+        // ── Team filter chips (all teams present in this schedule) ────────────
+        const seenTeams = new Set();
+        matches.forEach(m => { if (m.team1Short) seenTeams.add(m.team1Short); if (m.team2Short) seenTeams.add(m.team2Short); });
+        const allTeams = [...seenTeams].sort();
+
+        const teamFilterHtml = `
+        <div class="schedule-team-filter" role="group" aria-label="Filter by team">
+            <button class="team-filter-chip team-filter-chip--active" data-team="all" aria-pressed="true">All</button>
+            ${allTeams.map(t => {
+                const c = TEAM_COLORS[t] || { bg: '#444', fg: '#fff' };
+                return `<button class="team-filter-chip" data-team="${t}"
+                         style="--tbg:${c.bg};--tfg:${c.fg}" aria-pressed="false">${t}</button>`;
+            }).join('')}
+        </div>`;
+
+        // ── View toggle (list / grid) ─────────────────────────────────────────
+        const viewToggleHtml = `
+        <div class="schedule-view-toggle" role="group" aria-label="Switch schedule view">
+            <button class="view-btn view-btn--active" data-view="list" aria-pressed="true"
+                    aria-label="List view">${Icons.i('list', 13)} List</button>
+            <button class="view-btn" data-view="grid" aria-pressed="false"
+                    aria-label="Grid view">${Icons.i('grid', 13)} Grid</button>
+        </div>`;
+
+        const controlsHtml = `
+        <div class="schedule-controls-bar">
+            ${viewToggleHtml}
+            ${teamFilterHtml}
+        </div>
+        ${datePickerHtml}`;
+
+        // ── Match cards ───────────────────────────────────────────────────────
         const PLAYOFF_RE = /Qualifier|Eliminator|Final/i;
 
         matches.forEach(m => {
-            // Determine the section label for this match
-            const isPlayoff   = PLAYOFF_RE.test(m.status || '');
-            const dateParts   = m.d.split(' ');
-            const month       = dateParts.length >= 2 ? dateParts[1] : '';
+            const isPlayoff    = PLAYOFF_RE.test(m.status || '');
+            const dateParts    = m.d.split(' ');
+            const month        = dateParts.length >= 2 ? dateParts[1] : '';
             const sectionLabel = isPlayoff ? 'PLAYOFFS' : month;
 
             if (sectionLabel && sectionLabel !== lastSectionLabel) {
                 html += `<div class="fixture-month-sep" role="separator" aria-label="${sectionLabel}">${sectionLabel}</div>`;
                 lastSectionLabel = sectionLabel;
             }
+
             const isLive      = m.status && /live|progress/i.test(m.status);
             const isPast      = !isPlayoff && m.iso && new Date(m.iso).getTime() <= now;
             const cskClass    = m.isCSK ? ' ipl-match--csk' : '';
@@ -911,40 +995,61 @@ const Render = (() => {
             const pastClass   = isPast && !isLive ? ' ipl-match--past' : '';
             const playoffClass = isPlayoff ? ' ipl-match--playoff' : '';
 
-            const scoreHtml = m.score
+            const scoreHtml   = m.score
                 ? `<p class="ipl-match-score">${m.score}</p>`
                 : '';
-            // For playoff placeholders show the round label; for regular matches show result status
             const statusLabel = isPlayoff && !isLive
                 ? `<p class="ipl-match-status ipl-match-status--playoff">${m.status}</p>`
                 : (m.status && !isLive ? `<p class="ipl-match-status">${m.status}</p>` : '');
-            const liveTag   = isLive
+            const liveTag     = isLive
                 ? '<span class="tag live-tag" aria-label="Live match"><span class="live-dot" aria-hidden="true"></span>LIVE</span>'
                 : '';
+
+            // Status CTA: TICKET for upcoming, MATCH CENTRE for finished
+            let statusCta = '';
+            if (!isPlayoff) {
+                if (isLive) {
+                    statusCta = `<a class="match-cta match-cta--live" href="https://www.iplt20.com/match/results"
+                                    target="_blank" rel="noopener noreferrer">MATCH CENTRE</a>`;
+                } else if (isPast) {
+                    statusCta = `<a class="match-cta match-cta--centre" href="https://www.iplt20.com/match/results"
+                                    target="_blank" rel="noopener noreferrer">MATCH CENTRE</a>`;
+                } else {
+                    statusCta = `<a class="match-cta match-cta--ticket" href="https://tickets.iplt20.com/"
+                                    target="_blank" rel="noopener noreferrer">${Icons.i('ticket', 12)} TICKETS</a>`;
+                }
+            }
+
+            const localTimeHtml = _localTime(m.iso);
 
             html += `
             <div class="ipl-match-card${cskClass}${liveClass}${pastClass}${playoffClass}" role="listitem"
                  aria-label="${m.team1Short} vs ${m.team2Short}, ${m.d}"
-                 data-team1-short="${m.team1Short}" data-team2-short="${m.team2Short}">
+                 data-team1-short="${m.team1Short}" data-team2-short="${m.team2Short}"
+                 data-date="${m.d}">
                 ${liveTag}
                 <div class="ipl-match-teams">
-                    <span class="ipl-match-team${m.isCSK && /Chennai Super Kings|CSK/i.test(m.team1) ? ' ipl-match-team--csk' : ''}">${m.team1Short}</span>
+                    ${_teamBadge(m.team1Short)}
                     <span class="ipl-match-vs">vs</span>
-                    <span class="ipl-match-team${m.isCSK && /Chennai Super Kings|CSK/i.test(m.team2) ? ' ipl-match-team--csk' : ''}">${m.team2Short}</span>
+                    ${_teamBadge(m.team2Short)}
                 </div>
                 <div class="ipl-match-meta">
                     <span class="ipl-match-datetime">${m.d} · ${m.t} IST</span>
-                    <span class="ipl-match-venue">${m.v}</span>
+                    ${localTimeHtml}
+                    <span class="ipl-match-venue">${Icons.i('map-pin', 11)} ${m.v}</span>
                 </div>
-                ${scoreHtml}${statusLabel}
+                <div class="ipl-match-footer">
+                    ${scoreHtml}${statusLabel}${statusCta}
+                </div>
             </div>`;
         });
 
-        container.innerHTML = `<div class="ipl-schedule-rows" role="list">${html}</div>`;
+        container.innerHTML = controlsHtml + `<div class="ipl-schedule-rows" role="list">${html}</div>`;
 
-        // Re-apply favourite team highlighting
-        if (typeof Schedule !== 'undefined' && Schedule.applyFavTeamHighlight) {
-            Schedule.applyFavTeamHighlight();
+        // Re-apply favourite team highlighting and wire schedule controls
+        if (typeof Schedule !== 'undefined') {
+            if (Schedule.applyFavTeamHighlight) Schedule.applyFavTeamHighlight();
+            if (Schedule.initScheduleControls) Schedule.initScheduleControls();
         }
     }
 

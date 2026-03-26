@@ -60,6 +60,15 @@ const Icons = (() => {
         'calendar-check': {
             body: '<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 9h16"/><path d="m9 14 2 2 4-4"/>'
         },
+        list: {
+            body: '<path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h11"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/>'
+        },
+        grid: {
+            body: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'
+        },
+        ticket: {
+            body: '<path d="M2 9a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1a1 1 0 0 0 0 2v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1a1 1 0 0 0 0-2z"/><path d="M9 3v3"/><path d="M9 15v3"/><path d="M9 11v2"/>'
+        },
         default: {
             body: '<circle cx="12" cy="12" r="5"/>'
         }

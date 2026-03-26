@@ -6186,3 +6186,303 @@ h1 {
         scroll-behavior:           auto   !important;
     }
 }
+
+
+/* ==========================================================================
+   Schedule Map — Core Design Elements
+   Match cards with team badges, date picker, team filter, view toggle,
+   localized time, and status CTAs.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Team Badge — colored pill with team abbreviation
+   Uses CSS custom properties --tbg / --tfg set inline by render.js.
+-------------------------------------------------------------------------- */
+.team-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--tbg, #444444);
+    color: var(--tfg, #ffffff);
+    font-family: var(--font-mono);
+    font-weight: var(--font-weight-bold);
+    font-size: 0.62rem;
+    line-height: 1;
+    padding: 5px 8px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 2.8rem;
+    text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   ipl-match-teams — now uses badge pills instead of plain text
+-------------------------------------------------------------------------- */
+.ipl-match-teams {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   ipl-match-footer — score, status label, and CTA row
+-------------------------------------------------------------------------- */
+.ipl-match-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin-top: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   ipl-match-local-time — user's local timezone below IST line
+-------------------------------------------------------------------------- */
+.ipl-match-local-time {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.3px;
+    display: block;
+}
+
+/* --------------------------------------------------------------------------
+   Match CTAs — TICKETS (upcoming) and MATCH CENTRE (finished / live)
+-------------------------------------------------------------------------- */
+.match-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.8px;
+    text-decoration: none;
+    border-radius: var(--radius-pill);
+    padding: 4px 10px;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.match-cta:hover {
+    opacity: 0.82;
+    transform: translateY(-1px);
+}
+
+.match-cta--ticket {
+    background: var(--color-yellow);
+    color: #000;
+}
+
+.match-cta--centre {
+    background: transparent;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border-lt);
+}
+
+.match-cta--centre:hover {
+    border-color: var(--color-border-hover);
+    color: var(--color-text);
+}
+
+.match-cta--live {
+    background: #e53e3e;
+    color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Hidden match card (filtered out by date / team picker)
+-------------------------------------------------------------------------- */
+.ipl-match--hidden {
+    display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Schedule Controls Bar — view toggle + team filter row
+-------------------------------------------------------------------------- */
+.schedule-controls-bar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+    flex-wrap: wrap;
+}
+
+/* --------------------------------------------------------------------------
+   View Toggle — list / grid buttons
+-------------------------------------------------------------------------- */
+.schedule-view-toggle {
+    display: flex;
+    gap: 2px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+    flex-shrink: 0;
+}
+
+.view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    padding: 5px 10px;
+    border-radius: calc(var(--radius-sm) - 2px);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.view-btn--active {
+    background: var(--color-border-lt);
+    color: var(--color-text);
+}
+
+.view-btn:hover:not(.view-btn--active) {
+    color: var(--color-text);
+}
+
+/* --------------------------------------------------------------------------
+   Team Filter Chips — horizontal scrollable row
+-------------------------------------------------------------------------- */
+.schedule-team-filter {
+    display: flex;
+    gap: var(--space-1);
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex: 1;
+    min-width: 0;
+}
+
+.schedule-team-filter::-webkit-scrollbar { display: none; }
+
+.team-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    padding: 5px 10px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+    transition: background var(--transition-fast), color var(--transition-fast),
+                border-color var(--transition-fast);
+}
+
+.team-filter-chip--active {
+    background: var(--tbg, var(--color-border-lt));
+    color: var(--tfg, var(--color-text));
+    border-color: transparent;
+}
+
+.team-filter-chip--active[data-team="all"] {
+    background: var(--color-border-lt);
+    color: var(--color-text);
+}
+
+.team-filter-chip:hover:not(.team-filter-chip--active) {
+    border-color: var(--color-border-hover);
+    color: var(--color-text);
+}
+
+/* --------------------------------------------------------------------------
+   Date Picker — horizontal scrollable date chips
+-------------------------------------------------------------------------- */
+.schedule-date-picker {
+    display: flex;
+    gap: var(--space-1);
+    overflow-x: auto;
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-3);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.schedule-date-picker::-webkit-scrollbar { display: none; }
+
+.date-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+    transition: background var(--transition-fast), color var(--transition-fast),
+                border-color var(--transition-fast);
+}
+
+.date-chip--active {
+    background: var(--color-yellow);
+    color: #000;
+    border-color: transparent;
+}
+
+.date-chip:hover:not(.date-chip--active) {
+    border-color: var(--color-border-hover);
+    color: var(--color-text);
+}
+
+/* --------------------------------------------------------------------------
+   Grid View — 2-column card layout
+-------------------------------------------------------------------------- */
+.ipl-schedule-rows.view--grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+}
+
+/* Month separator spans full grid width */
+.ipl-schedule-rows.view--grid .fixture-month-sep,
+.ipl-schedule-rows.view--grid .fav-section-sep {
+    grid-column: 1 / -1;
+}
+
+/* Grid card: stack vertically, no side-by-side layout override */
+.ipl-schedule-rows.view--grid .ipl-match-card {
+    flex-direction: column;
+}
+
+@media (min-width: 480px) {
+    .ipl-schedule-rows.view--grid .ipl-match-card {
+        align-items: flex-start;
+    }
+
+    .ipl-schedule-rows.view--grid .ipl-match-meta {
+        text-align: left;
+    }
+}
+
+@media (max-width: 360px) {
+    .ipl-schedule-rows.view--grid {
+        grid-template-columns: 1fr;
+    }
+}
