@@ -231,7 +231,7 @@ const Schedule = (() => {
         const fixtures = DATA.fixtures || [];
         const now      = Date.now();
         const nextIdx  = Results.nextFixtureIndex();
-        const preferredVenueKey = fixtures[nextIdx]?.v || null;
+        const preferredVenueKey = nextIdx >= 0 ? (fixtures[nextIdx]?.v || null) : null;
         if (!activeVenueKey && preferredVenueKey) activeVenueKey = preferredVenueKey;
 
         // Group fixtures by venue
