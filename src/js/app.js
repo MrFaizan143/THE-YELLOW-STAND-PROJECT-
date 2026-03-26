@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!liveScoreEl) return;
                     if (match && match.score) {
                         liveScoreEl.innerHTML = `
-                            <span class="tag live-tag">🔴 LIVE</span>
+                            <span class="tag live-tag"><span class="live-dot" aria-hidden="true"></span>LIVE</span>
                             <p class="hub-live-score-teams">CSK vs ${match.o}</p>
                             <p class="hub-live-score-text">${match.score}</p>
                             <p class="hub-live-score-status">${match.status || ''}</p>`;
@@ -221,7 +221,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
-        if (toggleBtn) toggleBtn.textContent = theme === 'light' ? '☾' : '☀';
+        if (toggleBtn) toggleBtn.innerHTML = theme === 'light' ? Icons.i('moon', 16) : Icons.i('sun', 16);
+        Icons.init(toggleBtn);
         if (toggleBtn) toggleBtn.setAttribute('aria-label',
             theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
     }

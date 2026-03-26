@@ -141,15 +141,16 @@ const Render = (() => {
                     <button class="filter-btn filter-btn--sm${currentTimeSlot === 'all'       ? ' filter-btn--active' : ''}"
                             data-timeslot="all"       aria-pressed="${currentTimeSlot === 'all'}">Any Time</button>
                     <button class="filter-btn filter-btn--sm${currentTimeSlot === 'afternoon' ? ' filter-btn--active' : ''}"
-                            data-timeslot="afternoon" aria-pressed="${currentTimeSlot === 'afternoon'}">☀ 3:30 PM</button>
+                            data-timeslot="afternoon" aria-pressed="${currentTimeSlot === 'afternoon'}">${Icons.i('sun', 13)} 3:30 PM</button>
                     <button class="filter-btn filter-btn--sm${currentTimeSlot === 'evening'   ? ' filter-btn--active' : ''}"
-                            data-timeslot="evening"   aria-pressed="${currentTimeSlot === 'evening'}">🌙 7:30 PM</button>
+                            data-timeslot="evening"   aria-pressed="${currentTimeSlot === 'evening'}">${Icons.i('moon', 13)} 7:30 PM</button>
                 </div>
             </div>
         </div>`;
 
         if (filtered.length === 0) {
             container.innerHTML = progressBar + filterBar + '<p class="fixtures-status">No fixtures match this filter.</p>';
+            Icons.init(container);
             bindFilterButtons(container);
             return;
         }
@@ -180,14 +181,14 @@ const Render = (() => {
             // .ics download calendar button
             const icsBtn = f.iso
                 ? `<a class="cal-btn" href="${buildICS(f)}" download="csk-vs-${f.o.replace(/\s+/g, '-').toLowerCase()}.ics"
-                      aria-label="Add to iCal / Outlook" title="Add to iCal / Outlook">📅</a>`
+                      aria-label="Add to iCal / Outlook" title="Add to iCal / Outlook">${Icons.i('calendar', 14)}</a>`
                 : '';
 
             // Google Calendar URL deep-link button
             const gCalBtn = f.iso
                 ? `<a class="cal-btn cal-btn--gcal" href="${buildGoogleCalendarLink(f)}"
                       target="_blank" rel="noopener noreferrer"
-                      aria-label="Add to Google Calendar" title="Add to Google Calendar">📆</a>`
+                      aria-label="Add to Google Calendar" title="Add to Google Calendar">${Icons.i('calendar-check', 14)}</a>`
                 : '';
 
             // Directions link (Google Maps)
@@ -195,7 +196,7 @@ const Render = (() => {
             const dirLink = vInfo
                 ? `<a class="travel-link" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(vInfo.stadium + ', ' + vInfo.city)}"
                       target="_blank" rel="noopener noreferrer"
-                      aria-label="Get directions to ${vInfo.stadium}" title="Get directions">📍 Directions</a>`
+                      aria-label="Get directions to ${vInfo.stadium}" title="Get directions">${Icons.i('map-pin', 13)} Directions</a>`
                 : '';
 
             // Days-away label for the next upcoming fixture
@@ -247,6 +248,7 @@ const Render = (() => {
         }).join('');
 
         container.innerHTML = progressBar + filterBar + `<div class="fixture-rows" role="list">${rows}</div>`;
+        Icons.init(container);
 
         bindFilterButtons(container);
 
@@ -756,7 +758,7 @@ const Render = (() => {
                 ? `<p class="ipl-match-status ipl-match-status--playoff">${m.status}</p>`
                 : (m.status && !isLive ? `<p class="ipl-match-status">${m.status}</p>` : '');
             const liveTag   = isLive
-                ? '<span class="tag live-tag" aria-label="Live match">🔴 LIVE</span>'
+                ? '<span class="tag live-tag" aria-label="Live match"><span class="live-dot" aria-hidden="true"></span>LIVE</span>'
                 : '';
 
             html += `
