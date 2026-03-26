@@ -2058,6 +2058,19 @@ h1 {
     margin: 0;
 }
 
+.ipl-match-status--playoff {
+    color: var(--color-yellow);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.ipl-match-card.ipl-match--playoff {
+    border-color: rgba(245, 184, 0, 0.3);
+    background: linear-gradient(135deg, var(--color-surface) 0%, rgba(245, 184, 0, 0.04) 100%);
+    opacity: 0.85;
+}
+
 .ipl-match-score {
     color: var(--color-text);
 }

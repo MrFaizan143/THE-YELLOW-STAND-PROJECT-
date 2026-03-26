@@ -40,6 +40,13 @@ const Router = (() => {
         if (!visited.has(pageId)) {
             visited.add(pageId);
             if (pageId === 'm') {
+                // Always render static data first so the schedule is never stuck on
+                // "Loading IPL schedule…".  If API keys are configured the live data
+                // will overwrite the static render once the fetch completes.
+                Render.fixtures();
+                Render.iplSchedule();
+                Render.standings();
+
                 if (CricketAPI.isConfigured() || CricketAPI.isCricapiConfigured()) {
                     Render.fixturesLoading();
                     // Fetch CSK-only fixtures and full IPL schedule in parallel
@@ -50,11 +57,7 @@ const Router = (() => {
                         Render.fixtures(cskLive);
                         Render.iplSchedule(iplLive);
                     });
-                } else {
-                    Render.fixtures();
-                    Render.iplSchedule();
                 }
-                Render.standings();
             }
             if (pageId === 'p') { Render.legacy(); Render.management(); Render.squad(); }
             if (pageId === 'n') News.fetchAndRender();

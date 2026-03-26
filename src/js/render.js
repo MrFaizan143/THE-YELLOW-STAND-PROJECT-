@@ -705,8 +705,9 @@ const Render = (() => {
     /**
      * Renders all IPL 2026 fixtures into #ipl-schedule-list.
      * CSK matches are highlighted with the brand-yellow accent.
-     * Matches are grouped by month. Falls back to a "no data" notice
-     * when liveData is empty or not provided.
+     * Matches are grouped by month. Falls back to the static DATA.iplSchedule
+     * when liveData is empty or not provided — this means the schedule is
+     * always populated on first render without waiting for an API response.
      * @param {Array} [liveData] — normalised full-match fixtures from CricketAPI.fetchAllIPLFixtures()
      */
     function iplSchedule(liveData) {
@@ -723,36 +724,40 @@ const Render = (() => {
         }
 
         const now = Date.now();
-        let lastMonth = null;
+        let lastSectionLabel = null;
         let html = '';
 
         matches.forEach(m => {
-            // Month separator
-            const dateParts = m.d.split(' ');
-            const month = dateParts.length >= 2 ? dateParts[1] : '';
-            if (month && month !== lastMonth) {
-                html += `<div class="fixture-month-sep" role="separator" aria-label="${month}">${month}</div>`;
-                lastMonth = month;
-            }
+            // Determine the section label for this match
+            const isPlayoff   = /Qualifier|Eliminator|Final/i.test(m.status || '');
+            const dateParts   = m.d.split(' ');
+            const month       = dateParts.length >= 2 ? dateParts[1] : '';
+            const sectionLabel = isPlayoff ? 'PLAYOFFS' : month;
 
-            const isLive    = m.status && /live|progress/i.test(m.status);
-            const isPast    = m.iso && new Date(m.iso).getTime() <= now;
-            const cskClass  = m.isCSK ? ' ipl-match--csk' : '';
-            const liveClass = isLive  ? ' ipl-match--live' : '';
-            const pastClass = isPast && !isLive ? ' ipl-match--past' : '';
+            if (sectionLabel && sectionLabel !== lastSectionLabel) {
+                html += `<div class="fixture-month-sep" role="separator" aria-label="${sectionLabel}">${sectionLabel}</div>`;
+                lastSectionLabel = sectionLabel;
+            }
+            const isLive      = m.status && /live|progress/i.test(m.status);
+            const isPast      = !isPlayoff && m.iso && new Date(m.iso).getTime() <= now;
+            const cskClass    = m.isCSK ? ' ipl-match--csk' : '';
+            const liveClass   = isLive  ? ' ipl-match--live' : '';
+            const pastClass   = isPast && !isLive ? ' ipl-match--past' : '';
+            const playoffClass = isPlayoff ? ' ipl-match--playoff' : '';
 
             const scoreHtml = m.score
                 ? `<p class="ipl-match-score">${m.score}</p>`
                 : '';
-            const statusHtml = m.status && !isLive
-                ? `<p class="ipl-match-status">${m.status}</p>`
-                : '';
+            // For playoff placeholders show the round label; for regular matches show result status
+            const statusLabel = isPlayoff && !isLive
+                ? `<p class="ipl-match-status ipl-match-status--playoff">${m.status}</p>`
+                : (m.status && !isLive ? `<p class="ipl-match-status">${m.status}</p>` : '');
             const liveTag   = isLive
                 ? '<span class="tag live-tag" aria-label="Live match">🔴 LIVE</span>'
                 : '';
 
             html += `
-            <div class="ipl-match-card${cskClass}${liveClass}${pastClass}" role="listitem"
+            <div class="ipl-match-card${cskClass}${liveClass}${pastClass}${playoffClass}" role="listitem"
                  aria-label="${m.team1Short} vs ${m.team2Short}, ${m.d}"
                  data-team1-short="${m.team1Short}" data-team2-short="${m.team2Short}">
                 ${liveTag}
@@ -765,7 +770,7 @@ const Render = (() => {
                     <span class="ipl-match-datetime">${m.d} · ${m.t} IST</span>
                     <span class="ipl-match-venue">${m.v}</span>
                 </div>
-                ${scoreHtml}${statusHtml}
+                ${scoreHtml}${statusLabel}
             </div>`;
         });
 
