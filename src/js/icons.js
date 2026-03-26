@@ -1,43 +1,65 @@
 /**
- * TYS Icon Utility
- * Thin wrapper around Lucide icons for use in dynamically generated HTML strings.
- *
- * Usage:
- *   Icons.i('home', 20)         → '<svg data-lucide="home" ...></svg>'
- *   Icons.init(containerEl)     → processes any pending [data-lucide] elements
+ * TYS Icon Utility (offline-friendly)
+ * Replaces external Lucide dependency with lightweight inline glyphs so the
+ * site renders without third-party requests being blocked.
  */
 const Icons = (() => {
 
-    /**
-     * Return an SVG placeholder element that Lucide will replace with the real icon.
-     * Always call Icons.init(container) after inserting the HTML into the DOM.
-     *
-     * @param {string} name  – Lucide icon name in kebab-case (e.g. 'map-pin')
-     * @param {number} [size] – Width/height in px. Default 16.
-     * @param {string} [cls]  – Extra CSS class string.
-     * @returns {string} HTML string with a data-lucide placeholder.
-     */
-    function i(name, size = 16, cls = '') {
-        const c = cls ? ` class="${cls}"` : '';
-        return `<svg xmlns="http://www.w3.org/2000/svg"` +
-               ` width="${size}" height="${size}"` +
-               ` viewBox="0 0 24 24" fill="none"` +
-               ` stroke="currentColor" stroke-width="2"` +
-               ` stroke-linecap="round" stroke-linejoin="round"` +
-               ` data-lucide="${name}" aria-hidden="true"${c}></svg>`;
+    const GLYPHS = {
+        home: '🏠',
+        map: '🗺️',
+        shield: '🛡️',
+        newspaper: '📰',
+        target: '🎯',
+        wrench: '🔧',
+        activity: '📈',
+        'share-2': '📤',
+        sun: '☀️',
+        moon: '🌙',
+        bell: '🔔',
+        'bell-off': '🔕',
+        sparkles: '✨',
+        x: '✕',
+        pin: '📌',
+        'map-pin': '📍',
+        calendar: '📅',
+        'calendar-check': '✅'
+    };
+
+    function renderGlyph(name, size = 16, cls = '') {
+        const glyph = GLYPHS[name] || '•';
+        const extra = cls ? ` ${cls}` : '';
+        return `<span class="icon-glyph${extra}" style="font-size:${size}px;line-height:1" aria-hidden="true">${glyph}</span>`;
     }
 
     /**
-     * Process all un-rendered [data-lucide] elements within a container.
-     * Call this after setting innerHTML on any element that contains Icons.i() output.
-     *
-     * @param {Element|Document} [container] – Root to search within. Defaults to document.
+     * Return an inline glyph string.
+     */
+    function i(name, size = 16, cls = '') {
+        return renderGlyph(name, size, cls);
+    }
+
+    /**
+     * Replace any [data-lucide] placeholders with inline glyphs.
      */
     function init(container) {
-        if (!window.lucide) return;
         const root = container || document;
         const els  = root.querySelectorAll ? Array.from(root.querySelectorAll('[data-lucide]')) : [];
-        if (els.length) lucide.createIcons({ elements: els });
+        els.forEach(el => {
+            const name = el.getAttribute('data-lucide');
+            const size = parseInt(el.getAttribute('data-size') || '16', 10);
+            el.replaceWith(createGlyphElement(name, size, el.className));
+        });
+    }
+
+    function createGlyphElement(name, size, cls) {
+        const span = document.createElement('span');
+        span.className = `icon-glyph${cls ? ' ' + cls : ''}`;
+        span.setAttribute('aria-hidden', 'true');
+        span.textContent = GLYPHS[name] || '•';
+        span.style.fontSize = `${size || 16}px`;
+        span.style.lineHeight = '1';
+        return span;
     }
 
     // Process static HTML icons on first paint
