@@ -123,11 +123,14 @@ const Schedule = (() => {
     function updateLiveInSchedule(match) {
         const hasLive = !!match;
         const favTeam = getFavoriteTeam();
+        const liveIso = match && match.iso ? new Date(match.iso).toISOString() : null;
         document.querySelectorAll('.ipl-match-card').forEach(card => {
             const t1 = card.dataset.team1Short;
             const t2 = card.dataset.team2Short;
+            const cardIso = card.dataset.iso ? new Date(card.dataset.iso).toISOString() : null;
             const isFavMatch = t1 === favTeam || t2 === favTeam;
-            const shouldBeLive = hasLive && isFavMatch;
+            const isSameMatch = liveIso && cardIso && liveIso === cardIso;
+            const shouldBeLive = hasLive && isFavMatch && isSameMatch;
             card.classList.toggle('ipl-match--live', shouldBeLive);
         });
     }
