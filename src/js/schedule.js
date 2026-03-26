@@ -29,6 +29,7 @@ const Schedule = (() => {
 
     let notifTimers         = [];     // setTimeout handles for pending notifications
     let scheduleCountdownId = null;   // setInterval handle for in-page countdown
+    let activeVenueKey      = null;   // currently highlighted venue in the grid
 
     // =========================================================================
     // Follow My Team
@@ -230,6 +231,11 @@ const Schedule = (() => {
         const fixtures = DATA.fixtures || [];
         const now      = Date.now();
         const nextIdx  = Results.nextFixtureIndex();
+        let preferredVenueKey = null;
+        if (nextIdx >= 0 && fixtures[nextIdx]) {
+            preferredVenueKey = fixtures[nextIdx].v || null;
+        }
+        if (!activeVenueKey && preferredVenueKey) activeVenueKey = preferredVenueKey;
 
         // Group fixtures by venue
         const venueGroups = {};
@@ -240,8 +246,30 @@ const Schedule = (() => {
             venueGroups[f.v].matches.push({ f, idx });
         });
 
-        const cards = Object.entries(venueGroups).map(([key, { vInfo, matches }]) => {
-            const isNext = matches.some(({ idx }) => idx === nextIdx);
+        const venueKeys = Object.keys(venueGroups);
+        if (venueKeys.length === 0) {
+            mapEl.innerHTML = `
+                <div class="venue-grid">
+                    <p class="fixtures-status">Venue map unavailable.</p>
+                </div>`;
+            sidebarEl.innerHTML = '';
+            sidebarEl.classList.remove('venue-sidebar--open');
+            return;
+        }
+
+        let defaultVenueKey = null;
+        if (activeVenueKey && venueGroups[activeVenueKey]) {
+            defaultVenueKey = activeVenueKey;
+        } else if (preferredVenueKey && venueGroups[preferredVenueKey]) {
+            defaultVenueKey = preferredVenueKey;
+        } else {
+            defaultVenueKey = venueKeys[0];
+        }
+        activeVenueKey = defaultVenueKey;
+
+        const venueCardsHtml = Object.entries(venueGroups).reduce((html, [key, { vInfo, matches }]) => {
+            const isNext    = matches.some(({ idx }) => idx === nextIdx);
+            const isActive  = activeVenueKey === key;
             const matchList = matches.map(({ f }) => {
                 const isPast = f.iso && new Date(f.iso).getTime() <= now;
                 return `<li class="venue-match${isPast ? ' venue-match--past' : ''}">
@@ -253,7 +281,10 @@ const Schedule = (() => {
             const dirUrl   = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(vInfo.stadium + ', ' + vInfo.city)}`;
             const hotelsUrl = `https://www.google.com/maps/search/hotels+near+${encodeURIComponent(vInfo.stadium + ', ' + vInfo.city)}`;
             return `
-            <article class="venue-card${isNext ? ' venue-card--next' : ''}">
+            <article class="venue-card${isNext ? ' venue-card--next' : ''}${isActive ? ' venue-card--active' : ''}"
+                     data-venue-key="${key}" role="button" tabindex="0"
+                     aria-label="Show fixtures for ${vInfo.stadium} in ${vInfo.city}"
+                     aria-pressed="${isActive ? 'true' : 'false'}">
                 <div class="venue-card__header">
                     <div>
                         <p class="venue-card__stadium">${vInfo.stadium}</p>
@@ -267,21 +298,13 @@ const Schedule = (() => {
                     <a class="travel-btn" href="${hotelsUrl}" target="_blank" rel="noopener noreferrer">🏨 Nearby stays</a>
                 </div>
             </article>`;
-        }).join('');
+        }, '');
 
         mapEl.innerHTML = `
             <div class="venue-grid" aria-label="Venue list (map unavailable offline)">
-                ${cards || '<p class="fixtures-status">Venue map unavailable.</p>'}
+                ${venueCardsHtml}
             </div>`;
-
-        // Default sidebar to next venue info for quick glance
-        if (nextIdx >= 0) {
-            const nextFixture = fixtures[nextIdx];
-            const vInfo = DATA.venueInfo && DATA.venueInfo[nextFixture.v];
-            if (vInfo) {
-                showVenueSidebar(nextFixture.v, venueGroups[nextFixture.v].matches, vInfo);
-            }
-        }
+        _bindVenueCardInteractions(mapEl, venueGroups, defaultVenueKey);
     }
 
     // =========================================================================
@@ -332,6 +355,56 @@ const Schedule = (() => {
 
         // Auto-scroll to sidebar on mobile
         sidebar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function _bindVenueCardInteractions(mapEl, venueGroups, defaultVenueKey) {
+        const grid = mapEl.querySelector('.venue-grid');
+        if (!grid) return;
+
+        const setActive = venueKey => {
+            if (activeVenueKey === venueKey) return;
+            const prevKey = activeVenueKey;
+            activeVenueKey = venueKey;
+
+            if (prevKey) {
+                const prevCard = grid.querySelector(`.venue-card[data-venue-key="${prevKey}"]`);
+                if (prevCard) {
+                    prevCard.classList.remove('venue-card--active');
+                    prevCard.setAttribute('aria-pressed', 'false');
+                }
+            }
+
+            const nextCard = grid.querySelector(`.venue-card[data-venue-key="${venueKey}"]`);
+            if (nextCard) {
+                nextCard.classList.add('venue-card--active');
+                nextCard.setAttribute('aria-pressed', 'true');
+            }
+        };
+
+        const selectVenue = venueKey => {
+            const group = venueGroups[venueKey];
+            if (!group) return;
+            setActive(venueKey);
+            showVenueSidebar(venueKey, group.matches, group.vInfo);
+        };
+
+        grid.querySelectorAll('.venue-card').forEach(card => {
+            const venueKey = card.dataset.venueKey;
+            if (!venueKey) return;
+            card.addEventListener('click', () => selectVenue(venueKey));
+            card.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    selectVenue(venueKey);
+                } else if (e.key === ' ') {
+                    e.preventDefault();
+                    selectVenue(venueKey);
+                }
+            });
+        });
+
+        if (defaultVenueKey && venueGroups[defaultVenueKey]) {
+            selectVenue(defaultVenueKey);
+        }
     }
 
     // =========================================================================
