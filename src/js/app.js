@@ -83,6 +83,108 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------------------
+    // Highlights Carousel — populated from fixture data
+    // Shows recent results + upcoming matches as 16:9 media cards.
+    // -------------------------------------------------------------------------
+    (function initHighlightsCarousel() {
+        const carousel = document.getElementById('hub-highlights');
+        const prevBtn  = document.getElementById('highlights-prev');
+        const nextBtn  = document.getElementById('highlights-next');
+        if (!carousel) return;
+
+        const fixtures     = (typeof DATA !== 'undefined' && Array.isArray(DATA.fixtures))
+            ? DATA.fixtures : [];
+        const savedResults = (typeof Results !== 'undefined') ? Results.load() : {};
+        const now          = Date.now();
+
+        if (fixtures.length === 0) {
+            carousel.innerHTML = '<span class="highlights-empty">No matches found</span>';
+            return;
+        }
+
+        // Build array: last 3 played + next 5 upcoming, capped at 8 total
+        const played   = [];
+        const upcoming = [];
+        fixtures.forEach((f, i) => {
+            const matchMs = new Date(f.d).getTime() + 5.5 * 3600 * 1000; // IST offset
+            if (matchMs < now) {
+                played.push({ f, i });
+            } else {
+                upcoming.push({ f, i });
+            }
+        });
+
+        const cards = [
+            ...played.slice(-3).reverse(),
+            ...upcoming.slice(0, 5)
+        ].slice(0, 8);
+
+        if (cards.length === 0) {
+            carousel.innerHTML = '<span class="highlights-empty">Season data loading…</span>';
+            return;
+        }
+
+        const resultMap = { W: 'win', L: 'loss', N: 'nr' };
+
+        const html = cards.map(({ f, i }) => {
+            const matchMs = new Date(f.d).getTime() + 5.5 * 3600 * 1000;
+            const isPast  = matchMs < now;
+            const result  = savedResults[i];
+
+            let resultLabel = 'UPCOMING';
+            let resultClass = 'upcoming';
+            if (isPast && result) {
+                resultLabel = result === 'W' ? 'WIN' : result === 'L' ? 'LOSS' : 'N/R';
+                resultClass = resultMap[result] || 'nr';
+            } else if (isPast) {
+                resultLabel = 'PLAYED';
+                resultClass = 'nr';
+            }
+
+            const matchDate = new Date(f.d);
+            const dateStr   = matchDate.toLocaleDateString('en-IN', {
+                day: 'numeric', month: 'short'
+            });
+            const opponent  = (f.o || 'TBD').replace('vs ', '').trim();
+            const venue     = f.v ? f.v.split(',')[0].trim() : '';
+
+            return `
+            <div class="highlight-card" role="listitem" tabindex="0"
+                 aria-label="CSK vs ${opponent}, ${dateStr}">
+                <div class="highlight-card__thumb">
+                    <div class="highlight-card__thumb-bg">
+                        <span class="highlight-card__vs">
+                            <strong>CSK</strong>&nbsp;vs&nbsp;<strong>${opponent}</strong>
+                        </span>
+                    </div>
+                    <div class="highlight-card__scrim"></div>
+                    <div class="highlight-card__play" aria-hidden="true"></div>
+                    <span class="highlight-card__result highlight-card__result--${resultClass}">${resultLabel}</span>
+                </div>
+                <div class="highlight-card__info">
+                    <p class="highlight-card__match">CSK · ${opponent}</p>
+                    <p class="highlight-card__meta">${dateStr}${venue ? ' · ' + venue : ''}</p>
+                </div>
+            </div>`;
+        }).join('');
+
+        carousel.innerHTML = html;
+
+        // Scroll arrow controls
+        const SCROLL_AMT = 290;
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                carousel.scrollBy({ left: -SCROLL_AMT, behavior: 'smooth' });
+            });
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                carousel.scrollBy({ left: SCROLL_AMT, behavior: 'smooth' });
+            });
+        }
+    })();
+
+    // -------------------------------------------------------------------------
     // Share button — Web Share API with clipboard copy fallback
     // -------------------------------------------------------------------------
     const shareBtn = document.getElementById('share-btn');

@@ -5026,6 +5026,540 @@ h1 {
 }
 
 
+/* ==========================================================================
+   Hub Hero Banner
+   Premium full-bleed banner with player silhouettes and yellow glow.
+   Sits above the countdown card on the Hub page.
+   ========================================================================== */
+
+.hub-hero {
+    position: relative;
+    width: calc(100% + 10%);
+    margin-left: -5%;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    margin-bottom: var(--space-8);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    border-top: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Subtle grid pattern overlay */
+.hub-hero__grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(245,184,0,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245,184,0,0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+}
+
+/* Yellow glow orbs behind the player silhouettes */
+.hub-hero__glow {
+    position: absolute;
+    top: 50%;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hub-hero__glow--left {
+    left: 0;
+    transform: translate(-30%, -50%);
+    background: radial-gradient(circle, rgba(245,184,0,0.22) 0%, transparent 70%);
+}
+
+.hub-hero__glow--right {
+    right: 0;
+    transform: translate(30%, -50%);
+    background: radial-gradient(circle, rgba(245,184,0,0.22) 0%, transparent 70%);
+}
+
+/* Player silhouette containers */
+.hub-hero__player {
+    position: absolute;
+    bottom: 0;
+    width: 130px;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hub-hero__player--left  { left: 0; }
+.hub-hero__player--right { right: 0; }
+
+/* Abstract player silhouettes — CSS clip-path art */
+.hub-hero__silhouette {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 90%;
+    opacity: 0.55;
+}
+
+/* Batting stance: abstract batter silhouette (left player) */
+.hub-hero__silhouette--bat {
+    background: linear-gradient(170deg, var(--color-yellow) 0%, rgba(245,184,0,0.4) 60%, transparent 100%);
+    clip-path: polygon(
+        42% 0%, 48% 0%, 55% 8%, 58% 16%, 54% 22%, 60% 30%,
+        80% 45%, 88% 55%, 85% 62%, 75% 58%, 68% 50%,
+        60% 42%, 56% 52%, 58% 68%, 60% 82%, 55% 100%,
+        35% 100%, 38% 80%, 34% 64%, 30% 52%, 22% 42%,
+        14% 38%, 10% 28%, 18% 22%, 26% 28%, 32% 34%,
+        34% 24%, 30% 14%, 35% 6%
+    );
+    left: 8%;
+    width: 84%;
+}
+
+/* Bowling stance: abstract bowler silhouette (right player) */
+.hub-hero__silhouette--bowl {
+    background: linear-gradient(190deg, var(--color-yellow) 0%, rgba(245,184,0,0.4) 55%, transparent 100%);
+    clip-path: polygon(
+        52% 0%, 58% 0%, 64% 6%, 66% 16%, 60% 22%,
+        56% 28%, 72% 24%, 84% 20%, 88% 28%, 78% 36%,
+        66% 38%, 58% 38%, 62% 50%, 68% 64%, 70% 80%,
+        66% 100%, 46% 100%, 44% 80%, 40% 64%, 36% 52%,
+        30% 42%, 24% 36%, 20% 28%, 28% 20%, 36% 26%,
+        42% 22%, 40% 12%, 44% 4%
+    );
+    right: 8%;
+    width: 84%;
+}
+
+/* Mirrored for right player */
+.hub-hero__player--right .hub-hero__silhouette--bowl {
+    transform: scaleX(-1);
+    right: auto;
+    left: 8%;
+}
+
+/* Central brand content */
+.hub-hero__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    text-align: center;
+    pointer-events: none;
+}
+
+.hub-hero__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--color-yellow);
+    opacity: 0.85;
+}
+
+.hub-hero__wordmark {
+    font-family: var(--font-sans);
+    font-size: clamp(2.4rem, 10vw, 4rem);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.15em;
+    color: var(--color-text);
+    line-height: 1;
+    background: linear-gradient(135deg, #fff 0%, var(--color-yellow) 50%, rgba(245,184,0,0.6) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+}
+
+.hub-hero__sub {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+/* Entrance animation */
+.hub-hero__content {
+    animation: fadeUp 0.5s ease both;
+}
+
+.hub-hero__player--left {
+    animation: slideInLeft 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.hub-hero__player--right {
+    animation: slideInRight 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-24px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(24px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+
+/* ==========================================================================
+   Match Highlights Carousel
+   Horizontal scroll section on the Hub page with 16:9 media cards.
+   ========================================================================== */
+
+.highlights-section {
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-4);
+}
+
+.highlights-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+}
+
+/* Scroll arrow buttons */
+.highlights-nav {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.highlights-nav__btn {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-lt);
+    border-radius: var(--radius-full);
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    line-height: 1;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast),
+                border-color var(--transition-fast), transform var(--transition-fast);
+    padding: 0;
+    font-family: var(--font-sans);
+}
+
+.highlights-nav__btn:hover {
+    background: var(--color-yellow);
+    color: var(--color-black);
+    border-color: var(--color-yellow);
+    transform: scale(1.08);
+}
+
+.highlights-nav__btn:active {
+    transform: scale(0.94);
+}
+
+.highlights-nav__btn:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
+/* Horizontal scroll container */
+.highlights-carousel {
+    display: flex;
+    gap: var(--space-4);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: var(--space-2);
+    /* extend to full section width for edge bleed */
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.highlights-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+/* Highlight media card — 16:9 aspect ratio */
+.highlight-card {
+    flex: 0 0 260px;
+    scroll-snap-align: start;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid #1A1A1E;
+    background: var(--color-surface);
+    position: relative;
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+                border-color var(--transition-fast);
+}
+
+.highlight-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.6), 0 0 0 1px rgba(245,184,0,0.3);
+    border-color: rgba(245,184,0,0.4);
+}
+
+.highlight-card:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
+/* 16:9 thumbnail area */
+.highlight-card__thumb {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 */
+    overflow: hidden;
+    background: var(--color-surface-deep);
+}
+
+/* Gradient background art for the thumbnail */
+.highlight-card__thumb-bg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.highlight-card__thumb-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--color-surface-deep) 0%, #0d0d12 100%);
+}
+
+/* Yellow glow on hover */
+.highlight-card:hover .highlight-card__thumb-bg::before {
+    background: linear-gradient(135deg, #0a0a0f 0%, rgba(245,184,0,0.06) 100%);
+}
+
+/* Pseudo-field lines to suggest a cricket pitch */
+.highlight-card__thumb-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 80% 40% at 50% 60%, rgba(245,184,0,0.06) 0%, transparent 70%);
+}
+
+/* Team vs display inside the thumbnail */
+.highlight-card__vs {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    z-index: 2;
+}
+
+.highlight-card__vs strong {
+    color: var(--color-yellow);
+}
+
+/* Result badge top-right corner */
+.highlight-card__result {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: var(--radius-pill);
+    z-index: 3;
+}
+
+.highlight-card__result--win {
+    background: rgba(74, 222, 128, 0.2);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.4);
+}
+
+.highlight-card__result--loss {
+    background: rgba(248, 113, 113, 0.2);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.4);
+}
+
+.highlight-card__result--upcoming {
+    background: rgba(245, 184, 0, 0.15);
+    color: var(--color-yellow);
+    border: 1px solid rgba(245, 184, 0, 0.35);
+}
+
+.highlight-card__result--nr {
+    background: rgba(80, 80, 96, 0.2);
+    color: var(--color-text-muted);
+    border: 1px solid rgba(80, 80, 96, 0.4);
+}
+
+/* Play button overlay — centered on thumbnail */
+.highlight-card__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.85);
+    width: 40px;
+    height: 40px;
+    background: rgba(245, 184, 0, 0.15);
+    border: 1.5px solid rgba(245, 184, 0, 0.6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity var(--transition-base), transform var(--transition-base),
+                background var(--transition-fast);
+    z-index: 4;
+    pointer-events: none;
+}
+
+.highlight-card__play::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 0 6px 11px;
+    border-color: transparent transparent transparent var(--color-yellow);
+    margin-left: 2px;
+}
+
+.highlight-card:hover .highlight-card__play {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    background: rgba(245, 184, 0, 0.25);
+}
+
+/* Bottom gradient scrim on thumbnail */
+.highlight-card__scrim {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(6,6,8,0.85) 0%, transparent 100%);
+    z-index: 2;
+}
+
+/* Card info below thumbnail */
+.highlight-card__info {
+    padding: var(--space-3) var(--space-4);
+}
+
+.highlight-card__match {
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    margin-bottom: var(--space-1);
+}
+
+.highlight-card__meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.5px;
+}
+
+/* Empty state for when no fixtures are available */
+.highlights-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    flex: 1;
+}
+
+
+/* ==========================================================================
+   Enhanced Glassmorphism — countdown card upgrade
+   ========================================================================== */
+
+.countdown-card {
+    /* Upgrade to full glassmorphism treatment */
+    background: linear-gradient(145deg,
+        rgba(17, 17, 22, 0.92) 0%,
+        rgba(13, 13, 16, 0.96) 100%
+    );
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.07);
+    box-shadow: var(--shadow-md),
+                inset 0 1px 0 rgba(255,255,255,0.05),
+                inset 0 -1px 0 rgba(0,0,0,0.3);
+}
+
+.countdown-card::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 20%;
+    right: 20%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(245,184,0,0.35), transparent);
+    pointer-events: none;
+}
+
+/* Yellow glow behind active hub info cards */
+.hub-info-card {
+    border: 1px solid #1A1A1E;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast),
+                transform var(--transition-fast);
+}
+
+.hub-info-card:hover {
+    border-color: rgba(245,184,0,0.3);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(245,184,0,0.15);
+}
+
+/* Hub record card — upgraded */
+.hub-record-wrap {
+    border: 1px solid #1A1A1E;
+    background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-mid) 100%);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.hub-record-wrap:hover {
+    border-color: rgba(245,184,0,0.25);
+    box-shadow: 0 0 0 1px rgba(245,184,0,0.1), var(--shadow-sm);
+}
+
+
+/* ==========================================================================
+   Navigation — enhanced active-state glow
+   ========================================================================== */
+
+.n-i.active {
+    box-shadow: 0 2px 14px rgba(245, 184, 0, 0.5), 0 0 0 1px rgba(245,184,0,0.3);
+}
+
+
 /* --------------------------------------------------------------------------
    Accessibility — Respect prefers-reduced-motion
 -------------------------------------------------------------------------- */
