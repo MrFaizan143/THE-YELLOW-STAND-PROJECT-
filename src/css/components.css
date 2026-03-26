@@ -106,6 +106,7 @@ nav {
    Global icon alignment
    Keeps inline SVG icons vertically centred with adjacent text.
 -------------------------------------------------------------------------- */
+.icon-glyph,
 svg[aria-hidden="true"] {
     display: inline-block;
     vertical-align: middle;
@@ -613,6 +614,114 @@ h1 {
 
 .fixtures-status--error {
     color: #f87171;
+}
+
+/* --------------------------------------------------------------------------
+   Venue Grid (Map fallback)
+   Offline-friendly cards shown in place of the interactive map.
+-------------------------------------------------------------------------- */
+.venue-map-container {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    box-shadow: var(--shadow-md);
+    min-height: 220px;
+}
+
+.venue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-4);
+}
+
+.venue-card {
+    background: var(--color-surface-mid);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    box-shadow: var(--shadow-sm);
+}
+
+.venue-card--next {
+    border-color: var(--color-yellow);
+    box-shadow: var(--shadow-glow-sm);
+}
+
+.venue-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.venue-card__stadium {
+    font-weight: var(--font-weight-bold);
+    font-size: 1rem;
+}
+
+.venue-card__city {
+    color: var(--color-text-muted);
+    font-size: var(--text-xxs);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.venue-card__badge {
+    background: var(--color-surface);
+    color: var(--color-yellow);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    padding: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+}
+
+.venue-card__matches {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.venue-match {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: var(--space-2);
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+}
+
+.venue-match--past {
+    opacity: 0.75;
+}
+
+.venue-match-date {
+    font-family: var(--font-mono);
+    color: var(--color-yellow);
+    font-weight: var(--font-weight-bold);
+}
+
+.venue-match-team {
+    font-weight: var(--font-weight-bold);
+}
+
+.venue-match-time {
+    color: var(--color-text-muted);
+    font-size: var(--text-xxs);
+}
+
+.venue-card__actions {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
 }
 
 

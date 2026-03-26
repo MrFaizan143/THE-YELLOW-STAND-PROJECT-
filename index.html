@@ -6,6 +6,7 @@
     <meta name="description" content="CSK fan hub — fixtures, squad &amp; countdown for the 2026 season.">
     <meta name="theme-color" content="#F5B800">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <!-- Open Graph / Social sharing -->
@@ -21,11 +22,12 @@
     <title>T Y S | 2026 Engine</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;800&family=Space+Mono&display=swap" rel="stylesheet">
+    <link rel="icon" href="icons/icon-192.png" type="image/png">
     <link rel="stylesheet" href="src/css/main.css">
-    <!-- Lucide icon library (MIT) — processed by src/js/icons.js -->
-    <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+    <script>
+        // Default keys (override by setting window.TYS_CONFIG before app.js)
+        window.TYS_CONFIG = window.TYS_CONFIG || { CRICAPI_KEY: '', RAPIDAPI_KEY: '' };
+    </script>
 </head>
 <body>
 
@@ -210,8 +212,6 @@
 
     <!-- Scripts (data first, then logic, then app init) -->
     <script src="src/data/team.js"></script>
-    <!-- config.js is gitignored — copy config.example.js → config.js and add your keys -->
-    <script src="src/js/config.js"></script>
     <script src="src/js/icons.js"></script>
     <script src="src/js/api.js"></script>
     <script src="src/js/results.js"></script>

@@ -26,8 +26,6 @@ const Schedule = (() => {
     // State
     // =========================================================================
 
-    let leafletMap          = null;   // Leaflet.js map instance
-    let mapMarkers          = {};     // venueKey → { marker, matches }
     let notifTimers         = [];     // setTimeout handles for pending notifications
     let scheduleCountdownId = null;   // setInterval handle for in-page countdown
 
@@ -186,7 +184,7 @@ const Schedule = (() => {
                 try {
                     new Notification('The Yellow Stand 🦁', {
                         body: `CSK vs ${f.o} starts in 15 minutes!\n${f.v} · ${f.t} IST`,
-                        icon: '/icons/icon-192x192.png',
+                        icon: '/icons/icon-192.png',
                         tag:  `tys-match-${f.iso}`
                     });
                 } catch (_) { /* Notification may be blocked */ }
@@ -213,27 +211,13 @@ const Schedule = (() => {
     }
 
     // =========================================================================
-    // Venue Map (Leaflet.js)
+    // Venue Map (Leaflet.js) — replaced with offline-friendly venue grid
     // =========================================================================
 
-    function initMap() {
-        const mapEl = document.getElementById('venue-map');
-        if (!mapEl || typeof L === 'undefined' || leafletMap) return;
-
-        leafletMap = L.map('venue-map', {
-            center:            [21.0, 80.0],
-            zoom:              5,
-            zoomControl:       false,
-            attributionControl: false
-        });
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-            maxZoom:     18
-        }).addTo(leafletMap);
-
-        L.control.attribution({ prefix: false }).addTo(leafletMap);
-        L.control.zoom({ position: 'bottomright' }).addTo(leafletMap);
+    function renderVenueGrid() {
+        const mapEl      = document.getElementById('venue-map');
+        const sidebarEl  = document.getElementById('venue-sidebar');
+        if (!mapEl || !sidebarEl) return;
 
         const fixtures = DATA.fixtures || [];
         const now      = Date.now();
@@ -248,61 +232,48 @@ const Schedule = (() => {
             venueGroups[f.v].matches.push({ f, idx });
         });
 
-        Object.entries(venueGroups).forEach(([key, { vInfo, matches }]) => {
-            const isNextVenue = matches.some(({ idx }) => idx === nextIdx);
-            const isLiveVenue = matches.some(({ f }) =>
-                f.status && /live|progress/i.test(f.status)
-            );
-
-            const pinClass = [
-                'map-pin',
-                isNextVenue ? 'map-pin--next' : '',
-                isLiveVenue ? 'map-pin--live' : ''
-            ].filter(Boolean).join(' ');
-
-            const icon = L.divIcon({
-                html:      `<div class="${pinClass}">${matches.length}</div>`,
-                className: '',
-                iconSize:  [32, 32],
-                iconAnchor:[16, 16]
-            });
-
-            const marker = L.marker([vInfo.lat, vInfo.lng], { icon, title: vInfo.stadium });
-            marker.addTo(leafletMap);
-
-            // Popup content
-            const matchRows = matches.map(({ f }) => {
+        const cards = Object.entries(venueGroups).map(([key, { vInfo, matches }]) => {
+            const isNext = matches.some(({ idx }) => idx === nextIdx);
+            const matchList = matches.map(({ f }) => {
                 const isPast = f.iso && new Date(f.iso).getTime() <= now;
-                return `<div class="map-popup-match${isPast ? ' map-popup-match--past' : ''}">
-                            ${f.d} — CSK vs ${f.o}
-                        </div>`;
+                return `<li class="venue-match${isPast ? ' venue-match--past' : ''}">
+                    <span class="venue-match-date">${f.d}</span>
+                    <span class="venue-match-team">CSK vs ${f.o}</span>
+                    <span class="venue-match-time">${f.t} IST</span>
+                </li>`;
             }).join('');
+            const dirUrl   = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(vInfo.stadium + ', ' + vInfo.city)}`;
+            const hotelsUrl = `https://www.google.com/maps/search/hotels+near+${encodeURIComponent(vInfo.stadium + ', ' + vInfo.city)}`;
+            return `
+            <article class="venue-card${isNext ? ' venue-card--next' : ''}">
+                <div class="venue-card__header">
+                    <div>
+                        <p class="venue-card__stadium">${vInfo.stadium}</p>
+                        <p class="venue-card__city">${vInfo.city}</p>
+                    </div>
+                    <span class="venue-card__badge">${matches.length} match${matches.length > 1 ? 'es' : ''}</span>
+                </div>
+                <ul class="venue-card__matches">${matchList}</ul>
+                <div class="venue-card__actions">
+                    <a class="travel-btn" href="${dirUrl}" target="_blank" rel="noopener noreferrer">📍 Directions</a>
+                    <a class="travel-btn" href="${hotelsUrl}" target="_blank" rel="noopener noreferrer">🏨 Nearby stays</a>
+                </div>
+            </article>`;
+        }).join('');
 
-            marker.bindPopup(`
-                <div class="map-popup">
-                    <strong class="map-popup-stadium">${vInfo.stadium}</strong>
-                    <p class="map-popup-city">${vInfo.city}</p>
-                    ${matchRows}
-                    <button class="map-popup-filter-btn" data-venue="${key}">
-                        View in schedule ↓
-                    </button>
-                </div>`, { maxWidth: 250, minWidth: 180 });
+        mapEl.innerHTML = `
+            <div class="venue-grid" aria-label="Venue list (map unavailable offline)">
+                ${cards || '<p class="fixtures-status">Venue map unavailable.</p>'}
+            </div>`;
 
-            marker.on('popupopen', () => {
-                // Bind the popup button after Leaflet inserts it into the DOM
-                requestAnimationFrame(() => {
-                    const btn = document.querySelector(`.map-popup-filter-btn[data-venue="${CSS.escape(key)}"]`);
-                    if (btn) {
-                        btn.addEventListener('click', () => {
-                            marker.closePopup();
-                            showVenueSidebar(key, matches, vInfo);
-                        });
-                    }
-                });
-            });
-
-            mapMarkers[key] = { marker, matches };
-        });
+        // Default sidebar to next venue info for quick glance
+        if (nextIdx >= 0) {
+            const nextFixture = fixtures[nextIdx];
+            const vInfo = DATA.venueInfo && DATA.venueInfo[nextFixture.v];
+            if (vInfo) {
+                showVenueSidebar(nextFixture.v, venueGroups[nextFixture.v].matches, vInfo);
+            }
+        }
     }
 
     // =========================================================================
@@ -604,10 +575,8 @@ const Schedule = (() => {
         // Render probable XIs
         renderProbableXIs();
 
-        // Lazy-load Leaflet (CSS + JS) on first visit to the Map page
-        loadLeaflet().then(() => {
-            initMap();
-        });
+        // Offline-friendly venue view (no external Leaflet dependency)
+        renderVenueGrid();
 
         // Re-apply fav team highlight after IPL schedule finishes rendering
         // (schedule render is async via API calls — small delay is acceptable)
@@ -615,43 +584,6 @@ const Schedule = (() => {
             applyFavTeamHighlight();
             initH2HTooltips();
         }, 700);
-    }
-
-    /**
-     * Dynamically inject the Leaflet CSS and JS bundle the first time the Map
-     * page is visited.  Subsequent calls resolve immediately from the cached
-     * promise so Leaflet is only fetched once per session.
-     * @returns {Promise<void>}
-     */
-    let leafletLoadPromise = null;
-    function loadLeaflet() {
-        if (typeof L !== 'undefined') return Promise.resolve();
-        if (leafletLoadPromise) return leafletLoadPromise;
-
-        leafletLoadPromise = new Promise((resolve, reject) => {
-            // Inject CSS (no callback needed — non-render-blocking for map)
-            if (!document.getElementById('leaflet-css')) {
-                const link = document.createElement('link');
-                link.id   = 'leaflet-css';
-                link.rel  = 'stylesheet';
-                link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-                link.setAttribute('integrity', 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=');
-                link.setAttribute('crossorigin', '');
-                document.head.appendChild(link);
-            }
-
-            // Inject JS
-            const script = document.createElement('script');
-            script.id  = 'leaflet-js';
-            script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-            script.setAttribute('integrity', 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLs=');
-            script.setAttribute('crossorigin', '');
-            script.onload  = () => resolve();
-            script.onerror = (e) => reject(e);
-            document.head.appendChild(script);
-        });
-
-        return leafletLoadPromise;
     }
 
     /**

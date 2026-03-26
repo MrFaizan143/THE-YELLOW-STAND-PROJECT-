@@ -50,6 +50,9 @@ All app content lives in **`src/data/team.js`**. Edit the `DATA` object:
 
 No other files need to change for content updates.
 
+### API keys (optional)
+- A built-in empty config stub ships with the app. To enable live scores, set `window.TYS_CONFIG = { CRICAPI_KEY: '...', RAPIDAPI_KEY: '...' }` in `index.html` (before `src/js/app.js`) or a local script tag you keep out of version control.
+
 ## Features
 
 | Feature | Description |
