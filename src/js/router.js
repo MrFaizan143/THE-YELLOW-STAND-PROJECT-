@@ -39,26 +39,6 @@ const Router = (() => {
         // Lazy-render page content on first visit
         if (!visited.has(pageId)) {
             visited.add(pageId);
-            if (pageId === 'm') {
-                // Always render static data first so the schedule is never stuck on
-                // "Loading IPL schedule…".  If API keys are configured the live data
-                // will overwrite the static render once the fetch completes.
-                Render.fixtures();
-                Render.iplSchedule();
-                Render.standings();
-
-                if (CricketAPI.isConfigured() || CricketAPI.isCricapiConfigured()) {
-                    Render.fixturesLoading();
-                    // Fetch CSK-only fixtures and full IPL schedule in parallel
-                    Promise.all([
-                        CricketAPI.fetchCSKFixtures().catch(() => []),
-                        CricketAPI.fetchAllIPLFixtures().catch(() => [])
-                    ]).then(([cskLive, iplLive]) => {
-                        Render.fixtures(cskLive);
-                        Render.iplSchedule(iplLive);
-                    });
-                }
-            }
             if (pageId === 'p') { Render.legacy(); Render.management(); Render.squad(); }
             if (pageId === 'n') News.fetchAndRender();
             if (pageId === 'f') {
@@ -72,12 +52,6 @@ const Router = (() => {
             }
             if (pageId === 't') Tools.render();
             if (pageId === 'l') Live.render();
-        }
-
-        // Always call Schedule.onPageShow when navigating to the schedule page
-        // (map must be visible before Leaflet can initialize it)
-        if (pageId === 'm' && typeof Schedule !== 'undefined') {
-            Schedule.onPageShow();
         }
 
         window.scrollTo(0, 0);
