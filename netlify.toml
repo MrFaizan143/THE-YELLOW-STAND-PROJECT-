@@ -1,0 +1,67 @@
+[build]
+  publish = "."
+
+# ---------------------------------------------------------------------------
+# Security headers — applied to every response
+# ---------------------------------------------------------------------------
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options  = "nosniff"
+    X-Frame-Options          = "DENY"
+    Referrer-Policy          = "strict-origin-when-cross-origin"
+    Permissions-Policy       = "geolocation=(), microphone=(), camera=()"
+    Content-Security-Policy  = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.cricapi.com https://cricket-live-data.p.rapidapi.com https://api.rss2json.com; img-src 'self' data: https:; frame-src 'none'; worker-src 'self'"
+
+# ---------------------------------------------------------------------------
+# Cache-Control headers — asset-type specific
+# ---------------------------------------------------------------------------
+
+# Service worker must never be stale (PWA updates depend on it)
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control        = "public, max-age=0, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+# HTML shell — always revalidate so the SW update cycle works correctly
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# PWA manifest — 1-day cache is plenty
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# JS / CSS / data — 1-hour cache; SW provides faster cache-first serving
+[[headers]]
+  for = "/src/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/src/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/src/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+# Icons change rarely — cache for 1 week
+[[headers]]
+  for = "/icons/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# ---------------------------------------------------------------------------
+# SPA fallback — serve index.html for all routes that don't match a file
+# ---------------------------------------------------------------------------
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
