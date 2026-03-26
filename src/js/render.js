@@ -727,9 +727,12 @@ const Render = (() => {
         let lastSectionLabel = null;
         let html = '';
 
+        // Regex for detecting playoff-round entries (matches team.js status values)
+        const PLAYOFF_RE = /Qualifier|Eliminator|Final/i;
+
         matches.forEach(m => {
             // Determine the section label for this match
-            const isPlayoff   = /Qualifier|Eliminator|Final/i.test(m.status || '');
+            const isPlayoff   = PLAYOFF_RE.test(m.status || '');
             const dateParts   = m.d.split(' ');
             const month       = dateParts.length >= 2 ? dateParts[1] : '';
             const sectionLabel = isPlayoff ? 'PLAYOFFS' : month;

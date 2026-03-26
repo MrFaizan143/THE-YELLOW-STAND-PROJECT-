@@ -176,11 +176,12 @@ const CricketAPI = (() => {
 
     /** Persist live-match data to localStorage so newly-opened tabs can read it. */
     function _saveLiveCrossTab(list) {
+        const ts = Date.now();
         try {
-            localStorage.setItem(LIVE_XT_CACHE_KEY, JSON.stringify({ data: list, ts: Date.now() }));
+            localStorage.setItem(LIVE_XT_CACHE_KEY, JSON.stringify({ data: list, ts }));
         } catch (_) {}
         if (_liveBC) {
-            try { _liveBC.postMessage({ data: list, ts: Date.now() }); } catch (_) {}
+            try { _liveBC.postMessage({ data: list, ts }); } catch (_) {}
         }
     }
 
