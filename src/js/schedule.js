@@ -249,7 +249,7 @@ const Schedule = (() => {
         const venueKeys = Object.keys(venueGroups);
         if (venueKeys.length === 0) {
             mapEl.innerHTML = `
-                <div class="venue-grid" aria-label="Venue list (map unavailable offline)">
+                <div class="venue-grid" aria-label="Venue information unavailable">
                     <p class="fixtures-status">Venue map unavailable.</p>
                 </div>`;
             sidebarEl.innerHTML = '';
@@ -382,8 +382,9 @@ const Schedule = (() => {
             if (!venueKey) return;
             card.addEventListener('click', () => selectVenue(venueKey));
             card.addEventListener('keydown', e => {
-                const isEnter = e.key === 'Enter';
-                const isSpace = e.key === ' ';
+                const code    = e.keyCode || e.which;
+                const isEnter = e.key === 'Enter' || code === 13;
+                const isSpace = e.key === ' ' || code === 32;
                 if (!isEnter && !isSpace) return;
                 if (isSpace) e.preventDefault();
                 selectVenue(venueKey);
