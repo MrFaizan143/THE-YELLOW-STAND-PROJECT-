@@ -167,7 +167,7 @@ const Schedule = (() => {
             renderFromList();
         };
 
-        if (!CricketAPI?.fetchCSKFixtures) {
+        if (typeof CricketAPI === 'undefined' || !CricketAPI.fetchCSKFixtures) {
             renderFromList();
             return;
         }
