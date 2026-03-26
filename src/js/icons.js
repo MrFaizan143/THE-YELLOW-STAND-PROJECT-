@@ -26,8 +26,12 @@ const Icons = (() => {
         'calendar-check': '✅'
     };
 
+    function glyphText(name) {
+        return GLYPHS[name] || '•';
+    }
+
     function renderGlyph(name, size = 16, cls = '') {
-        const glyph = GLYPHS[name] || '•';
+        const glyph = glyphText(name);
         const extra = cls ? ` ${cls}` : '';
         return `<span class="icon-glyph${extra}" style="font-size:${size}px;line-height:1" aria-hidden="true">${glyph}</span>`;
     }
@@ -56,7 +60,7 @@ const Icons = (() => {
         const span = document.createElement('span');
         span.className = `icon-glyph${cls ? ' ' + cls : ''}`;
         span.setAttribute('aria-hidden', 'true');
-        span.textContent = GLYPHS[name] || '•';
+        span.textContent = glyphText(name);
         span.style.fontSize = `${size || 16}px`;
         span.style.lineHeight = '1';
         return span;
