@@ -362,12 +362,23 @@ const Schedule = (() => {
         if (!grid) return;
 
         const setActive = venueKey => {
+            if (activeVenueKey === venueKey) return;
+            const prevKey = activeVenueKey;
             activeVenueKey = venueKey;
-            grid.querySelectorAll('.venue-card').forEach(card => {
-                const isActive = card.dataset.venueKey === venueKey;
-                card.classList.toggle('venue-card--active', isActive);
-                card.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-            });
+
+            if (prevKey) {
+                const prevCard = grid.querySelector(`.venue-card[data-venue-key="${prevKey}"]`);
+                if (prevCard) {
+                    prevCard.classList.remove('venue-card--active');
+                    prevCard.setAttribute('aria-pressed', 'false');
+                }
+            }
+
+            const nextCard = grid.querySelector(`.venue-card[data-venue-key="${venueKey}"]`);
+            if (nextCard) {
+                nextCard.classList.add('venue-card--active');
+                nextCard.setAttribute('aria-pressed', 'true');
+            }
         };
 
         const selectVenue = venueKey => {
@@ -382,9 +393,8 @@ const Schedule = (() => {
             if (!venueKey) return;
             card.addEventListener('click', () => selectVenue(venueKey));
             card.addEventListener('keydown', e => {
-                const code    = e.keyCode || e.which;
-                const isEnter = e.key === 'Enter' || code === 13;
-                const isSpace = e.key === ' ' || code === 32;
+                const isEnter = e.key === 'Enter';
+                const isSpace = e.key === ' ';
                 if (!isEnter && !isSpace) return;
                 if (isSpace) e.preventDefault();
                 selectVenue(venueKey);
