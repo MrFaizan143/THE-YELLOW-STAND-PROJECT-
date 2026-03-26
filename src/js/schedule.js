@@ -151,14 +151,20 @@ const Schedule = (() => {
 
         const renderFromList = (list = null) => {
             _fixturesLoading = false;
-            _fixturesLoaded = true;
-            if (typeof Render !== 'undefined' && Render.fixtures) {
+            const canRender = typeof Render !== 'undefined' && typeof Render.fixtures === 'function';
+            _fixturesLoaded = canRender;
+            if (canRender) {
                 if (Array.isArray(list) && list.length > 0) {
                     Render.fixtures(list);
                 } else {
                     Render.fixtures();
                 }
             }
+        };
+
+        const handleFixturesError = err => {
+            console.warn('[Schedule] fixtures fetch failed via CricketAPI.fetchCSKFixtures:', err);
+            renderFromList();
         };
 
         if (!CricketAPI?.fetchCSKFixtures) {
@@ -169,19 +175,10 @@ const Schedule = (() => {
         try {
             Promise.resolve(CricketAPI.fetchCSKFixtures()).then(list => {
                 renderFromList(list);
-            }).catch(err => {
-                console.warn('[Schedule] fixtures fetch failed via CricketAPI.fetchCSKFixtures:', err);
-                if (typeof Render !== 'undefined' && Render.fixturesError) {
-                    Render.fixturesError('Fixtures unavailable right now.');
-                }
-                renderFromList();
-            });
+            }).catch(handleFixturesError);
         } catch (err) {
             console.warn('[Schedule] fixtures fetch threw synchronously:', err);
-            if (typeof Render !== 'undefined' && Render.fixturesError) {
-                Render.fixturesError('Fixtures unavailable right now.');
-            }
-            renderFromList();
+            handleFixturesError(err);
         }
     }
 
