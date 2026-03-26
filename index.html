@@ -2,24 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="description" content="CSK fan hub — fixtures, squad &amp; countdown for the 2026 season.">
+    <!-- maximum-scale removed: allowing user zoom is required for WCAG 1.4.4 (Resize Text) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The Yellow Stand — your unofficial CSK fan hub. Live countdown, fixtures, squad &amp; live scores for IPL 2026.">
     <meta name="theme-color" content="#F5B800">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <!-- Open Graph / Social sharing -->
-    <meta property="og:type"        content="website">
-    <meta property="og:title"       content="The Yellow Stand · CSK 2026">
-    <meta property="og:description" content="Your unofficial CSK fan hub — live countdown, fixtures, squad &amp; live scores for IPL 2026.">
-    <meta property="og:image"       content="icons/icon-512.png">
-    <meta name="twitter:card"        content="summary_large_image">
-    <meta name="twitter:title"       content="The Yellow Stand · CSK 2026">
-    <meta name="twitter:description" content="Your unofficial CSK fan hub — live countdown, fixtures, squad &amp; live scores for IPL 2026.">
-    <meta name="twitter:image"       content="icons/icon-512.png">
+    <!-- Canonical — update to your production domain before deploying -->
+    <link rel="canonical" href="https://theyellowstand.netlify.app/">
 
-    <title>T Y S | 2026 Engine</title>
+    <!-- Open Graph / Social sharing — og:image must be an absolute URL -->
+    <meta property="og:type"        content="website">
+    <meta property="og:url"         content="https://theyellowstand.netlify.app/">
+    <meta property="og:title"       content="The Yellow Stand · CSK Fan Hub 2026">
+    <meta property="og:description" content="Your unofficial CSK fan hub — live countdown, fixtures, squad &amp; live scores for IPL 2026.">
+    <meta property="og:image"       content="https://theyellowstand.netlify.app/icons/icon-512.png">
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="The Yellow Stand · CSK Fan Hub 2026">
+    <meta name="twitter:description" content="Your unofficial CSK fan hub — live countdown, fixtures, squad &amp; live scores for IPL 2026.">
+    <meta name="twitter:image"       content="https://theyellowstand.netlify.app/icons/icon-512.png">
+
+    <title>The Yellow Stand · CSK Fan Hub 2026</title>
+
+    <!-- JSON-LD structured data — SportsTeam rich result -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SportsOrganization",
+      "name": "Chennai Super Kings",
+      "alternateName": "CSK",
+      "sport": "Cricket",
+      "url": "https://theyellowstand.netlify.app/",
+      "description": "The Yellow Stand is an unofficial CSK fan hub covering IPL 2026 fixtures, squad, live scores, and countdowns.",
+      "memberOf": {
+        "@type": "SportsOrganization",
+        "name": "Indian Premier League",
+        "alternateName": "IPL"
+      }
+    }
+    </script>
 
     <!-- Google Fonts — preconnect reduces latency; SW caches via stale-while-revalidate -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -87,9 +110,17 @@
             <div id="hub-live-score" class="hub-live-score-card" aria-live="polite" style="display:none"></div>
             <div class="hub-info-row">
                 <!-- Last Result Card -->
-                <div class="hub-info-card" id="hub-last-result" aria-label="Last result"></div>
+                <div class="hub-info-card" id="hub-last-result" aria-label="Last result">
+                    <div class="skeleton skeleton--tag"></div>
+                    <div class="skeleton skeleton--line skeleton--line-60"></div>
+                    <div class="skeleton skeleton--line skeleton--line-80" style="margin-top:6px"></div>
+                </div>
                 <!-- Venue Card -->
-                <div class="hub-info-card" id="hub-venue" aria-label="Next match venue"></div>
+                <div class="hub-info-card" id="hub-venue" aria-label="Next match venue">
+                    <div class="skeleton skeleton--tag"></div>
+                    <div class="skeleton skeleton--line skeleton--line-70"></div>
+                    <div class="skeleton skeleton--line skeleton--line-50" style="margin-top:6px"></div>
+                </div>
             </div>
             <div class="hub-record-wrap" aria-label="Season record">
                 <span class="tag" style="margin-bottom: var(--space-2);">2026 Season Record</span>

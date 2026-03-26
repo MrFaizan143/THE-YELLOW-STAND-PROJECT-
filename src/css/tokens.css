@@ -66,9 +66,9 @@
     /* -----------------------------------------------------------------------
        Font Sizes
     ----------------------------------------------------------------------- */
-    --text-xxs:   0.65rem;   /* tags, roles, small labels */
-    --text-xs:    0.65rem;   /* nav items */
-    --text-sm:    0.7rem;    /* squad category titles */
+    --text-xxs:   0.65rem;   /* micro-labels: tags, roles (≈10.4px — uppercase with letter-spacing) */
+    --text-xs:    0.7rem;    /* nav items, secondary meta (≈11.2px) */
+    --text-sm:    0.75rem;   /* squad category titles (≈12px) */
     --text-base:  0.8rem;    /* staff names */
     --text-md:    0.85rem;   /* player card names */
     --text-lg:    2rem;      /* countdown display */
@@ -150,6 +150,20 @@
 
     --color-overlay-nav:        rgba(244, 244, 240, 0.88);
     --color-overlay-nav-border: rgba(0, 0, 0, 0.1);
+
+    /*
+     * In light mode the default #F5B800 gold has only ~1.6:1 contrast against
+     * the off-white background — far below the WCAG AA minimum of 4.5:1.
+     * #7A5900 yields ≈5.3:1 and still reads as a rich amber-gold.
+     * Background/decorative uses (active nav pill, badge fills) are unaffected
+     * in appearance since dark text on this amber is still clearly legible.
+     */
+    --color-yellow:       #7A5900;
+    --color-yellow-dim:   rgba(122, 89, 0, 0.1);
+    --color-yellow-glow:  rgba(122, 89, 0, 0.18);
+
+    /* Backward-compat aliases */
+    --yellow:     var(--color-yellow);
 
     --color-positive:     #16a34a;
     --color-negative:     #dc2626;

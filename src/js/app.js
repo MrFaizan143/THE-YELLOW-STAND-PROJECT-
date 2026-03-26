@@ -271,9 +271,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     await navigator.share(shareData);
                 } else if (navigator.clipboard) {
                     await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
-                    shareBtn.innerHTML = '<span class="share-icon">✓</span> Copied!';
+                    shareBtn.innerHTML = `${Icons.i('check', 14)} Copied!`;
                     setTimeout(() => {
-                        shareBtn.innerHTML = '<span class="share-icon">↑</span> Share';
+                        shareBtn.innerHTML = `<span class="share-icon">${Icons.i('share-2', 14)}</span> Share`;
                     }, 2000);
                 }
             } catch (_) { /* user cancelled share or browser denied */ }
@@ -346,6 +346,29 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dismissBtn) {
             dismissBtn.addEventListener('click', () => { banner.hidden = true; }, { once: true });
         }
+    }
+});
+
+// =============================================================================
+// Global error handler — surface unhandled errors as dev-mode toasts so that
+// silent failures are visible during local development.
+// Gated to localhost/127.0.0.1 only — never exposes internals in production.
+// =============================================================================
+const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+
+window.addEventListener('error', (event) => {
+    if (IS_DEV && typeof Toast !== 'undefined') {
+        Toast.show(`JS Error: ${event.message}`, 'error', 6000);
+    }
+    // Let the error propagate normally for devtools
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    if (IS_DEV && typeof Toast !== 'undefined') {
+        const msg = event.reason instanceof Error
+            ? event.reason.message
+            : String(event.reason);
+        Toast.show(`Unhandled promise rejection: ${msg}`, 'error', 6000);
     }
 });
 
