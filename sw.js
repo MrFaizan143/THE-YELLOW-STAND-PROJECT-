@@ -22,7 +22,6 @@ const SHELL_ASSETS = [
     '/src/data/team.js',
     '/src/js/icons.js',
     '/src/js/api.js',
-    '/src/js/results.js',
     '/src/js/render.js',
     '/src/js/router.js',
     '/src/js/schedule.js',
