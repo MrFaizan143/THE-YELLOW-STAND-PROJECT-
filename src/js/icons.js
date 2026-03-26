@@ -48,6 +48,9 @@ const Icons = (() => {
         x: {
             body: '<path d="M18 6 6 18"/><path d="M6 6l12 12"/>'
         },
+        check: {
+            body: '<path d="M20 6 9 17l-5-5"/>'
+        },
         pin: {
             body: '<path d="M12 17v5"/><path d="M8 5h8l-1 6H9z"/><path d="m9 11-4 4"/><path d="m15 11 4 4"/>'
         },

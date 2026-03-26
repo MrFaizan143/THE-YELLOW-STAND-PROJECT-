@@ -22,6 +22,11 @@ const Router = (() => {
         // Show target page
         const target = document.getElementById(pageId);
         if (target) {
+            // Force a style recalculation so the fadeUp keyframe restarts even
+            // when the user navigates back to an already-visited page.
+            target.style.animationName = 'none';
+            target.offsetHeight; // trigger reflow
+            target.style.animationName = '';
             target.classList.add('active');
         }
 
