@@ -9,8 +9,6 @@ const Schedule = (() => {
     let _activeTeamFilter = 'all';
     let _activeViewMode   = 'list';
     let _scheduleControlsBound = false;
-    let _fixturesLoaded = false;
-    let _fixturesLoading = false;
 
     function init() {
         applyFavTeamHighlight();
@@ -137,50 +135,5 @@ const Schedule = (() => {
         });
     }
 
-    /**
-     * Loads CSK fixtures for the Schedule page.
-     * Shows a loading state, tries live data when keys are configured,
-     * and falls back to static DATA.fixtures on failure.
-     */
-    function loadFixtures() {
-        if (_fixturesLoaded || _fixturesLoading) return;
-        _fixturesLoading = true;
-        if (typeof Render !== 'undefined' && Render.fixturesLoading) {
-            Render.fixturesLoading();
-        }
-
-        const renderFromList = (list = null) => {
-            _fixturesLoading = false;
-            _fixturesLoaded = true;
-            const canRender = typeof Render !== 'undefined' && typeof Render.fixtures === 'function';
-            if (canRender) {
-                if (Array.isArray(list) && list.length > 0) {
-                    Render.fixtures(list);
-                } else {
-                    Render.fixtures();
-                }
-            }
-        };
-
-        const handleFixturesError = err => {
-            console.warn('[Schedule] fixtures fetch failed:', err);
-            renderFromList();
-        };
-
-        if (typeof CricketAPI === 'undefined' || !CricketAPI.fetchCSKFixtures) {
-            renderFromList();
-            return;
-        }
-
-        try {
-            Promise.resolve(CricketAPI.fetchCSKFixtures()).then(list => {
-                renderFromList(list);
-            }).catch(handleFixturesError);
-        } catch (err) {
-            console.warn('[Schedule] fixtures fetch threw synchronously:', err);
-            handleFixturesError(err);
-        }
-    }
-
-    return { init, initScheduleControls, applyFavTeamHighlight, updateLiveInSchedule, loadFixtures };
+    return { init, initScheduleControls, applyFavTeamHighlight, updateLiveInSchedule };
 })();

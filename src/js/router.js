@@ -41,13 +41,7 @@ const Router = (() => {
             visited.add(pageId);
             if (pageId === 'p') { Render.legacy(); Render.management(); Render.squad(); }
             if (pageId === 'n') News.fetchAndRender();
-            if (pageId === 's') {
-                Render.iplSchedule();
-                Render.standings();
-                if (typeof Schedule !== 'undefined' && Schedule.loadFixtures) {
-                    Schedule.loadFixtures();
-                }
-            }
+            if (pageId === 's') { Render.iplSchedule(); Render.standings(); }
             if (pageId === 'f') {
                 CricketQuiz.render();
                 FanPoll.render();
