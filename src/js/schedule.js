@@ -257,10 +257,15 @@ const Schedule = (() => {
             return;
         }
 
-        const effectiveActiveKey = (activeVenueKey && venueGroups[activeVenueKey])
-            ? activeVenueKey
-            : (preferredVenueKey && venueGroups[preferredVenueKey] ? preferredVenueKey : null);
-        if (effectiveActiveKey) activeVenueKey = effectiveActiveKey;
+        let defaultVenueKey = null;
+        if (activeVenueKey && venueGroups[activeVenueKey]) {
+            defaultVenueKey = activeVenueKey;
+        } else if (preferredVenueKey && venueGroups[preferredVenueKey]) {
+            defaultVenueKey = preferredVenueKey;
+        } else {
+            defaultVenueKey = venueKeys[0] || null;
+        }
+        activeVenueKey = defaultVenueKey;
 
         const venueCardsHtml = Object.entries(venueGroups).map(([key, { vInfo, matches }]) => {
             const isNext    = matches.some(({ idx }) => idx === nextIdx);
@@ -297,11 +302,8 @@ const Schedule = (() => {
 
         mapEl.innerHTML = `
             <div class="venue-grid" aria-label="Venue list (map unavailable offline)">
-                ${venueCardsHtml || '<p class="fixtures-status">Venue map unavailable.</p>'}
+                ${venueCardsHtml}
             </div>`;
-        const defaultVenueKey = activeVenueKey && venueGroups[activeVenueKey]
-            ? activeVenueKey
-            : (venueKeys.length > 0 ? venueKeys[0] : null);
         _bindVenueCardInteractions(mapEl, venueGroups, defaultVenueKey);
     }
 
