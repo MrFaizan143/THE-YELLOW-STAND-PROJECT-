@@ -65,9 +65,6 @@ const Render = (() => {
         }
     }
 
-    /** Currently active fixture filter: 'all' | 'home' | 'away' | 'upcoming' | 'done' */
-    let currentFilter = 'all';
-
     /** Active venue filter: 'all' or an exact venue string from DATA.fixtures */
     let currentVenueFilter = 'all';
 
@@ -124,20 +121,6 @@ const Render = (() => {
 
         // Apply all active filters (AND logic)
         const filtered = source.map((f, i) => ({ f, i })).filter(({ f, i }) => {
-            const result  = savedResults[i];
-            const isPast  = f.iso && new Date(f.iso).getTime() <= now;
-
-            // Base filter
-            let pass = true;
-            switch (currentFilter) {
-                case 'home':     pass = f.home === true;         break;
-                case 'away':     pass = f.home === false;        break;
-                case 'upcoming': pass = !isPast;                 break;
-                case 'done':     pass = isPast || !!result;      break;
-                default:         pass = true;
-            }
-            if (!pass) return false;
-
             // Venue filter
             if (currentVenueFilter !== 'all' && f.v !== currentVenueFilter) return false;
 
@@ -184,17 +167,8 @@ const Render = (() => {
         ).join('');
 
         // Filter bar HTML — base filters + venue dropdown + time-slot toggles
-        const baseFilters   = ['all', 'home', 'away', 'upcoming', 'done'];
-        const activeCount   = currentFilter !== 'all' ? ` <span class="fixture-count">${filtered.length}</span>` : '';
         const filterBar = `
         <div class="fixture-filters" role="group" aria-label="Filter fixtures">
-            <div class="filter-row" role="group" aria-label="Status filter">
-                ${baseFilters.map(f => `
-                <button class="filter-btn${currentFilter === f ? ' filter-btn--active' : ''}"
-                        data-filter="${f}" aria-pressed="${currentFilter === f}">
-                    ${f.charAt(0).toUpperCase() + f.slice(1)}${currentFilter === f ? activeCount : ''}
-                </button>`).join('')}
-            </div>
             <div class="filter-row filter-row--secondary">
                 <select class="filter-venue-select" id="venue-filter-select" aria-label="Filter by venue">
                     <option value="all"${currentVenueFilter === 'all' ? ' selected' : ''}>All Venues</option>
@@ -375,14 +349,6 @@ const Render = (() => {
 
     /** Binds click handlers on filter buttons (base + venue + time-slot) inside container */
     function bindFilterButtons(container) {
-        // Base status filters
-        container.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                currentFilter = btn.dataset.filter;
-                renderFixtures();
-            });
-        });
-
         // Time-slot toggle buttons
         container.querySelectorAll('.filter-btn[data-timeslot]').forEach(btn => {
             btn.addEventListener('click', () => {
