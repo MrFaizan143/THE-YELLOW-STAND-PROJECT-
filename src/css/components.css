@@ -5759,6 +5759,30 @@ h1 {
     .hub-hero__player {
         width: 100px;
     }
+
+    /* Countdown timer — compact layout so all 4 blocks fit on narrow viewports */
+    .countdown-card {
+        padding: var(--space-5);
+    }
+
+    .cd-blocks {
+        gap: var(--space-2);
+        justify-content: center;
+    }
+
+    .cd-block {
+        min-width: 50px;
+        padding: var(--space-2) var(--space-3);
+    }
+
+    .cd-digit {
+        font-size: 1.5rem;
+    }
+
+    .cd-sep {
+        font-size: 1.1rem;
+        padding-top: var(--space-2);
+    }
 }
 
 /* --------------------------------------------------------------------------
@@ -5779,6 +5803,20 @@ h1 {
     /* Hub hero — hide side silhouettes entirely to keep the wordmark readable */
     .hub-hero__player {
         display: none;
+    }
+
+    /* Countdown timer — tighten further on the smallest phones */
+    .cd-block {
+        min-width: 44px;
+        padding: var(--space-2) var(--space-2);
+    }
+
+    .cd-digit {
+        font-size: 1.3rem;
+    }
+
+    .cd-sep {
+        font-size: 0.95rem;
     }
 }
 
