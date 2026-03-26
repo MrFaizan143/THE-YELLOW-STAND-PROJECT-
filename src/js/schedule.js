@@ -161,7 +161,7 @@ const Schedule = (() => {
             }
         };
 
-        if (typeof CricketAPI === 'undefined' || !CricketAPI.fetchCSKFixtures) {
+        if (!CricketAPI?.fetchCSKFixtures) {
             renderFromList();
             return;
         }
@@ -169,7 +169,7 @@ const Schedule = (() => {
         CricketAPI.fetchCSKFixtures().then(list => {
             renderFromList(list);
         }).catch(err => {
-            console.warn('[Schedule] fixtures fetch failed via CricketAPI.fetchCSKFixtures:', err?.message ?? err);
+            console.warn('[Schedule] fixtures fetch failed via CricketAPI.fetchCSKFixtures:', err);
             if (typeof Render !== 'undefined' && Render.fixturesError) {
                 Render.fixturesError('Fixtures unavailable right now.');
             }
