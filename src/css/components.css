@@ -717,7 +717,6 @@ h1 {
 .venue-card:hover {
     border-color: var(--color-yellow);
     box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
 }
 
 .venue-card:focus-visible {

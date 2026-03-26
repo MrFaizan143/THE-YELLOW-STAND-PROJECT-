@@ -382,10 +382,11 @@ const Schedule = (() => {
             if (!venueKey) return;
             card.addEventListener('click', () => selectVenue(venueKey));
             card.addEventListener('keydown', e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    selectVenue(venueKey);
-                }
+                const isEnter = e.key === 'Enter';
+                const isSpace = e.key === ' ';
+                if (!isEnter && !isSpace) return;
+                if (isSpace) e.preventDefault();
+                selectVenue(venueKey);
             });
         });
 
