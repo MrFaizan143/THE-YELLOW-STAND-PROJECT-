@@ -50,7 +50,6 @@ const Router = (() => {
                 FanProfile.render();
                 FantasyTips.render();
             }
-            if (pageId === 't') Tools.render();
             if (pageId === 'l') Live.render();
         }
 
