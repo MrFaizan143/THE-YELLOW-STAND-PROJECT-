@@ -8,6 +8,9 @@ const Countdown = (() => {
 
     let intervalId = null;
 
+    /** Previous digit values — used to detect changes and trigger pop animation */
+    let prevVals = {};
+
     const pad = n => String(n).padStart(2, '0');
 
     /**
@@ -39,9 +42,9 @@ const Countdown = (() => {
         }
     }
 
-    /** Build inner HTML for a single digit block */
-    function block(value, unit) {
-        return `<div class="cd-block"><span class="cd-digit">${value}</span><span class="cd-unit">${unit}</span></div>`;
+    /** Build inner HTML for a single digit block; adds pop class when value changed */
+    function block(value, unit, pop) {
+        return `<div class="cd-block"><span class="cd-digit${pop ? ' cd-digit--pop' : ''}">${value}</span><span class="cd-unit">${unit}</span></div>`;
     }
 
     function tick() {
@@ -69,6 +72,12 @@ const Countdown = (() => {
         const mins  = Math.floor((gap % 3_600_000) / 60_000);
         const secs  = Math.floor((gap % 60_000) / 1_000);
 
+        const popD = prevVals.days  !== days;
+        const popH = prevVals.hours !== hours;
+        const popM = prevVals.mins  !== mins;
+        const popS = prevVals.secs  !== secs;
+        prevVals = { days, hours, mins, secs };
+
         // Urgency modifiers: <1h = urgent (red pulse), <24h = soon (yellow)
         const urgencyClass = gap < 3_600_000   ? 'cd-blocks--urgent'
                            : gap < 86_400_000  ? 'cd-blocks--soon'
@@ -77,13 +86,13 @@ const Countdown = (() => {
         const label = `${days}d ${pad(hours)}h ${pad(mins)}m ${pad(secs)}s`;
         el.innerHTML = `
             <div class="cd-blocks${urgencyClass ? ' ' + urgencyClass : ''}">
-                ${block(String(days), 'D')}
+                ${block(String(days), 'D', popD)}
                 <span class="cd-sep">:</span>
-                ${block(pad(hours), 'H')}
+                ${block(pad(hours), 'H', popH)}
                 <span class="cd-sep">:</span>
-                ${block(pad(mins), 'M')}
+                ${block(pad(mins), 'M', popM)}
                 <span class="cd-sep">:</span>
-                ${block(pad(secs), 'S')}
+                ${block(pad(secs), 'S', popS)}
             </div>`;
         el.setAttribute('aria-label', `Time until next match: ${label}`);
     }

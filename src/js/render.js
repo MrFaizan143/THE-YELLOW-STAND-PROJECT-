@@ -394,7 +394,13 @@ const Render = (() => {
         const el = document.getElementById('hub-record');
         if (!el) return;
         const { W, L, N } = Results.tally();
-        el.textContent = N > 0 ? `${W}W · ${L}L · ${N}NR` : `${W}W · ${L}L`;
+        const sep   = '<span class="hub-record-sep"> · </span>';
+        const wPart = `<span class="hub-record-w">${W}W</span>`;
+        const lPart = `<span class="hub-record-l">${L}L</span>`;
+        const nPart = `<span class="hub-record-n">${N}NR</span>`;
+        el.innerHTML = N > 0
+            ? `${wPart}${sep}${lPart}${sep}${nPart}`
+            : `${wPart}${sep}${lPart}`;
     }
 
     /**

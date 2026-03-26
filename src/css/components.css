@@ -30,13 +30,16 @@ nav {
 /* Nav item */
 .n-i {
     flex: 1;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
     color: var(--color-text-muted);
     font-size: var(--text-xs);
     font-weight: var(--font-weight-bold);
     text-transform: uppercase;
     cursor: pointer;
-    padding: 12px 0;
+    padding: 8px 0;
     border-radius: var(--radius-pill);
     border: none;
     background: transparent;
@@ -54,7 +57,7 @@ nav {
 .n-i.active {
     color: var(--color-black);
     background: var(--color-yellow);
-    box-shadow: 0 2px 10px rgba(245,184,0,0.35);
+    animation: navPulse 2.5s ease-in-out infinite;
 }
 
 .n-i:active {
@@ -64,6 +67,31 @@ nav {
 .n-i:focus-visible {
     outline: 2px solid var(--color-yellow);
     outline-offset: 2px;
+}
+
+/* Nav icon emoji + label text */
+.n-icon {
+    font-size: 1rem;
+    line-height: 1;
+    display: block;
+    transition: transform var(--transition-fast);
+}
+
+.n-i:hover .n-icon,
+.n-i.active .n-icon {
+    transform: scale(1.15);
+}
+
+.n-label {
+    font-size: 0.48rem;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    display: block;
+}
+
+@keyframes navPulse {
+    0%, 100% { box-shadow: 0 2px 10px rgba(245, 184, 0, 0.35); }
+    50%       { box-shadow: 0 4px 22px rgba(245, 184, 0, 0.65); }
 }
 
 
@@ -4668,3 +4696,333 @@ h1 {
 }
 
 .sw-update-dismiss:hover { opacity: 1; }
+
+
+/* ==========================================================================
+   TYS 2026 — UI/UX Polish Layer
+   Micro-interactions, stagger animations, and visual refinements
+   across every section of the app.
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   SW Update Banner — Slide in from top
+-------------------------------------------------------------------------- */
+.sw-update-banner:not([hidden]) {
+    animation: slideDown 0.35s ease both;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+
+/* --------------------------------------------------------------------------
+   Fixture List — Stagger entrance animation
+-------------------------------------------------------------------------- */
+.fixture-rows > * {
+    animation: fadeUp var(--transition-slow) ease both;
+}
+
+.fixture-rows > *:nth-child(2)  { animation-delay: 35ms; }
+.fixture-rows > *:nth-child(3)  { animation-delay: 70ms; }
+.fixture-rows > *:nth-child(4)  { animation-delay: 105ms; }
+.fixture-rows > *:nth-child(5)  { animation-delay: 140ms; }
+.fixture-rows > *:nth-child(6)  { animation-delay: 175ms; }
+.fixture-rows > *:nth-child(7)  { animation-delay: 210ms; }
+.fixture-rows > *:nth-child(8)  { animation-delay: 245ms; }
+.fixture-rows > *:nth-child(9)  { animation-delay: 280ms; }
+.fixture-rows > *:nth-child(10) { animation-delay: 315ms; }
+.fixture-rows > *:nth-child(n+11) { animation-delay: 350ms; }
+
+
+/* --------------------------------------------------------------------------
+   News Page — Stagger entrance animation
+-------------------------------------------------------------------------- */
+#news-list .news-item {
+    animation: fadeUp var(--transition-slow) ease both;
+}
+
+#news-list .news-item:nth-child(2)  { animation-delay: 50ms; }
+#news-list .news-item:nth-child(3)  { animation-delay: 100ms; }
+#news-list .news-item:nth-child(4)  { animation-delay: 150ms; }
+#news-list .news-item:nth-child(5)  { animation-delay: 200ms; }
+#news-list .news-item:nth-child(n+6) { animation-delay: 250ms; }
+
+
+/* --------------------------------------------------------------------------
+   Squad Grid — Stagger entrance animation
+-------------------------------------------------------------------------- */
+.squad-group > .card {
+    animation: fadeUp var(--transition-slow) ease both;
+}
+
+.squad-group > .card:nth-child(2)  { animation-delay: 30ms; }
+.squad-group > .card:nth-child(3)  { animation-delay: 60ms; }
+.squad-group > .card:nth-child(4)  { animation-delay: 90ms; }
+.squad-group > .card:nth-child(5)  { animation-delay: 120ms; }
+.squad-group > .card:nth-child(6)  { animation-delay: 150ms; }
+.squad-group > .card:nth-child(7)  { animation-delay: 180ms; }
+.squad-group > .card:nth-child(8)  { animation-delay: 210ms; }
+.squad-group > .card:nth-child(n+9) { animation-delay: 240ms; }
+
+
+/* --------------------------------------------------------------------------
+   Section Heading — Animated underline grow on hover
+-------------------------------------------------------------------------- */
+.section-heading::after {
+    transition: width var(--transition-base) ease;
+}
+
+.section-heading:hover::after {
+    width: 60px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Points Table — Medal emojis for top 3 positions
+-------------------------------------------------------------------------- */
+.standing-row:nth-child(2) .standing-pos::after { content: ' 🥇'; }
+.standing-row:nth-child(3) .standing-pos::after { content: ' 🥈'; }
+.standing-row:nth-child(4) .standing-pos::after { content: ' 🥉'; }
+
+
+/* --------------------------------------------------------------------------
+   Hub Record — Color-coded W / L / NR spans
+-------------------------------------------------------------------------- */
+.hub-record-w   { color: var(--color-positive); }
+.hub-record-l   { color: var(--color-negative); }
+.hub-record-n   { color: var(--color-text-muted); }
+.hub-record-sep { color: var(--color-text-muted); opacity: 0.6; }
+
+
+/* --------------------------------------------------------------------------
+   Hub Info Card — Result-aware left border accent
+-------------------------------------------------------------------------- */
+#hub-last-result:has(.hub-info-result--w) {
+    border-left: 3px solid var(--color-positive);
+}
+
+#hub-last-result:has(.hub-info-result--l) {
+    border-left: 3px solid var(--color-negative);
+}
+
+
+/* --------------------------------------------------------------------------
+   Fixture "NEXT" Badge — Subtle pulse animation
+-------------------------------------------------------------------------- */
+.fixture-next .next-badge {
+    animation: nextBadgePulse 2s ease-in-out infinite;
+}
+
+@keyframes nextBadgePulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.7; }
+}
+
+
+/* --------------------------------------------------------------------------
+   Card — Subtle yellow left accent on hover (squad cards)
+-------------------------------------------------------------------------- */
+.card:hover:not(.card--captain):not(.card--vc) {
+    border-left-color: rgba(245, 184, 0, 0.45);
+}
+
+
+/* --------------------------------------------------------------------------
+   Tool Card — Glow when any child input is focused
+-------------------------------------------------------------------------- */
+.tool-card:focus-within {
+    border-color: rgba(245, 184, 0, 0.3);
+    box-shadow: var(--shadow-md), 0 0 0 3px rgba(245, 184, 0, 0.06);
+}
+
+
+/* --------------------------------------------------------------------------
+   Quiz Option — Slide right on hover for visual feedback
+-------------------------------------------------------------------------- */
+.quiz-option:hover:not(:disabled) {
+    transform: translateX(4px);
+}
+
+
+/* --------------------------------------------------------------------------
+   Countdown Card — Animated radial glow on the decorative orb
+-------------------------------------------------------------------------- */
+.countdown-card::before {
+    animation: countdownGlow 4s ease-in-out infinite;
+}
+
+@keyframes countdownGlow {
+    0%, 100% {
+        background: radial-gradient(circle, var(--color-yellow-dim) 0%, transparent 70%);
+        transform: scale(1);
+    }
+    50% {
+        background: radial-gradient(circle, var(--color-yellow-glow) 0%, transparent 70%);
+        transform: scale(1.2);
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   Countdown Digit — Pop animation triggered by .cd-digit--pop class
+-------------------------------------------------------------------------- */
+@keyframes digitPop {
+    0%   { transform: scaleY(0.82) translateY(-3px); opacity: 0.55; }
+    65%  { transform: scaleY(1.06); }
+    100% { transform: scaleY(1) translateY(0); opacity: 1; }
+}
+
+.cd-digit--pop {
+    display: inline-block;
+    animation: digitPop 0.24s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+
+/* --------------------------------------------------------------------------
+   Legacy Record Items — Hover accent
+-------------------------------------------------------------------------- */
+.legacy-record-item {
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.legacy-record-item:hover {
+    border-color: rgba(245, 184, 0, 0.35);
+    background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-mid) 100%);
+}
+
+
+/* --------------------------------------------------------------------------
+   Staff Item — Hover left border + subtle tint
+-------------------------------------------------------------------------- */
+.staff-item {
+    transition: border-left-color var(--transition-fast), background var(--transition-fast);
+}
+
+.staff-item:hover {
+    border-left-color: rgba(245, 184, 0, 0.5);
+    background: linear-gradient(90deg, rgba(245, 184, 0, 0.03) 0%, transparent 60%);
+}
+
+
+/* --------------------------------------------------------------------------
+   IPL Match Card — Hover lift effect
+-------------------------------------------------------------------------- */
+.ipl-match-card {
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast),
+                transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.ipl-match-card:hover:not(.ipl-match--past) {
+    border-color: var(--color-border-hover);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+
+/* --------------------------------------------------------------------------
+   Live Match Card — CSK glow boost on hover
+-------------------------------------------------------------------------- */
+.live-match-card--csk:hover {
+    box-shadow: var(--shadow-md), 0 0 14px rgba(245, 184, 0, 0.1);
+}
+
+
+/* --------------------------------------------------------------------------
+   Legacy Trophy Card — Enhanced glow on hover
+-------------------------------------------------------------------------- */
+.legacy-trophy-card:hover {
+    box-shadow: var(--shadow-lg), 0 0 24px rgba(245, 184, 0, 0.1);
+}
+
+
+/* --------------------------------------------------------------------------
+   Management Cards — Hover lift
+-------------------------------------------------------------------------- */
+.mgmt-owner-card {
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.mgmt-owner-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md), 0 0 12px rgba(245, 184, 0, 0.08);
+}
+
+.mgmt-coach-card {
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.mgmt-coach-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+
+/* --------------------------------------------------------------------------
+   Toss / Journal / Prediction rows — Subtle hover highlight
+-------------------------------------------------------------------------- */
+.toss-match-row,
+.journal-match-row,
+.prediction-item {
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.toss-match-row:hover,
+.journal-match-row:hover {
+    border-color: var(--color-border-lt);
+    background: var(--color-surface);
+}
+
+
+/* --------------------------------------------------------------------------
+   Fantasy Tip Card — Hover accent
+-------------------------------------------------------------------------- */
+.fantasy-tip-card:not(.fantasy-tip-card--past) {
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.fantasy-tip-card:not(.fantasy-tip-card--past):hover {
+    border-color: rgba(245, 184, 0, 0.3);
+    box-shadow: var(--shadow-sm);
+}
+
+
+/* --------------------------------------------------------------------------
+   Resource Card — Icon scale on hover
+-------------------------------------------------------------------------- */
+.resource-card:hover .resource-icon {
+    display: inline-block;
+    animation: iconBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes iconBounce {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.3); }
+    100% { transform: scale(1.1); }
+}
+
+
+/* --------------------------------------------------------------------------
+   Poll Option — Highlight selected option better
+-------------------------------------------------------------------------- */
+.poll-option:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Accessibility — Respect prefers-reduced-motion
+-------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration:        0.01ms !important;
+        animation-iteration-count: 1      !important;
+        transition-duration:       0.01ms !important;
+        scroll-behavior:           auto   !important;
+    }
+}
