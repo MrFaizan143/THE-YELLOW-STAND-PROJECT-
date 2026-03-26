@@ -231,7 +231,7 @@ const Schedule = (() => {
         const fixtures = DATA.fixtures || [];
         const now      = Date.now();
         const nextIdx  = Results.nextFixtureIndex();
-        const preferredVenueKey = nextIdx >= 0 && fixtures[nextIdx] ? fixtures[nextIdx].v : null;
+        const preferredVenueKey = fixtures[nextIdx]?.v || null;
         if (!activeVenueKey && preferredVenueKey) activeVenueKey = preferredVenueKey;
 
         // Group fixtures by venue
@@ -248,6 +248,11 @@ const Schedule = (() => {
             sidebarEl.innerHTML = '';
             sidebarEl.classList.remove('venue-sidebar--open');
         }
+
+        const effectiveActiveKey = (activeVenueKey && venueGroups[activeVenueKey])
+            ? activeVenueKey
+            : (preferredVenueKey && venueGroups[preferredVenueKey] ? preferredVenueKey : null);
+        if (effectiveActiveKey) activeVenueKey = effectiveActiveKey;
 
         const cards = Object.entries(venueGroups).map(([key, { vInfo, matches }]) => {
             const isNext    = matches.some(({ idx }) => idx === nextIdx);
@@ -286,7 +291,10 @@ const Schedule = (() => {
             <div class="venue-grid" aria-label="Venue list (map unavailable offline)">
                 ${cards || '<p class="fixtures-status">Venue map unavailable.</p>'}
             </div>`;
-        _bindVenueCardInteractions(mapEl, venueGroups);
+        const defaultVenueKey = activeVenueKey && venueGroups[activeVenueKey]
+            ? activeVenueKey
+            : venueKeys[0];
+        _bindVenueCardInteractions(mapEl, venueGroups, defaultVenueKey);
     }
 
     // =========================================================================
@@ -339,7 +347,7 @@ const Schedule = (() => {
         sidebar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    function _bindVenueCardInteractions(mapEl, venueGroups) {
+    function _bindVenueCardInteractions(mapEl, venueGroups, defaultVenueKey) {
         const grid = mapEl.querySelector('.venue-grid');
         if (!grid) return;
 
@@ -371,11 +379,8 @@ const Schedule = (() => {
             });
         });
 
-        if (activeVenueKey && venueGroups[activeVenueKey]) {
-            selectVenue(activeVenueKey);
-        } else {
-            const firstVenueKey = Object.keys(venueGroups)[0];
-            if (firstVenueKey) selectVenue(firstVenueKey);
+        if (defaultVenueKey && venueGroups[defaultVenueKey]) {
+            selectVenue(defaultVenueKey);
         }
     }
 
