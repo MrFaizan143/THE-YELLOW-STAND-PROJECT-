@@ -166,15 +166,23 @@ const Schedule = (() => {
             return;
         }
 
-        CricketAPI.fetchCSKFixtures().then(list => {
-            renderFromList(list);
-        }).catch(err => {
-            console.warn('[Schedule] fixtures fetch failed via CricketAPI.fetchCSKFixtures:', err);
+        try {
+            Promise.resolve(CricketAPI.fetchCSKFixtures()).then(list => {
+                renderFromList(list);
+            }).catch(err => {
+                console.warn('[Schedule] fixtures fetch failed via CricketAPI.fetchCSKFixtures:', err);
+                if (typeof Render !== 'undefined' && Render.fixturesError) {
+                    Render.fixturesError('Fixtures unavailable right now.');
+                }
+                renderFromList();
+            });
+        } catch (err) {
+            console.warn('[Schedule] fixtures fetch threw synchronously:', err);
             if (typeof Render !== 'undefined' && Render.fixturesError) {
                 Render.fixturesError('Fixtures unavailable right now.');
             }
             renderFromList();
-        });
+        }
     }
 
     return { init, initScheduleControls, applyFavTeamHighlight, updateLiveInSchedule, loadFixtures };
