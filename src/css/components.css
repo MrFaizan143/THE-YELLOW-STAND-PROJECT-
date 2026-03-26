@@ -25,10 +25,43 @@ nav {
     display: flex;
     z-index: var(--z-nav);
     box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.04);
+    transition: transform var(--transition-base) cubic-bezier(0.4, 0, 0.2, 1),
+                opacity var(--transition-base) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Auto-hide when scrolling down */
+nav.nav--hidden {
+    transform: translateX(-50%) translateY(calc(100% + 28px));
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Live indicator dot on the Live nav tab */
+.n-live-dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-yellow);
+    box-shadow: 0 0 6px var(--color-yellow);
+    animation: liveDotPulse 1.6s ease-in-out infinite;
+    display: none;
+}
+
+.n-live-dot--active {
+    display: block;
+}
+
+@keyframes liveDotPulse {
+    0%, 100% { opacity: 1;   transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(1.35); }
 }
 
 /* Nav item */
 .n-i {
+    position: relative;
     flex: 1;
     display: flex;
     flex-direction: column;

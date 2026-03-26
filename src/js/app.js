@@ -10,6 +10,33 @@ document.addEventListener('DOMContentLoaded', () => {
     FanProfile.init();   // Pre-load saved fan profile from localStorage
     Render.updateHubRecord(); // Show season record on Hub
 
+    // -------------------------------------------------------------------------
+    // Navbar — auto-hide on scroll-down, reveal on scroll-up
+    // -------------------------------------------------------------------------
+    (function initNavScrollBehaviour() {
+        const nav = document.getElementById('main-nav');
+        if (!nav) return;
+        let lastScrollY = window.scrollY;
+        let ticking     = false;
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const currentY = Math.max(0, window.scrollY);
+                    // Hide when scrolling down more than 60px from the top
+                    if (currentY > lastScrollY && currentY > 60) {
+                        nav.classList.add('nav--hidden');
+                    } else {
+                        nav.classList.remove('nav--hidden');
+                    }
+                    lastScrollY = currentY;
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+    })();
+
     // Initialize Schedule module (notification bell, follow-team selector, etc.)
     if (typeof Schedule !== 'undefined') {
         Schedule.init();
@@ -45,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
             function updateLiveScore() {
                 CricketAPI.fetchCSKLiveMatch().then(match => {
                     if (!liveScoreEl) return;
+                    const navLiveDot = document.getElementById('nav-live-dot');
                     if (match && match.score) {
                         liveScoreEl.innerHTML = `
                             <span class="tag live-tag"><span class="live-dot" aria-hidden="true"></span>LIVE</span>
@@ -52,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="hub-live-score-text">${match.score}</p>
                             <p class="hub-live-score-status">${match.status || ''}</p>`;
                         liveScoreEl.style.display = '';
+                        if (navLiveDot) navLiveDot.classList.add('n-live-dot--active');
 
                         if (typeof Schedule !== 'undefined') {
                             Schedule.updateLiveInSchedule(match);
@@ -61,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         scheduleHubPoll(90_000);   // Active match: poll every 90 s
                     } else {
                         liveScoreEl.style.display = 'none';
+                        if (navLiveDot) navLiveDot.classList.remove('n-live-dot--active');
                         hubMissCount++;
                         // After 3 consecutive misses, back off to 5-minute checks
                         scheduleHubPoll(hubMissCount >= 3 ? 300_000 : 90_000);
