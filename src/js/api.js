@@ -19,18 +19,21 @@
 const CricketAPI = (() => {
 
     // -------------------------------------------------------------------------
-    // Configuration — paste your free keys here
+    // Configuration — keys are loaded from src/js/config.js (gitignored).
+    // Copy src/js/config.example.js → src/js/config.js and fill in your keys.
     // -------------------------------------------------------------------------
 
     /**
-     * cricapi.com free key.
-     * Get one (free, no card) at: https://cricapi.com/
-     * 100 API calls / day on the free plan.
+     * cricapi.com free key (100 calls/day).
+     * Set via window.TYS_CONFIG.CRICAPI_KEY in src/js/config.js.
      */
-    const CRICAPI_KEY = 'bbf69190-0d70-4665-9b33-523ce96f057e';
+    const CRICAPI_KEY = (window.TYS_CONFIG && window.TYS_CONFIG.CRICAPI_KEY) || '';
 
-    /** RapidAPI cricket-live-data key (optional, 500 req/month free) */
-    const RAPIDAPI_KEY = '1c452f2595msh591b430a54e97c6p1d901bjsnfbb28c9ec143';
+    /**
+     * RapidAPI cricket-live-data key (500 req/month free).
+     * Set via window.TYS_CONFIG.RAPIDAPI_KEY in src/js/config.js.
+     */
+    const RAPIDAPI_KEY = (window.TYS_CONFIG && window.TYS_CONFIG.RAPIDAPI_KEY) || '';
 
     // -------------------------------------------------------------------------
     // Constants shared by both providers

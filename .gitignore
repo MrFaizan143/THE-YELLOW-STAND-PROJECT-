@@ -1,0 +1,2 @@
+# API keys — local config (never commit real keys)
+src/js/config.js
