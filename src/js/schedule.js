@@ -1,14 +1,11 @@
 /**
- * schedule.js — TYS 2026 Advanced Schedule Features
+ * schedule.js — TYS 2026 Schedule Features
  *
  * Handles all interactive enhancements on the Map/Schedule page:
- *   • Venue map         — Leaflet.js markers for each CSK fixture venue
- *   • Venue sidebar     — click a map pin to see filtered fixtures + travel links
- *   • H2H tooltips      — hover over a fixture to see head-to-head history
+ *   • Venue map         — venue cards for each CSK fixture venue
+ *   • Venue sidebar     — click a venue card to see filtered fixtures + travel links
  *   • Follow My Team    — highlight and flag matches by favourite team
- *   • Push notifications — Notification API alerts 15 min before each match
  *   • Inline countdown  — live ticking countdown on the schedule page
- *   • Probable XIs      — shows playing XIs near match day
  *   • Traveler Mode     — directions + nearby hotels via Google Maps URLs
  */
 
@@ -19,15 +16,12 @@ const Schedule = (() => {
     // =========================================================================
 
     const FAV_TEAM_KEY  = 'tys_fav_team';
-    const NOTIF_KEY     = 'tys_notif_enabled';
     const ALL_TEAMS     = ['CSK', 'MI', 'RCB', 'KKR', 'DC', 'RR', 'PBKS', 'SRH', 'GT', 'LSG'];
-    const MIN_NOTIFICATION_LEAD_MINUTES = 10;
 
     // =========================================================================
     // State
     // =========================================================================
 
-    let notifTimers         = [];     // setTimeout handles for pending notifications
     let scheduleCountdownId = null;   // setInterval handle for in-page countdown
     let activeVenueKey      = null;   // currently highlighted venue in the grid
 
@@ -43,7 +37,6 @@ const Schedule = (() => {
         if (team) localStorage.setItem(FAV_TEAM_KEY, team);
         else       localStorage.removeItem(FAV_TEAM_KEY);
         applyFavTeamHighlight();
-        scheduleNotifications();
     }
 
     /**
@@ -122,105 +115,7 @@ const Schedule = (() => {
     }
 
     // =========================================================================
-    // Push Notifications (Notification API)
-    // =========================================================================
-
-    function isNotifEnabled() {
-        return localStorage.getItem(NOTIF_KEY) === 'yes'
-            && 'Notification' in window
-            && Notification.permission === 'granted';
-    }
-
-    function updateNotifBell() {
-        const bell = document.getElementById('notif-bell');
-        if (!bell) return;
-        const enabled = isNotifEnabled();
-        bell.textContent = enabled ? '🔔' : '🔕';
-        bell.setAttribute('aria-label', enabled ? 'Notifications on — click to disable' : 'Enable match notifications');
-        bell.setAttribute('aria-pressed', enabled ? 'true' : 'false');
-        bell.classList.toggle('notif-bell--active', enabled);
-    }
-
-    async function requestNotifPermission() {
-        if (!('Notification' in window)) {
-            if (typeof Toast !== 'undefined') Toast.show('Notifications are not supported on this device', 'warn');
-            return;
-        }
-        try {
-            const perm = await Notification.requestPermission();
-            if (perm === 'granted') {
-                localStorage.setItem(NOTIF_KEY, 'yes');
-                scheduleNotifications();
-            } else {
-                localStorage.removeItem(NOTIF_KEY);
-                if (typeof Toast !== 'undefined') Toast.show('Notifications blocked — enable in browser settings', 'warn');
-            }
-        } catch (_) { /* Safari may not return a promise */ }
-        updateNotifBell();
-    }
-
-    /**
-     * Schedule browser Notification alerts 15 minutes before each upcoming
-     * match that involves the user's favourite team (or all CSK matches).
-     * Clears any previously scheduled timers before re-scheduling.
-     */
-    function scheduleNotifications() {
-        notifTimers.forEach(id => clearTimeout(id));
-        notifTimers = [];
-
-        if (!isNotifEnabled()) return;
-
-        const favTeam    = getFavTeam();
-        const fixtures   = DATA.fixtures || [];
-        const now        = Date.now();
-        const leadMin    = (typeof FanProfile !== 'undefined' && FanProfile.getNotificationLeadMinutes)
-            ? FanProfile.getNotificationLeadMinutes()
-            : 15;
-        const ALERT_MS   = Math.max(MIN_NOTIFICATION_LEAD_MINUTES, leadMin) * 60 * 1000; // safety floor aligned with allowed lead times
-
-        fixtures.forEach(f => {
-            if (!f.iso) return;
-
-            // Alert for CSK matches, or if favourite team is the opponent
-            const relevant = !favTeam || favTeam === 'CSK' || (favTeam && f.o === favTeam);
-            if (!relevant) return;
-
-            const alertTime = new Date(f.iso).getTime() - ALERT_MS;
-            const delay     = alertTime - now;
-            if (delay <= 0) return; // Already past
-
-            const id = setTimeout(() => {
-                try {
-                    new Notification('The Yellow Stand 🦁', {
-                        body: `CSK vs ${f.o} starts in 15 minutes!\n${f.v} · ${f.t} IST`,
-                        icon: '/icons/icon-192.png',
-                        tag:  `tys-match-${f.iso}`
-                    });
-                } catch (_) { /* Notification may be blocked */ }
-            }, delay);
-
-            notifTimers.push(id);
-        });
-    }
-
-    function initNotifBell() {
-        const bell = document.getElementById('notif-bell');
-        if (!bell) return;
-        updateNotifBell();
-        bell.addEventListener('click', async () => {
-            if (isNotifEnabled()) {
-                localStorage.removeItem(NOTIF_KEY);
-                notifTimers.forEach(id => clearTimeout(id));
-                notifTimers = [];
-                updateNotifBell();
-            } else {
-                await requestNotifPermission();
-            }
-        });
-    }
-
-    // =========================================================================
-    // Venue Map (Leaflet.js) — replaced with offline-friendly venue grid
+    // Venue Grid
     // =========================================================================
 
     function renderVenueGrid() {
@@ -408,93 +303,6 @@ const Schedule = (() => {
     }
 
     // =========================================================================
-    // Head-to-Head Tooltips
-    // =========================================================================
-
-    /**
-     * Binds mouseenter / mouseleave listeners to every CSK fixture row so that
-     * a floating H2H tooltip appears when the user hovers over a match.
-     * Safe to call multiple times — re-binds on re-render.
-     */
-    function initH2HTooltips() {
-        const container = document.getElementById('fixture-list');
-        const tooltip   = document.getElementById('h2h-tooltip');
-        if (!container || !tooltip) return;
-
-        container.querySelectorAll('.fixture-item[data-idx]').forEach(row => {
-            // Remove old listeners by cloning (cheap for small lists)
-            const fresh = row.cloneNode(true);
-            row.parentNode && row.parentNode.replaceChild(fresh, row);
-
-            const idx = parseInt(fresh.dataset.idx, 10);
-            if (isNaN(idx)) return;
-            const f   = DATA.fixtures[idx];
-            if (!f) return;
-
-            const h2h = DATA.h2h && DATA.h2h[f.o];
-            if (!h2h) {
-                // Re-bind result button for the cloned node
-                _rebindResultBtn(fresh);
-                return;
-            }
-
-            const total      = h2h.w + h2h.l;
-            const last5Html  = h2h.last5.map(r =>
-                `<span class="h2h-dot h2h-dot--${r.toLowerCase()}">${r}</span>`
-            ).join('');
-
-            fresh.addEventListener('mouseenter', e => {
-                tooltip.innerHTML = `
-                <div class="h2h-tooltip-inner">
-                    <p class="h2h-title">CSK vs ${f.o}</p>
-                    <p class="h2h-record">Overall: <strong>${h2h.w}W – ${h2h.l}L</strong> (${total} played)</p>
-                    <p class="h2h-last5-label">Last 5 encounters:</p>
-                    <div class="h2h-dots">${last5Html}</div>
-                </div>`;
-                tooltip.classList.add('h2h-tooltip--visible');
-                _positionTooltip(tooltip, e);
-            });
-            fresh.addEventListener('mousemove', e => _positionTooltip(tooltip, e));
-            fresh.addEventListener('mouseleave', () => tooltip.classList.remove('h2h-tooltip--visible'));
-
-            // Re-bind result button click for the cloned node
-            _rebindResultBtn(fresh);
-        });
-    }
-
-    function _positionTooltip(tooltip, e) {
-        const x  = e.clientX + 18;
-        const y  = e.clientY - 10;
-        const vw = window.innerWidth;
-        const tw = tooltip.offsetWidth || 220;
-        tooltip.style.left = (x + tw > vw ? Math.max(0, x - tw - 36) : x) + 'px';
-        tooltip.style.top  = Math.max(0, y) + 'px';
-    }
-
-    /**
-     * Re-binds the result button on a cloned fixture row so that
-     * cycling results still works after H2H tooltip re-binding.
-     */
-    function _rebindResultBtn(row) {
-        const btn = row.querySelector('.result-btn');
-        if (!btn) return;
-        btn.addEventListener('click', e => {
-            e.stopPropagation();
-            const idx = parseInt(row.dataset.idx, 10);
-            if (isNaN(idx)) return;
-            const newVal = Results.cycle(idx);
-            // Delegate full re-render back to Render module
-            if (typeof Render !== 'undefined') {
-                Render.fixtures();
-                Render.updateHubRecord();
-                Render.lastResult();
-                Render.venueInfo();
-            }
-            if (typeof Countdown !== 'undefined') Countdown.updateLabel();
-        });
-    }
-
-    // =========================================================================
     // Inline Schedule Countdown
     // =========================================================================
 
@@ -540,56 +348,6 @@ const Schedule = (() => {
         el.textContent = d > 0
             ? `${d}d ${pad(h)}h ${pad(m)}m ${pad(s)}s`
             : `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
-    }
-
-    // =========================================================================
-    // Probable Playing XIs
-    // =========================================================================
-
-    function renderProbableXIs() {
-        const container = document.getElementById('probable-xi-section');
-        if (!container) return;
-
-        const nextIdx = Results.nextFixtureIndex();
-        if (nextIdx < 0) { container.innerHTML = ''; return; }
-
-        const f = DATA.fixtures[nextIdx];
-        if (!f || !f.iso) { container.innerHTML = ''; return; }
-
-        const hoursUntil = (new Date(f.iso).getTime() - Date.now()) / 3_600_000;
-        const xi         = DATA.probableXIs && DATA.probableXIs[f.iso];
-
-        // Show section only within 24 h of the match
-        if (!xi && hoursUntil > 24) { container.innerHTML = ''; return; }
-
-        if (!xi) {
-            container.innerHTML = `
-            <div class="probable-xi-card">
-                <span class="tag">Probable Playing XIs</span>
-                <p class="probable-xi-tbd">CSK vs ${f.o} — XIs announced closer to match day</p>
-            </div>`;
-            return;
-        }
-
-        const xiList = players => players.map((p, i) =>
-            `<li class="probable-xi-player"><span class="probable-xi-num">${i + 1}</span>${p}</li>`
-        ).join('');
-
-        container.innerHTML = `
-        <div class="probable-xi-card">
-            <span class="tag">Probable Playing XIs</span>
-            <p class="probable-xi-match">CSK vs ${f.o} · ${f.d} · ${f.t} IST</p>
-            <div class="probable-xi-teams">
-                <div class="probable-xi-team">
-                    <p class="probable-xi-team-name">CSK</p>
-                    <ol class="probable-xi-list">${xiList(xi.csk)}</ol>
-                </div>
-                <div class="probable-xi-team">
-                    <p class="probable-xi-team-name">${f.o}</p>
-                    <ol class="probable-xi-list">${xiList(xi.opp)}</ol>
-                </div>
-            </div>
-        </div>`;
     }
 
     // =========================================================================
@@ -762,43 +520,32 @@ const Schedule = (() => {
 
     /** Called once on DOMContentLoaded from app.js */
     function init() {
-        initNotifBell();
         renderFavTeamSelector();
-        if (isNotifEnabled()) scheduleNotifications();
     }
 
     /**
      * Called by router.js when the schedule ('m') page is navigated to.
-     * Map must be initialized here (not on DOMContentLoaded) because
-     * Leaflet needs the container to be visible before setting up.
      */
     function onPageShow() {
         // Start in-page countdown
         startScheduleCountdown();
 
-        // Render probable XIs
-        renderProbableXIs();
-
-        // Offline-friendly venue view (no external Leaflet dependency)
+        // Render venue cards grid
         renderVenueGrid();
 
         // Re-apply fav team highlight after IPL schedule finishes rendering
         // (schedule render is async via API calls — small delay is acceptable)
         setTimeout(() => {
             applyFavTeamHighlight();
-            initH2HTooltips();
             initScheduleControls();
         }, 700);
     }
 
     /**
      * Called by render.js after the CSK fixture list is (re-)rendered.
-     * Re-binds tooltips.
+     * Kept for API compatibility with render.js.
      */
-    function onFixturesRendered() {
-        initH2HTooltips();
-        renderProbableXIs();
-    }
+    function onFixturesRendered() {}
 
     /** Public API */
     return {
