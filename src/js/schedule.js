@@ -293,7 +293,7 @@ const Schedule = (() => {
             </div>`;
         const defaultVenueKey = activeVenueKey && venueGroups[activeVenueKey]
             ? activeVenueKey
-            : venueKeys[0];
+            : (venueKeys.length > 0 ? venueKeys[0] : null);
         _bindVenueCardInteractions(mapEl, venueGroups, defaultVenueKey);
     }
 
