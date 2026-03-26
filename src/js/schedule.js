@@ -249,7 +249,7 @@ const Schedule = (() => {
         const venueKeys = Object.keys(venueGroups);
         if (venueKeys.length === 0) {
             mapEl.innerHTML = `
-                <div class="venue-grid" aria-label="Venue information unavailable">
+                <div class="venue-grid">
                     <p class="fixtures-status">Venue map unavailable.</p>
                 </div>`;
             sidebarEl.innerHTML = '';
@@ -267,7 +267,7 @@ const Schedule = (() => {
         }
         activeVenueKey = defaultVenueKey;
 
-        const venueCardsHtml = Object.entries(venueGroups).map(([key, { vInfo, matches }]) => {
+        const venueCardsHtml = Object.entries(venueGroups).reduce((html, [key, { vInfo, matches }]) => {
             const isNext    = matches.some(({ idx }) => idx === nextIdx);
             const isActive  = activeVenueKey === key;
             const matchList = matches.map(({ f }) => {
@@ -298,7 +298,7 @@ const Schedule = (() => {
                     <a class="travel-btn" href="${hotelsUrl}" target="_blank" rel="noopener noreferrer">🏨 Nearby stays</a>
                 </div>
             </article>`;
-        }).join('');
+        }, '');
 
         mapEl.innerHTML = `
             <div class="venue-grid" aria-label="Venue list (map unavailable offline)">
@@ -393,11 +393,12 @@ const Schedule = (() => {
             if (!venueKey) return;
             card.addEventListener('click', () => selectVenue(venueKey));
             card.addEventListener('keydown', e => {
-                const isEnter = e.key === 'Enter';
-                const isSpace = e.key === ' ';
-                if (!isEnter && !isSpace) return;
-                if (isSpace) e.preventDefault();
-                selectVenue(venueKey);
+                if (e.key === 'Enter') {
+                    selectVenue(venueKey);
+                } else if (e.key === ' ') {
+                    e.preventDefault();
+                    selectVenue(venueKey);
+                }
             });
         });
 
