@@ -1024,9 +1024,9 @@ const Render = (() => {
 
             html += `
             <div class="ipl-match-card${cskClass}${liveClass}${pastClass}${playoffClass}" role="listitem"
-                 aria-label="${m.team1Short} vs ${m.team2Short}, ${m.d}"
-                 data-team1-short="${m.team1Short}" data-team2-short="${m.team2Short}"
-                 data-date="${m.d}">
+                  aria-label="${m.team1Short} vs ${m.team2Short}, ${m.d}"
+                  data-team1-short="${m.team1Short}" data-team2-short="${m.team2Short}"
+                  data-date="${m.d}" data-iso="${m.iso || ''}">
                 ${liveTag}
                 <div class="ipl-match-teams">
                     ${_teamBadge(m.team1Short)}
