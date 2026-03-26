@@ -52,6 +52,25 @@
 
         <!-- Hub Page -->
         <section id="h" class="page active" aria-label="Hub">
+
+            <!-- Hero Banner -->
+            <div class="hub-hero" aria-hidden="true">
+                <div class="hub-hero__glow hub-hero__glow--left"></div>
+                <div class="hub-hero__glow hub-hero__glow--right"></div>
+                <div class="hub-hero__player hub-hero__player--left">
+                    <div class="hub-hero__silhouette hub-hero__silhouette--bat"></div>
+                </div>
+                <div class="hub-hero__player hub-hero__player--right">
+                    <div class="hub-hero__silhouette hub-hero__silhouette--bowl"></div>
+                </div>
+                <div class="hub-hero__content">
+                    <span class="hub-hero__eyebrow">Chennai Super Kings · IPL 2026</span>
+                    <div class="hub-hero__wordmark">T Y S</div>
+                    <div class="hub-hero__sub">The Yellow Stand</div>
+                </div>
+                <div class="hub-hero__grid-overlay"></div>
+            </div>
+
             <span class="tag">System 2026</span>
             <h1>T Y S.</h1>
             <div class="countdown-card">
@@ -70,6 +89,19 @@
                 <span class="tag" style="margin-bottom: var(--space-2);">2026 Season Record</span>
                 <p id="hub-record" class="hub-record">0W · 0L</p>
             </div>
+
+            <!-- Match Highlights Carousel -->
+            <div class="highlights-section">
+                <div class="highlights-header">
+                    <span class="tag" style="margin-bottom: 0;">Match Highlights</span>
+                    <div class="highlights-nav" aria-label="Scroll highlights">
+                        <button class="highlights-nav__btn" id="highlights-prev" aria-label="Scroll left">‹</button>
+                        <button class="highlights-nav__btn" id="highlights-next" aria-label="Scroll right">›</button>
+                    </div>
+                </div>
+                <div class="highlights-carousel" id="hub-highlights" role="list" aria-label="Match highlights carousel"></div>
+            </div>
+
             <button id="share-btn" class="share-btn" aria-label="Share match info">
                 <span class="share-icon">↑</span> Share
             </button>
