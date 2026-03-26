@@ -3,6 +3,8 @@
  */
 const Schedule = (() => {
 
+    const FAVORITE_TEAM = 'CSK';
+
     let _activeDateFilter = 'all';
     let _activeTeamFilter = 'all';
     let _activeViewMode   = 'list';
@@ -15,8 +17,12 @@ const Schedule = (() => {
     }
 
     function applyFavTeamHighlight() {
-        document.querySelectorAll('.ipl-match--csk').forEach(card => {
-            card.classList.add('ipl-match--fav');
+        document.querySelectorAll('.ipl-match-card').forEach(card => {
+            const t1 = card.dataset.team1Short;
+            const t2 = card.dataset.team2Short;
+            if (t1 === FAVORITE_TEAM || t2 === FAVORITE_TEAM) {
+                card.classList.add('ipl-match--fav');
+            }
         });
     }
 
