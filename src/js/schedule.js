@@ -3,7 +3,7 @@
  */
 const Schedule = (() => {
 
-    const FAVORITE_TEAM = 'CSK';
+    const FAVORITE_TEAM_DEFAULT = 'CSK';
 
     let _activeDateFilter = 'all';
     let _activeTeamFilter = 'all';
@@ -16,11 +16,18 @@ const Schedule = (() => {
         applyFilters();
     }
 
+    function getFavoriteTeam() {
+        const cfgTeam = (window.TYS_CONFIG && window.TYS_CONFIG.favoriteTeam) || '';
+        const saved    = localStorage.getItem('favTeam') || '';
+        return (cfgTeam || saved || FAVORITE_TEAM_DEFAULT).toUpperCase();
+    }
+
     function applyFavTeamHighlight() {
+        const favTeam = getFavoriteTeam();
         document.querySelectorAll('.ipl-match-card').forEach(card => {
             const t1 = card.dataset.team1Short;
             const t2 = card.dataset.team2Short;
-            if (t1 === FAVORITE_TEAM || t2 === FAVORITE_TEAM) {
+            if (t1 === favTeam || t2 === favTeam) {
                 card.classList.add('ipl-match--fav');
             }
         });
@@ -29,8 +36,12 @@ const Schedule = (() => {
     function setChipActive(chips, value) {
         chips.forEach(chip => {
             const isActive = chip.dataset.date === value || chip.dataset.team === value;
-            chip.classList.toggle('date-chip--active', isActive);
-            chip.classList.toggle('team-filter-chip--active', isActive);
+            if (chip.dataset.date) {
+                chip.classList.toggle('date-chip--active', isActive);
+            }
+            if (chip.dataset.team) {
+                chip.classList.toggle('team-filter-chip--active', isActive);
+            }
             chip.setAttribute('aria-pressed', String(isActive));
         });
     }
@@ -112,9 +123,12 @@ const Schedule = (() => {
 
     function updateLiveInSchedule(match) {
         const hasLive = !!match;
+        const favTeam = getFavoriteTeam();
         document.querySelectorAll('.ipl-match-card').forEach(card => {
-            const isCSKMatch = card.classList.contains('ipl-match--csk');
-            if (isCSKMatch && hasLive) {
+            const t1 = card.dataset.team1Short;
+            const t2 = card.dataset.team2Short;
+            const isFavMatch = t1 === favTeam || t2 === favTeam;
+            if (isFavMatch && hasLive) {
                 card.classList.add('ipl-match--live');
             } else if (!hasLive) {
                 card.classList.remove('ipl-match--live');
