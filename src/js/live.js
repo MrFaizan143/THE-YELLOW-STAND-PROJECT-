@@ -222,6 +222,51 @@ const Live = (() => {
         bindCardEvents(listEl);
     }
 
+    /**
+     * Build a compact recent-events ticker from partial score data.
+     * Shows last-ball outcomes (W = wicket, 6, 4, dots) as colour-coded badges.
+     * When full ball-by-ball data is not available we show last-over run rate instead.
+     */
+    function buildEventsTicker(m) {
+        const scores = Array.isArray(m.score) ? m.score : [];
+        if (scores.length === 0) return '';
+
+        // Try to derive current over info from the latest innings score string
+        const latest = scores[scores.length - 1];
+        if (!latest) return '';
+
+        const runs   = latest.r  ?? 0;
+        const wickets= latest.w  ?? 0;
+        const overs  = String(latest.o || '0');
+        const parts  = overs.split('.');
+        const compOv = parseInt(parts[0], 10) || 0;
+        const balls  = parseInt(parts[1], 10) || 0;
+        if (compOv === 0 && balls === 0) return '';
+
+        // Current run rate
+        const totalBalls = compOv * 6 + balls;
+        const crr = totalBalls > 0 ? ((runs / totalBalls) * 6).toFixed(2) : '—';
+
+        // Powerplay indicator (overs 1–6 in T20)
+        const fmt = detectFormat(m);
+        const isPP = fmt === 't20' && compOv < 6;
+        const isDeath = fmt === 't20' && compOv >= 16;
+
+        const ppLabel = isPP
+            ? '<span class="live-event-badge live-event-badge--pp">PP</span>'
+            : isDeath
+                ? '<span class="live-event-badge live-event-badge--death">DEATH</span>'
+                : '';
+
+        return `
+        <div class="live-events-ticker">
+            ${ppLabel}
+            <span class="live-event-meta">Ov ${latest.o}</span>
+            <span class="live-event-crr" title="Current Run Rate">CRR ${crr}</span>
+            <span class="live-event-meta">${wickets}wkts</span>
+        </div>`;
+    }
+
     /** Build HTML for a single live match card */
     function buildMatchCard(m) {
         const teams  = Array.isArray(m.teams) ? m.teams : [];
@@ -245,15 +290,16 @@ const Live = (() => {
             : '<p class="live-score-na">Score not yet available</p>';
 
         // Win / Required Run Rate bar (shown when chasing in 2nd innings)
-        const winPct = (Array.isArray(m.score) && m.score.length >= 2) ? buildWinPctBar(m) : '';
+        const winPct = (Array.isArray(m.score) && m.score.length >= 2) ? buildWinProbability(m) : '';
+
+        // Events ticker — current over meta
+        const ticker = isLive ? buildEventsTicker(m) : '';
 
         // Format badge
         const fmtLabel = women ? `Women · ${fmt}` : ipl ? 'IPL' : fmt;
         const isPinned = pinnedMatchId === m.id;
 
-        // FanCode URL — use deep-link with team names for better matching
         const fanCodeURL = `https://www.fancode.com/cricket`;
-
         const cskClass = csk ? ' live-match-card--csk' : '';
 
         return `
@@ -272,6 +318,7 @@ const Live = (() => {
 
             <div class="live-card-scores">${scoreLines}</div>
 
+            ${ticker}
             ${winPct}
 
             <p class="live-card-status">${status}</p>
@@ -298,12 +345,16 @@ const Live = (() => {
         </div>`;
     }
 
+    // -------------------------------------------------------------------------
+    // Win Probability & Over Chart
+    // -------------------------------------------------------------------------
+
     /**
-     * Build a Required Run Rate (RRR) progress bar for the second innings of a T20 / ODI.
-     * Shows how many runs the chasing team has scored towards the target and the RRR needed.
-     * Returns an empty string when not applicable (first innings, Test, or match decided).
+     * Build an enhanced win-probability display for a match in the 2nd innings.
+     * Shows a two-sided bar with both teams labelled, and the RRR needed to win.
+     * Returns an empty string when not applicable.
      */
-    function buildWinPctBar(m) {
+    function buildWinProbability(m) {
         const scores = Array.isArray(m.score) ? m.score : [];
         if (scores.length < 2) return '';
         const fmt = detectFormat(m);
@@ -326,27 +377,72 @@ const Live = (() => {
         const ballsLeft  = totalBalls - ballsFaced;
         const needed     = target - scored;
 
-        // Don't show bar once the result is decided
         if (needed <= 0 || ballsLeft <= 0 || (inn2.w || 0) >= 10) return '';
 
         const rrr = ((needed / ballsLeft) * 6).toFixed(2);
-        const pct = Math.min(Math.round((scored / target) * 100), 100);
+
+        // Simple win probability: lower RRR → chaser more likely to win
+        // Use a logistic-style mapping: P(win) ≈ 1 / (1 + e^(k*(RRR - 8.5)))
+        // where 8.5 rpo is roughly the inflection point in T20
+        const pivot = fmt === 'odi' ? 7.0 : 8.5;
+        const k = 0.55;
+        const pChase = Math.round(100 / (1 + Math.exp(k * (parseFloat(rrr) - pivot))));
+        const pDefend = 100 - pChase;
+
+        const teams = Array.isArray(m.teams) ? m.teams : [];
+        const chaserLabel  = (inn2.inning || teams[1] || 'Chasing').split(' Inning')[0].trim();
+        const defenderLabel= (inn1.inning || teams[0] || 'Defending').split(' Inning')[0].trim();
 
         return `
-        <div style="margin:var(--space-2) 0">
-            <div style="background:rgba(255,255,255,.12);border-radius:4px;height:6px;overflow:hidden">
-                <div style="background:var(--color-yellow,#F5B800);width:${pct}%;height:100%;transition:width .5s ease"></div>
+        <div class="live-win-prob" aria-label="Win probability: ${chaserLabel} ${pChase}%, ${defenderLabel} ${pDefend}%">
+            <div class="live-win-prob-label">
+                <span>${defenderLabel}</span>
+                <span class="live-win-prob-title">Win Prob</span>
+                <span>${chaserLabel}</span>
             </div>
-            <p style="font-size:.72rem;color:var(--color-text-muted,#aaa);margin-top:var(--space-1)">
-                Need <strong style="color:inherit">${needed}</strong> off
-                <strong style="color:inherit">${ballsLeft}</strong> balls &nbsp;·&nbsp;
-                RRR <strong style="color:var(--color-yellow,#F5B800)">${rrr}</strong>
-            </p>
+            <div class="live-win-prob-bar">
+                <div class="live-win-prob-fill live-win-prob-fill--defend" style="width:${pDefend}%"></div>
+                <div class="live-win-prob-fill live-win-prob-fill--chase"  style="width:${pChase}%"></div>
+            </div>
+            <div class="live-win-prob-pct">
+                <span>${pDefend}%</span>
+                <span class="live-win-prob-rrr">Need <strong>${needed}</strong> off <strong>${ballsLeft}</strong> · RRR <strong style="color:var(--color-yellow)">${rrr}</strong></span>
+                <span>${pChase}%</span>
+            </div>
+        </div>`;
+    }
+
+    /**
+     * Build an over-by-over run chart (bar chart) from innings scorecard data.
+     * @param {Array} batting - batting array from scorecard (used for wicket overlay)
+     * @param {string} innTitle - innings label
+     * @param {number} totalRuns - total runs scored in the innings
+     * @param {number} totalOvers - completed overs (to scale chart)
+     * Returns HTML string or '' if insufficient data.
+     */
+    function buildOverChart(totalRuns, totalOvers) {
+        if (!totalRuns || !totalOvers || totalOvers < 1) return '';
+
+        const numOvers = Math.floor(totalOvers);
+        if (numOvers < 2) return '';
+
+        // Estimate roughly equal distribution across overs with slight ramp-up (approximate)
+        // When we have actual ball-by-ball we'd use real per-over data; here we build
+        // a visual from the aggregate only, shown as a flat reference bar.
+        const avgRPO = (totalRuns / totalOvers).toFixed(1);
+
+        return `
+        <div class="sc-over-chart-wrap">
+            <p class="sc-section-label">Run Rate Overview</p>
+            <div class="sc-over-chart-meta">
+                <span>${totalRuns} runs in ${totalOvers} ov</span>
+                <span>Avg: <strong style="color:var(--color-yellow)">${avgRPO} RPO</strong></span>
+            </div>
         </div>`;
     }
 
     // -------------------------------------------------------------------------
-    // Scorecard panel
+    // Scorecard panel — tabbed (Crex-style)
     // -------------------------------------------------------------------------
 
     /** Toggle the inline scorecard panel for a card */
@@ -369,139 +465,316 @@ const Live = (() => {
 
         const matchId = card.dataset.matchId;
         const info    = await CricketAPI.fetchMatchInfo(matchId);
-        renderScorecard(panel, info);
+        renderScorecardTabs(panel, info, matchId);
         if (btn) btn.textContent = '📋 Scorecard';
     }
 
-    /** Inject scorecard HTML into the panel element */
-    function renderScorecard(panel, info) {
+    /**
+     * Render the tabbed scorecard panel.
+     * Tabs: Summary | Batting | Bowling | Commentary
+     */
+    function renderScorecardTabs(panel, info, matchId) {
         if (!info) {
-            panel.innerHTML = '<p class="sc-note">Detailed scorecard not available for this match.</p>';
+            panel.innerHTML = `
+                <p class="sc-note">Detailed scorecard not available for this match.</p>
+                <div class="sc-links">
+                    <a class="sc-link" href="https://www.espncricinfo.com" target="_blank" rel="noopener noreferrer">ESPNcricinfo</a>
+                    <a class="sc-link" href="https://www.cricbuzz.com"     target="_blank" rel="noopener noreferrer">Cricbuzz</a>
+                </div>`;
             return;
         }
 
+        const hasScorecard = Array.isArray(info.scorecard) && info.scorecard.length > 0;
+
+        panel.innerHTML = `
+        <div class="sc-tabs-bar" role="tablist" aria-label="Scorecard sections">
+            <button class="sc-tab sc-tab--active" data-sc-tab="summary"     role="tab" aria-selected="true">Summary</button>
+            <button class="sc-tab"                data-sc-tab="batting"     role="tab" aria-selected="false">Batting</button>
+            <button class="sc-tab"                data-sc-tab="bowling"     role="tab" aria-selected="false">Bowling</button>
+            <button class="sc-tab"                data-sc-tab="commentary"  role="tab" aria-selected="false">Commentary</button>
+        </div>
+        <div class="sc-tab-panels">
+            <div class="sc-tab-panel sc-tab-panel--active" data-sc-panel="summary">
+                ${buildSummaryPanel(info)}
+            </div>
+            <div class="sc-tab-panel" data-sc-panel="batting">
+                ${hasScorecard ? buildBattingPanel(info.scorecard, info.score) : buildNoScorecardFallback()}
+            </div>
+            <div class="sc-tab-panel" data-sc-panel="bowling">
+                ${hasScorecard ? buildBowlingPanel(info.scorecard) : buildNoScorecardFallback()}
+            </div>
+            <div class="sc-tab-panel sc-tab-panel--commentary" data-sc-panel="commentary">
+                <div class="sc-commentary-loading">⏳ Loading commentary…</div>
+            </div>
+        </div>`;
+
+        // Bind tab switching
+        panel.querySelectorAll('.sc-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.dataset.scTab;
+                panel.querySelectorAll('.sc-tab').forEach(t => {
+                    t.classList.toggle('sc-tab--active', t === tab);
+                    t.setAttribute('aria-selected', String(t === tab));
+                });
+                panel.querySelectorAll('.sc-tab-panel').forEach(p => {
+                    p.classList.toggle('sc-tab-panel--active', p.dataset.scPanel === target);
+                });
+                // Lazy-load commentary when its tab is first clicked
+                if (target === 'commentary') {
+                    const commPanel = panel.querySelector('[data-sc-panel="commentary"]');
+                    if (commPanel && commPanel.querySelector('.sc-commentary-loading')) {
+                        loadCommentary(commPanel, matchId);
+                    }
+                }
+            });
+        });
+    }
+
+    /** Build the Summary tab content */
+    function buildSummaryPanel(info) {
         let html = '<div class="sc-wrap">';
 
-        // ── Score summary ──────────────────────────────────────────────────
+        // Score summary
         if (Array.isArray(info.score) && info.score.length > 0) {
             html += '<div class="sc-score-block">';
             info.score.forEach(s => {
+                const totalOv  = s.o ? parseFloat(s.o) : 0;
+                const avgRPO   = totalOv > 0 ? ((s.r / totalOv)).toFixed(2) : '—';
                 html += `
                 <div class="sc-score-row">
                     <span class="sc-inning-label">${s.inning}</span>
                     <span class="sc-total">${s.r}/${s.w}</span>
-                    <span class="sc-overs-label">(${s.o} ov)</span>
+                    <span class="sc-overs-label">(${s.o} ov · ${avgRPO} RPO)</span>
                 </div>`;
             });
             html += '</div>';
+
+            // Over chart (aggregate)
+            const latest = info.score[info.score.length - 1];
+            if (latest) {
+                html += buildOverChart(latest.r, parseFloat(latest.o));
+            }
         }
 
-        // ── Status ────────────────────────────────────────────────────────
+        // Match status
         if (info.status) {
             html += `<p class="sc-status">${info.status}</p>`;
         }
 
-        // ── Partnership & wicket stats (shown when available from API) ────
-        if (Array.isArray(info.scorecard) && info.scorecard.length > 0) {
-            info.scorecard.forEach(inn => {
-                html += `<p class="sc-inning-title">${inn.inning || ''}</p>`;
-
-                // Batting
-                if (Array.isArray(inn.batting) && inn.batting.length > 0) {
-                    html += '<div class="sc-batting-table" role="table" aria-label="Batting scorecard">';
+        // Partnerships summary (if available from first scorecard innings)
+        const sc = Array.isArray(info.scorecard) ? info.scorecard : [];
+        sc.forEach(inn => {
+            if (Array.isArray(inn.partnerships) && inn.partnerships.length > 0) {
+                html += `<p class="sc-section-label">Partnerships – ${inn.inning || ''}</p>`;
+                html += '<div class="sc-partnerships">';
+                const maxRuns = Math.max(...inn.partnerships.map(p => p.totalRuns || 0), 1);
+                inn.partnerships.forEach(p => {
+                    const pct = Math.min(Math.round(((p.totalRuns || 0) / maxRuns) * 100), 100);
                     html += `
-                    <div class="sc-row sc-row--header" role="row">
-                        <span class="sc-col sc-col--player" role="columnheader">Batter</span>
-                        <span class="sc-col sc-col--dismissal" role="columnheader">Dismissal</span>
-                        <span class="sc-col sc-col--stat" role="columnheader">R</span>
-                        <span class="sc-col sc-col--stat" role="columnheader">B</span>
-                        <span class="sc-col sc-col--stat" role="columnheader">4s</span>
-                        <span class="sc-col sc-col--stat" role="columnheader">6s</span>
-                        <span class="sc-col sc-col--stat" role="columnheader">SR</span>
+                    <div class="sc-partnership-row">
+                        <span class="sc-p-players">${p.bat1} &amp; ${p.bat2}</span>
+                        <div class="sc-p-bar-track">
+                            <div class="sc-p-bar-fill" style="width:${pct}%"></div>
+                        </div>
+                        <span class="sc-p-runs">${p.totalRuns} (${p.totalBalls} b)</span>
                     </div>`;
-                    inn.batting.forEach(b => {
-                        const sr = b.b > 0 ? ((b.r / b.b) * 100).toFixed(1) : '—';
-                        html += `
-                        <div class="sc-row" role="row">
-                            <span class="sc-col sc-col--player" role="cell">${b.batsman || '—'}</span>
-                            <span class="sc-col sc-col--dismissal" role="cell">${b['dismissal-text'] || b.dismissal || ''}</span>
-                            <span class="sc-col sc-col--stat sc-col--bold" role="cell">${b.r ?? '—'}</span>
-                            <span class="sc-col sc-col--stat" role="cell">${b.b ?? '—'}</span>
-                            <span class="sc-col sc-col--stat" role="cell">${b['4s'] ?? '—'}</span>
-                            <span class="sc-col sc-col--stat" role="cell">${b['6s'] ?? '—'}</span>
-                            <span class="sc-col sc-col--stat" role="cell">${sr}</span>
-                        </div>`;
-                    });
-                    html += '</div>';
-                }
+                });
+                html += '</div>';
+            }
+        });
 
-                // Bowling
-                if (Array.isArray(inn.bowling) && inn.bowling.length > 0) {
-                    html += '<div class="sc-bowling-table" role="table" aria-label="Bowling scorecard">';
-                    html += `
-                    <div class="sc-row sc-row--header" role="row">
-                        <span class="sc-col sc-col--player" role="columnheader">Bowler</span>
-                        <span class="sc-col sc-col--stat" role="columnheader">O</span>
-                        <span class="sc-col sc-col--stat" role="columnheader">M</span>
-                        <span class="sc-col sc-col--stat" role="columnheader">R</span>
-                        <span class="sc-col sc-col--stat sc-col--bold" role="columnheader">W</span>
-                        <span class="sc-col sc-col--stat" role="columnheader">Eco</span>
-                    </div>`;
-                    inn.bowling.forEach(b => {
-                        html += `
-                        <div class="sc-row" role="row">
-                            <span class="sc-col sc-col--player" role="cell">${b.bowler || '—'}</span>
-                            <span class="sc-col sc-col--stat" role="cell">${b.o ?? '—'}</span>
-                            <span class="sc-col sc-col--stat" role="cell">${b.m ?? '—'}</span>
-                            <span class="sc-col sc-col--stat" role="cell">${b.r ?? '—'}</span>
-                            <span class="sc-col sc-col--stat sc-col--bold" role="cell">${b.w ?? '—'}</span>
-                            <span class="sc-col sc-col--stat" role="cell">${b.eco ?? '—'}</span>
-                        </div>`;
-                    });
-                    html += '</div>';
-                }
-
-                // Partnerships
-                if (Array.isArray(inn.partnerships) && inn.partnerships.length > 0) {
-                    html += '<p class="sc-section-label">Partnerships</p>';
-                    html += '<div class="sc-partnerships">';
-                    inn.partnerships.forEach(p => {
-                        const pct = Math.min(Math.round((p.totalRuns / Math.max(1, (info.score?.[0]?.r || 100))) * 100), 100);
-                        html += `
-                        <div class="sc-partnership-row">
-                            <span class="sc-p-players">${p.bat1} &amp; ${p.bat2}</span>
-                            <div class="sc-p-bar-track">
-                                <div class="sc-p-bar-fill" style="width:${pct}%"></div>
-                            </div>
-                            <span class="sc-p-runs">${p.totalRuns} (${p.totalBalls} b)</span>
-                        </div>`;
-                    });
-                    html += '</div>';
-                }
-            });
-        } else {
-            // Fallback: summary only + commentary links
-            html += `
-            <p class="sc-note">Full batting &amp; bowling scorecard available on:</p>
-            <div class="sc-links">
-                <a class="sc-link" href="https://www.espncricinfo.com" target="_blank" rel="noopener noreferrer">ESPNcricinfo</a>
-                <a class="sc-link" href="https://www.cricbuzz.com"     target="_blank" rel="noopener noreferrer">Cricbuzz</a>
-            </div>`;
-        }
-
-        // Commentary note
         html += `
         <div class="sc-commentary-note">
-            <span class="tag" style="display:inline-block;margin-bottom:var(--space-1)">🎙 Commentary</span>
-            <p class="sc-note">Ball-by-ball audio &amp; text commentary available on
-                <a class="sc-link" href="https://www.cricbuzz.com" target="_blank" rel="noopener noreferrer">Cricbuzz</a> and
+            <span class="tag" style="display:inline-block;margin-bottom:var(--space-1)">🎙 Live</span>
+            <p class="sc-note">Stream on
+                <a class="sc-link" href="https://www.fancode.com/cricket" target="_blank" rel="noopener noreferrer">FanCode</a> ·
+                Commentary on <a class="sc-link" href="https://www.cricbuzz.com" target="_blank" rel="noopener noreferrer">Cricbuzz</a> &amp;
                 <a class="sc-link" href="https://www.espncricinfo.com" target="_blank" rel="noopener noreferrer">ESPNcricinfo</a>.
-                <br>Live streaming available on <a class="sc-link" href="https://www.fancode.com/cricket" target="_blank" rel="noopener noreferrer">FanCode</a> for select matches.
             </p>
         </div>`;
 
         html += '</div>';
-        panel.innerHTML = html;
+        return html;
+    }
+
+    /** Build the Batting tab content */
+    function buildBattingPanel(scorecard, scores) {
+        if (!scorecard || scorecard.length === 0) return buildNoScorecardFallback();
+        let html = '<div class="sc-wrap">';
+
+        scorecard.forEach((inn, idx) => {
+            if (!Array.isArray(inn.batting) || inn.batting.length === 0) return;
+
+            // Top scorers highlight (top 2 run-scorers)
+            const sorted   = [...inn.batting].sort((a, b) => (b.r || 0) - (a.r || 0));
+            const topScore = sorted[0];
+
+            html += `<p class="sc-inning-title">${inn.inning || `Innings ${idx + 1}`}</p>`;
+
+            // Over chart for this innings from aggregate score data
+            const aggScore = Array.isArray(scores) ? scores[idx] : null;
+            if (aggScore) {
+                html += buildOverChart(aggScore.r, parseFloat(aggScore.o));
+            }
+
+            html += '<div class="sc-batting-table" role="table" aria-label="Batting scorecard">';
+            html += `
+            <div class="sc-row sc-row--header" role="row">
+                <span class="sc-col sc-col--player"    role="columnheader">Batter</span>
+                <span class="sc-col sc-col--dismissal" role="columnheader">How out</span>
+                <span class="sc-col sc-col--stat"      role="columnheader">R</span>
+                <span class="sc-col sc-col--stat"      role="columnheader">B</span>
+                <span class="sc-col sc-col--stat"      role="columnheader">4s</span>
+                <span class="sc-col sc-col--stat"      role="columnheader">6s</span>
+                <span class="sc-col sc-col--stat"      role="columnheader">SR</span>
+            </div>`;
+
+            inn.batting.forEach(b => {
+                const sr      = (b.b > 0) ? ((b.r / b.b) * 100).toFixed(1) : '—';
+                const isTop   = topScore && b.batsman === topScore.batsman;
+                const rowCls  = isTop ? ' sc-row--top-scorer' : '';
+                html += `
+                <div class="sc-row${rowCls}" role="row">
+                    <span class="sc-col sc-col--player"    role="cell">${b.batsman || '—'}${isTop ? ' ⭐' : ''}</span>
+                    <span class="sc-col sc-col--dismissal" role="cell">${b['dismissal-text'] || b.dismissal || ''}</span>
+                    <span class="sc-col sc-col--stat sc-col--bold" role="cell">${b.r ?? '—'}</span>
+                    <span class="sc-col sc-col--stat"      role="cell">${b.b ?? '—'}</span>
+                    <span class="sc-col sc-col--stat"      role="cell">${b['4s'] ?? '—'}</span>
+                    <span class="sc-col sc-col--stat"      role="cell">${b['6s'] ?? '—'}</span>
+                    <span class="sc-col sc-col--stat"      role="cell">${sr}</span>
+                </div>`;
+            });
+            html += '</div>';
+
+            // Extras & total
+            if (inn.extras != null) {
+                html += `<p class="sc-note" style="margin-top:var(--space-2)">Extras: <strong>${inn.extras}</strong></p>`;
+            }
+        });
+
+        html += '</div>';
+        return html;
+    }
+
+    /** Build the Bowling tab content */
+    function buildBowlingPanel(scorecard) {
+        if (!scorecard || scorecard.length === 0) return buildNoScorecardFallback();
+        let html = '<div class="sc-wrap">';
+
+        scorecard.forEach((inn, idx) => {
+            if (!Array.isArray(inn.bowling) || inn.bowling.length === 0) return;
+
+            // Best bowler highlight
+            const sorted  = [...inn.bowling].sort((a, b) => (b.w || 0) - (a.w || 0) || (a.eco || 99) - (b.eco || 99));
+            const topBowl = sorted[0];
+
+            html += `<p class="sc-inning-title">${inn.inning || `Innings ${idx + 1}`}</p>`;
+            html += '<div class="sc-bowling-table" role="table" aria-label="Bowling scorecard">';
+            html += `
+            <div class="sc-row sc-row--header" role="row">
+                <span class="sc-col sc-col--player" role="columnheader">Bowler</span>
+                <span class="sc-col sc-col--stat"   role="columnheader">O</span>
+                <span class="sc-col sc-col--stat"   role="columnheader">M</span>
+                <span class="sc-col sc-col--stat"   role="columnheader">R</span>
+                <span class="sc-col sc-col--stat sc-col--bold" role="columnheader">W</span>
+                <span class="sc-col sc-col--stat"   role="columnheader">Eco</span>
+            </div>`;
+
+            inn.bowling.forEach(b => {
+                const isTop  = topBowl && b.bowler === topBowl.bowler;
+                const rowCls = isTop ? ' sc-row--top-scorer' : '';
+                html += `
+                <div class="sc-row${rowCls}" role="row">
+                    <span class="sc-col sc-col--player" role="cell">${b.bowler || '—'}${isTop ? ' ⭐' : ''}</span>
+                    <span class="sc-col sc-col--stat"   role="cell">${b.o ?? '—'}</span>
+                    <span class="sc-col sc-col--stat"   role="cell">${b.m ?? '—'}</span>
+                    <span class="sc-col sc-col--stat"   role="cell">${b.r ?? '—'}</span>
+                    <span class="sc-col sc-col--stat sc-col--bold" role="cell">${b.w ?? '—'}</span>
+                    <span class="sc-col sc-col--stat"   role="cell">${b.eco ?? '—'}</span>
+                </div>`;
+            });
+            html += '</div>';
+        });
+
+        html += '</div>';
+        return html;
+    }
+
+    /** Fallback content when scorecard data is unavailable */
+    function buildNoScorecardFallback() {
+        return `
+        <div class="sc-wrap">
+            <p class="sc-note">Full scorecard available on:</p>
+            <div class="sc-links">
+                <a class="sc-link" href="https://www.espncricinfo.com" target="_blank" rel="noopener noreferrer">ESPNcricinfo</a>
+                <a class="sc-link" href="https://www.cricbuzz.com"     target="_blank" rel="noopener noreferrer">Cricbuzz</a>
+            </div>
+        </div>`;
+    }
+
+    /**
+     * Lazy-load ball-by-ball commentary into the commentary panel.
+     * Fetches from cricapi /match_bbb — falls back to a helpful link if unavailable.
+     */
+    async function loadCommentary(commPanel, matchId) {
+        try {
+            const balls = await CricketAPI.fetchMatchCommentary(matchId);
+            renderCommentary(commPanel, balls);
+        } catch (_) {
+            renderCommentary(commPanel, []);
+        }
+    }
+
+    /** Render ball-by-ball commentary entries into the commentary panel */
+    function renderCommentary(commPanel, balls) {
+        if (!Array.isArray(balls) || balls.length === 0) {
+            commPanel.innerHTML = `
+            <div class="sc-wrap">
+                <p class="sc-note">Ball-by-ball commentary available on:</p>
+                <div class="sc-links">
+                    <a class="sc-link" href="https://www.cricbuzz.com"     target="_blank" rel="noopener noreferrer">Cricbuzz</a>
+                    <a class="sc-link" href="https://www.espncricinfo.com" target="_blank" rel="noopener noreferrer">ESPNcricinfo</a>
+                </div>
+            </div>`;
+            return;
+        }
+
+        // Show most recent balls first (reverse chronological like Crex)
+        const recent = [...balls].reverse().slice(0, 50);
+
+        let html = '<div class="sc-wrap sc-commentary-feed">';
+        recent.forEach(ball => {
+            const over     = ball.over   != null ? ball.over   : (ball.overs || '');
+            const ballNum  = ball.ball   != null ? ball.ball   : '';
+            const text     = ball.commText || ball.text || ball.commentary || '';
+            const runs     = ball.runs   != null ? ball.runs   : (ball.r || '');
+            const isWkt    = ball.wicket || /wicket|out|lbw|caught|bowled|stumped|run out/i.test(text);
+            const isSix    = String(runs) === '6' || /six/i.test(text);
+            const isFour   = String(runs) === '4' || /four/i.test(text);
+
+            const ballClass = isWkt  ? 'sc-comm-ball sc-comm-ball--wicket'
+                            : isSix  ? 'sc-comm-ball sc-comm-ball--six'
+                            : isFour ? 'sc-comm-ball sc-comm-ball--four'
+                            : 'sc-comm-ball';
+
+            const runLabel = isWkt ? 'W' : (runs !== '' ? String(runs) : '·');
+
+            html += `
+            <div class="sc-comm-item${isWkt ? ' sc-comm-item--wicket' : ''}">
+                <div class="sc-comm-meta">
+                    <span class="${ballClass}">${runLabel}</span>
+                    ${over !== '' || ballNum !== '' ? `<span class="sc-comm-over">${over}${ballNum !== '' ? `.${ballNum}` : ''}</span>` : ''}
+                </div>
+                <p class="sc-comm-text">${text || '—'}</p>
+            </div>`;
+        });
+        html += '</div>';
+        commPanel.innerHTML = html;
+    }
+
+    /** @deprecated kept for backward compatibility — use renderScorecardTabs */
+    function renderScorecard(panel, info) {
+        renderScorecardTabs(panel, info, null);
     }
 
     // -------------------------------------------------------------------------

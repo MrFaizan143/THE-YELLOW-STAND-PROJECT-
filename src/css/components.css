@@ -6486,3 +6486,375 @@ h1 {
         grid-template-columns: 1fr;
     }
 }
+
+/* =============================================================================
+   Crex Live Features — added for TYS 2026
+   Scorecard tabs · Commentary · Events ticker · Win probability · News filters
+   ============================================================================= */
+
+/* --------------------------------------------------------------------------
+   Scorecard Tabs (Crex-style: Summary | Batting | Bowling | Commentary)
+   -------------------------------------------------------------------------- */
+
+.sc-tabs-bar {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-3);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.sc-tabs-bar::-webkit-scrollbar { display: none; }
+
+.sc-tab {
+    flex: 1;
+    min-width: 0;
+    padding: var(--space-2) var(--space-2);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color var(--transition-base), border-color var(--transition-base);
+    white-space: nowrap;
+}
+
+.sc-tab:hover {
+    color: var(--color-text);
+}
+
+.sc-tab--active {
+    color: var(--color-yellow);
+    border-bottom-color: var(--color-yellow);
+}
+
+.sc-tab-panels {
+    min-height: 80px;
+}
+
+.sc-tab-panel {
+    display: none;
+}
+
+.sc-tab-panel--active {
+    display: block;
+}
+
+.sc-tab-panel--commentary {
+    /* Commentary panel gets slightly smaller font */
+    font-size: var(--text-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Ball-by-ball Commentary Feed
+   -------------------------------------------------------------------------- */
+
+.sc-commentary-feed {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.sc-comm-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--color-border);
+    transition: background var(--transition-base);
+}
+
+.sc-comm-item--wicket {
+    background: rgba(255, 50, 50, 0.08);
+    border-color: rgba(255, 50, 50, 0.25);
+}
+
+.sc-comm-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.sc-comm-ball {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-mono);
+    background: rgba(255,255,255,0.1);
+    color: var(--color-text);
+    flex-shrink: 0;
+}
+
+.sc-comm-ball--wicket {
+    background: #c62828;
+    color: #fff;
+}
+
+.sc-comm-ball--six {
+    background: var(--color-yellow);
+    color: #000;
+}
+
+.sc-comm-ball--four {
+    background: #1565c0;
+    color: #fff;
+}
+
+.sc-comm-over {
+    font-size: 0.6rem;
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+}
+
+.sc-comm-text {
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    line-height: 1.4;
+    margin: 0;
+}
+
+.sc-commentary-loading {
+    padding: var(--space-4);
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Over Chart / Run Rate Overview
+   -------------------------------------------------------------------------- */
+
+.sc-over-chart-wrap {
+    margin: var(--space-2) 0 var(--space-3);
+}
+
+.sc-over-chart-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    margin-top: var(--space-1);
+}
+
+/* Highlighted row for top scorer / best bowler */
+.sc-row--top-scorer {
+    background: rgba(245, 184, 0, 0.06);
+}
+
+/* --------------------------------------------------------------------------
+   Events Ticker (current over meta in live card)
+   -------------------------------------------------------------------------- */
+
+.live-events-ticker {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin: var(--space-1) 0;
+    padding: var(--space-2) 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.live-event-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.live-event-badge--pp {
+    background: rgba(245, 184, 0, 0.2);
+    color: var(--color-yellow);
+    border: 1px solid rgba(245, 184, 0, 0.4);
+}
+
+.live-event-badge--death {
+    background: rgba(255, 50, 50, 0.15);
+    color: #ff5252;
+    border: 1px solid rgba(255, 80, 80, 0.35);
+}
+
+.live-event-meta {
+    font-size: var(--text-xxs);
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+}
+
+.live-event-crr {
+    font-size: var(--text-xxs);
+    font-family: var(--font-mono);
+    color: var(--color-text);
+    margin-left: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Win Probability Display (two-sided bar — Crex style)
+   -------------------------------------------------------------------------- */
+
+.live-win-prob {
+    margin: var(--space-2) 0;
+}
+
+.live-win-prob-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--text-xxs);
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+    margin-bottom: 4px;
+}
+
+.live-win-prob-title {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.live-win-prob-bar {
+    display: flex;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.08);
+}
+
+.live-win-prob-fill {
+    height: 100%;
+    transition: width 0.6s ease;
+}
+
+.live-win-prob-fill--defend {
+    background: #e53935;
+    border-radius: 4px 0 0 4px;
+}
+
+.live-win-prob-fill--chase {
+    background: #1e88e5;
+    border-radius: 0 4px 4px 0;
+}
+
+.live-win-prob-pct {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--text-xxs);
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+    margin-top: 4px;
+    gap: var(--space-2);
+}
+
+.live-win-prob-rrr {
+    font-size: var(--text-xxs);
+    color: var(--color-text-muted);
+    text-align: center;
+    flex: 1;
+}
+
+/* --------------------------------------------------------------------------
+   News Category Filter Tabs (Crex-style: All | CSK | IPL | Others)
+   -------------------------------------------------------------------------- */
+
+.news-cat-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: var(--space-1) 0 var(--space-2);
+    margin-bottom: var(--space-1);
+}
+
+.news-cat-tabs::-webkit-scrollbar { display: none; }
+
+.news-cat-tab {
+    flex-shrink: 0;
+    padding: 5px 14px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-mono);
+    cursor: pointer;
+    transition: background var(--transition-base), color var(--transition-base), border-color var(--transition-base);
+    white-space: nowrap;
+}
+
+.news-cat-tab:hover {
+    color: var(--color-text);
+    border-color: rgba(255,255,255,0.25);
+}
+
+.news-cat-tab--active {
+    background: var(--color-yellow);
+    color: #000;
+    border-color: var(--color-yellow);
+}
+
+/* --------------------------------------------------------------------------
+   CSK / IPL News Article Badges & Highlight
+   -------------------------------------------------------------------------- */
+
+.news-item--csk {
+    border-left: 3px solid var(--color-yellow);
+    padding-left: var(--space-3);
+}
+
+.news-item-top {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-1);
+}
+
+.news-csk-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-mono);
+    background: rgba(245, 184, 0, 0.15);
+    color: var(--color-yellow);
+    border: 1px solid rgba(245, 184, 0, 0.35);
+}
+
+.news-ipl-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-mono);
+    background: rgba(30, 136, 229, 0.12);
+    color: #64b5f6;
+    border: 1px solid rgba(30, 136, 229, 0.3);
+}
