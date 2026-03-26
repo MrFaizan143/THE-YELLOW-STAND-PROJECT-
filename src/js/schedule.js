@@ -231,7 +231,10 @@ const Schedule = (() => {
         const fixtures = DATA.fixtures || [];
         const now      = Date.now();
         const nextIdx  = Results.nextFixtureIndex();
-        const preferredVenueKey = nextIdx >= 0 ? ((fixtures[nextIdx] && fixtures[nextIdx].v) || null) : null;
+        let preferredVenueKey = null;
+        if (nextIdx >= 0 && fixtures[nextIdx]) {
+            preferredVenueKey = fixtures[nextIdx].v || null;
+        }
         if (!activeVenueKey && preferredVenueKey) activeVenueKey = preferredVenueKey;
 
         // Group fixtures by venue
@@ -245,8 +248,13 @@ const Schedule = (() => {
 
         const venueKeys = Object.keys(venueGroups);
         if (venueKeys.length === 0) {
+            mapEl.innerHTML = `
+                <div class="venue-grid" aria-label="Venue list (map unavailable offline)">
+                    <p class="fixtures-status">Venue map unavailable.</p>
+                </div>`;
             sidebarEl.innerHTML = '';
             sidebarEl.classList.remove('venue-sidebar--open');
+            return;
         }
 
         const effectiveActiveKey = (activeVenueKey && venueGroups[activeVenueKey])
