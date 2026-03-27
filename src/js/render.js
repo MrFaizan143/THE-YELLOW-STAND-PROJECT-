@@ -65,9 +65,6 @@ const Render = (() => {
         }
     }
 
-    /** Active venue filter: 'all' or an exact venue string from DATA.fixtures */
-    let currentVenueFilter = 'all';
-
     /** Active time-slot filter: 'all' | 'afternoon' | 'evening' */
     let currentTimeSlot = 'all';
 
@@ -105,7 +102,7 @@ const Render = (() => {
         renderFixtures();
     }
 
-    /** Internal: re-renders the fixture list applying currentFilter, venue filter, and time-slot filter */
+    /** Internal: re-renders the fixture list applying currentFilter and time-slot filter */
     function renderFixtures() {
         const container = document.getElementById('fixture-list');
         if (!container) return;
@@ -125,9 +122,6 @@ const Render = (() => {
 
         // Apply all active filters (AND logic)
         const filtered = source.map((f, i) => ({ f, i })).filter(({ f, i }) => {
-            // Venue filter
-            if (currentVenueFilter !== 'all' && f.v !== currentVenueFilter) return false;
-
             // Time-slot filter (Afternoon = 3:30 PM, Evening = 7:30 PM)
             if (currentTimeSlot === 'afternoon' && !(f.t && f.t.startsWith('3:'))) return false;
             if (currentTimeSlot === 'evening'   && !(f.t && f.t.startsWith('7:'))) return false;
@@ -148,28 +142,16 @@ const Render = (() => {
             <p class="season-progress-label">${playedMatches} / ${totalMatches} played</p>
         </div>`;
 
-        // Build unique venue list for the venue dropdown
-        const allVenues = [...new Set(source.map(f => f.v).filter(Boolean))].sort();
-        const venueOptions = allVenues.map(v =>
-            `<option value="${v}"${currentVenueFilter === v ? ' selected' : ''}>${v}</option>`
-        ).join('');
-
-        // Filter bar HTML — base filters + venue dropdown + time-slot toggles
+        // Filter bar HTML — time-slot toggles
         const filterBar = `
         <div class="fixture-filters" role="group" aria-label="Filter fixtures">
-            <div class="filter-row filter-row--secondary">
-                <select class="filter-venue-select" id="venue-filter-select" aria-label="Filter by venue">
-                    <option value="all"${currentVenueFilter === 'all' ? ' selected' : ''}>All Venues</option>
-                    ${venueOptions}
-                </select>
-                <div class="filter-timeslot" role="group" aria-label="Filter by time slot">
-                    <button class="filter-btn filter-btn--sm${currentTimeSlot === 'all'       ? ' filter-btn--active' : ''}"
-                            data-timeslot="all"       aria-pressed="${currentTimeSlot === 'all'}">Any Time</button>
-                    <button class="filter-btn filter-btn--sm${currentTimeSlot === 'afternoon' ? ' filter-btn--active' : ''}"
-                            data-timeslot="afternoon" aria-pressed="${currentTimeSlot === 'afternoon'}">${Icons.i('sun', 13)} 3:30 PM</button>
-                    <button class="filter-btn filter-btn--sm${currentTimeSlot === 'evening'   ? ' filter-btn--active' : ''}"
-                            data-timeslot="evening"   aria-pressed="${currentTimeSlot === 'evening'}">${Icons.i('moon', 13)} 7:30 PM</button>
-                </div>
+            <div class="filter-timeslot" role="group" aria-label="Filter by time slot">
+                <button class="filter-btn filter-btn--sm${currentTimeSlot === 'all'       ? ' filter-btn--active' : ''}"
+                        data-timeslot="all"       aria-pressed="${currentTimeSlot === 'all'}">Any Time</button>
+                <button class="filter-btn filter-btn--sm${currentTimeSlot === 'afternoon' ? ' filter-btn--active' : ''}"
+                        data-timeslot="afternoon" aria-pressed="${currentTimeSlot === 'afternoon'}">${Icons.i('sun', 13)} 3:30 PM</button>
+                <button class="filter-btn filter-btn--sm${currentTimeSlot === 'evening'   ? ' filter-btn--active' : ''}"
+                        data-timeslot="evening"   aria-pressed="${currentTimeSlot === 'evening'}">${Icons.i('moon', 13)} 7:30 PM</button>
             </div>
         </div>`;
 
@@ -301,7 +283,7 @@ const Render = (() => {
         }
     }
 
-    /** Binds click handlers on filter buttons (base + venue + time-slot) inside container */
+    /** Binds click handlers on filter buttons (time-slot) inside container */
     function bindFilterButtons(container) {
         // Time-slot toggle buttons
         container.querySelectorAll('.filter-btn[data-timeslot]').forEach(btn => {
@@ -310,15 +292,6 @@ const Render = (() => {
                 renderFixtures();
             });
         });
-
-        // Venue dropdown
-        const venueSelect = container.querySelector('#venue-filter-select');
-        if (venueSelect) {
-            venueSelect.addEventListener('change', () => {
-                currentVenueFilter = venueSelect.value || 'all';
-                renderFixtures();
-            });
-        }
     }
 
     /** Duration to add when generating .ics DTEND (3.5 hours in ms) */

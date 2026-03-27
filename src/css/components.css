@@ -2358,46 +2358,8 @@ h1 {
 
 
 /* --------------------------------------------------------------------------
-   Smart Filters — secondary row (venue + time-slot)
+   Smart Filters — time-slot toggles
 -------------------------------------------------------------------------- */
-.filter-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    align-items: center;
-}
-
-.filter-row--secondary {
-    margin-top: var(--space-2);
-    padding-top: var(--space-2);
-    border-top: 1px solid var(--color-border);
-}
-
-.filter-venue-select {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border-lt);
-    border-radius: var(--radius-pill);
-    color: var(--color-text);
-    font-family: var(--font-mono);
-    font-size: var(--text-xxs);
-    font-weight: var(--font-weight-bold);
-    letter-spacing: 1px;
-    padding: var(--space-1) var(--space-3);
-    cursor: pointer;
-    appearance: none;
-    transition: border-color var(--transition-fast);
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.filter-venue-select:hover,
-.filter-venue-select:focus-visible {
-    border-color: var(--color-yellow);
-    outline: none;
-}
-
 .filter-timeslot {
     display: flex;
     gap: var(--space-2);
