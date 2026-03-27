@@ -111,9 +111,13 @@ const Render = (() => {
         if (!container) return;
 
         const source       = storedFixtureSource || DATA.fixtures;
-        const savedResults = Results.load();
-        const nextIdx      = Results.nextFixtureIndex();
         const now          = Date.now();
+        const nextIdx      = (() => {
+            for (let i = 0; i < source.length; i++) {
+                if (source[i].iso && new Date(source[i].iso).getTime() > now) return i;
+            }
+            return -1;
+        })();
 
         // Update the fixtures count chip in the section header
         const countChip = document.getElementById('fixtures-chip-count');
@@ -143,22 +147,6 @@ const Render = (() => {
             </div>
             <p class="season-progress-label">${playedMatches} / ${totalMatches} played</p>
         </div>`;
-
-        // W / L / NR record summary (all logged results, not filtered)
-        const allResults  = Object.values(savedResults);
-        const recWins     = allResults.filter(r => r === 'W').length;
-        const recLosses   = allResults.filter(r => r === 'L').length;
-        const recNR       = allResults.filter(r => r === 'N').length;
-        const recPlayed   = recWins + recLosses + recNR;
-        const recordBar   = recPlayed > 0 ? `
-        <div class="fixture-record-bar" aria-label="Season record: ${recWins} wins, ${recLosses} losses, ${recNR} no results">
-            <span class="fixture-record-label">Record</span>
-            <span class="fixture-record-stat fixture-record-w">${recWins}W</span>
-            <span class="fixture-record-sep">·</span>
-            <span class="fixture-record-stat fixture-record-l">${recLosses}L</span>
-            <span class="fixture-record-sep">·</span>
-            <span class="fixture-record-stat fixture-record-n">${recNR}NR</span>
-        </div>` : '';
 
         // Build unique venue list for the venue dropdown
         const allVenues = [...new Set(source.map(f => f.v).filter(Boolean))].sort();
@@ -194,23 +182,11 @@ const Render = (() => {
 
         let lastMonth = null;
         const rows = filtered.map(({ f, i }) => {
-            const result  = savedResults[i];
             const isNext  = i === nextIdx;
             const isHome  = f.home === true;
             const classes = ['fixture-item',
-                isNext         ? 'fixture-next'   : '',
-                result === 'W' ? 'result-win'      : '',
-                result === 'L' ? 'result-loss'     : '',
-                result === 'N' ? 'result-nr'       : ''
+                isNext ? 'fixture-next' : ''
             ].filter(Boolean).join(' ');
-
-            const resultLabel = result === 'W' ? 'W' :
-                                result === 'L' ? 'L' :
-                                result === 'N' ? 'NR' : '+';
-
-            const resultTitle = result === 'W' ? 'Win'  :
-                                result === 'L' ? 'Loss' :
-                                result === 'N' ? 'No Result' : 'Tap to record result';
 
             const homeBadge = `<span class="fixture-badge fixture-badge--${isHome ? 'home' : 'away'}"
                                      aria-label="${isHome ? 'Home' : 'Away'}">${isHome ? 'HOME' : 'AWAY'}</span>`;
@@ -298,37 +274,15 @@ const Render = (() => {
                         ${daysLabel}
                         <span class="cal-btns">${icsBtn}${gCalBtn}</span>
                     </div>
-                    <button class="result-btn${result ? ' has-result' : ''}"
-                            aria-label="${resultTitle}"
-                            title="${resultTitle}">${resultLabel}</button>
                 </div>
             </div>`;
             return monthSep + rowHtml;
         }).join('');
 
-        container.innerHTML = progressBar + recordBar + filterBar + `<div class="fixture-rows" role="list">${rows}</div>`;
+        container.innerHTML = progressBar + filterBar + `<div class="fixture-rows" role="list">${rows}</div>`;
         Icons.init(container);
 
         bindFilterButtons(container);
-
-        // Bind result-button click events
-        container.querySelectorAll('.result-btn').forEach(btn => {
-            btn.addEventListener('click', e => {
-                e.stopPropagation();
-                const idx    = parseInt(btn.closest('.fixture-item').dataset.idx, 10);
-                const newVal = Results.cycle(idx);
-                // Refresh the full list (filter may affect visibility)
-                renderFixtures();
-                updateHubRecord();
-                // Refresh Hub last result card live
-                lastResult();
-                // Refresh Hub venue card in case next fixture changed
-                venueInfo();
-                // Refresh countdown label
-                if (typeof Countdown !== 'undefined') Countdown.updateLabel();
-                renderInsights();
-            });
-        });
 
         // Auto-scroll to the next fixture only on the initial render
         if (!autoScrollDone) {
@@ -423,78 +377,23 @@ const Render = (() => {
         return `https://calendar.google.com/calendar/render?${params.toString()}`;
     }
 
-    /** Re-renders a single fixture row's result state without full re-render */
-    function updateFixtureRow(container, idx, result) {
-        const row = container.querySelector(`.fixture-item[data-idx="${idx}"]`);
-        if (!row) return;
-
-        row.classList.remove('result-win', 'result-loss', 'result-nr');
-        if (result === 'W') row.classList.add('result-win');
-        if (result === 'L') row.classList.add('result-loss');
-        if (result === 'N') row.classList.add('result-nr');
-
-        const btn = row.querySelector('.result-btn');
-        if (btn) {
-            btn.textContent = result === 'W' ? 'W' :
-                              result === 'L' ? 'L' :
-                              result === 'N' ? 'NR' : '+';
-            btn.title      = result === 'W' ? 'Win'  :
-                             result === 'L' ? 'Loss' :
-                             result === 'N' ? 'No Result' : 'Tap to record result';
-            btn.classList.toggle('has-result', !!result);
-        }
-    }
-
-    /** Updates the W-L record chip on the Hub page */
-    function updateHubRecord() {
-        const el = document.getElementById('hub-record');
-        if (!el) return;
-        const { W, L, N } = Results.tally();
-        const sep   = '<span class="hub-record-sep"> · </span>';
-        const wPart = `<span class="hub-record-w">${W}W</span>`;
-        const lPart = `<span class="hub-record-l">${L}L</span>`;
-        const nPart = `<span class="hub-record-n">${N}NR</span>`;
-        el.innerHTML = N > 0
-            ? `${wPart}${sep}${lPart}${sep}${nPart}`
-            : `${wPart}${sep}${lPart}`;
-    }
-
     /**
      * Renders the last result card into #hub-last-result.
-     * Auto-derives the most recent result from user-recorded results,
-     * falling back to DATA.lastResult when none are recorded yet.
+     * Displays the static DATA.lastResult from team data.
      */
     function lastResult() {
         const container = document.getElementById('hub-last-result');
         if (!container) return;
 
-        const savedResults = Results.load();
-        let lr = DATA.lastResult;
+        const lr = DATA.lastResult;
 
-        // Find the most recently played fixture with a recorded result
-        for (let i = DATA.fixtures.length - 1; i >= 0; i--) {
-            const r = savedResults[i];
-            if (r) {
-                const f = DATA.fixtures[i];
-                lr = {
-                    opponent: f.o,
-                    result: r,
-                    score: `${f.d} · ${f.v.split(',')[0].trim()}`
-                };
-                break;
-            }
-        }
-
-        const resultClass = lr.result === 'W' ? 'hub-info-result--w'  :
-                            lr.result === 'L' ? 'hub-info-result--l' :
-                            lr.result === 'N' ? 'hub-info-result--n'   : '';
         const resultLabel = lr.result === 'W' ? 'WIN'         :
                             lr.result === 'L' ? 'LOSS'        :
                             lr.result === 'N' ? 'NO RESULT'   : '—';
 
         container.innerHTML = `
             <span class="tag">Last Result</span>
-            <p class="hub-info-label${resultClass ? ' ' + resultClass : ''}">${resultLabel}</p>
+            <p class="hub-info-label">${resultLabel}</p>
             <p class="hub-info-meta">${lr.opponent !== '—' ? 'vs ' + lr.opponent : '—'}</p>
             <p class="hub-info-score">${lr.score || ''}</p>`;
     }
@@ -507,7 +406,13 @@ const Render = (() => {
         const container = document.getElementById('hub-venue');
         if (!container) return;
 
-        const nextIdx = Results.nextFixtureIndex();
+        const nextIdx = (() => {
+            const now = Date.now();
+            for (let i = 0; i < DATA.fixtures.length; i++) {
+                if (DATA.fixtures[i].iso && new Date(DATA.fixtures[i].iso).getTime() > now) return i;
+            }
+            return -1;
+        })();
         let venue, city, pitch;
 
         if (nextIdx >= 0) {
@@ -539,116 +444,6 @@ const Render = (() => {
         if (isLive) return '<span class="fixture-badge fixture-badge--live">LIVE</span>';
         if (isSoon) return '<span class="fixture-badge fixture-badge--soon">STARTS SOON</span>';
         return '';
-    }
-
-    // =========================================================================
-    // Insights (Hub + Fan)
-    // =========================================================================
-
-    const FORM_EMPTY = '–';
-    const RECENT_FORM_COUNT = 5;
-
-    function computeInsights() {
-        const fixtures = DATA.fixtures || [];
-        const results  = Results.load();
-        const played   = fixtures.map((f, i) => ({
-            f,
-            result: results[i],
-            startMs: f && f.iso ? new Date(f.iso).getTime() : null
-        })).filter(({ startMs, result }) =>
-            !!result && startMs && startMs <= Date.now()
-        );
-
-        const tally = Results.tally();
-        const recentForm = played.slice(-RECENT_FORM_COUNT).map(p => p.result);
-
-        let winStreak = 0;
-        for (let i = played.length - 1; i >= 0; i--) {
-            if (played[i].result === 'W') winStreak++;
-            else break;
-        }
-
-        const venueStats = {};
-        const oppStats   = {};
-        played.forEach(({ f, result }) => {
-            const vKey = f.v || 'Venue';
-            const oKey = f.o || 'Opponent';
-            if (!venueStats[vKey]) venueStats[vKey] = { w: 0, l: 0 };
-            if (!oppStats[oKey])   oppStats[oKey]   = { w: 0, l: 0 };
-            if (result === 'W') {
-                venueStats[vKey].w++; oppStats[oKey].w++;
-            } else if (result === 'L') {
-                venueStats[vKey].l++; oppStats[oKey].l++;
-            }
-        });
-
-        function bestRecord(map) {
-            const entries = Object.entries(map);
-            if (entries.length === 0) return null;
-            entries.sort((a, b) => {
-                const aGames = a[1].w + a[1].l;
-                const bGames = b[1].w + b[1].l;
-                const aPct   = aGames > 0 ? a[1].w / aGames : 0;
-                const bPct   = bGames > 0 ? b[1].w / bGames : 0;
-                if (bPct !== aPct) return bPct - aPct;
-                return b[1].w - a[1].w;
-            });
-            const [key, rec] = entries[0];
-            return { key, ...rec };
-        }
-
-        return {
-            tally,
-            recentForm,
-            winStreak,
-            bestVenue: bestRecord(venueStats),
-            bestOpponent: bestRecord(oppStats)
-        };
-    }
-
-    function pluralize(count, singular, plural) {
-        return `${count} ${count === 1 ? singular : plural}`;
-    }
-
-    function renderInsights() {
-        const hub = document.getElementById('hub-insights');
-        const fan = document.getElementById('fan-insights');
-        if (!hub && !fan) return;
-
-        const data = computeInsights();
-        const formDots = data.recentForm.length
-            ? data.recentForm.map(r => {
-                const clsKey = (r || 'na').toLowerCase();
-                const label  = r || FORM_EMPTY;
-                return `<span class="form-dot form-dot--${clsKey}">${label}</span>`;
-            }).join('')
-            : '<span class="insight-muted">No results logged</span>';
-
-        const venueLabel = data.bestVenue
-            ? `${data.bestVenue.key} · ${data.bestVenue.w}W-${data.bestVenue.l}L`
-            : 'No venue data yet';
-        const oppLabel = data.bestOpponent
-            ? `${data.bestOpponent.key} · ${data.bestOpponent.w}W-${data.bestOpponent.l}L`
-            : 'No opponent data yet';
-
-        const cards = [
-            { title: 'Form', value: formDots, isRich: true, hint: 'Last 5 recorded results' },
-            { title: 'Win Streak', value: `${pluralize(data.winStreak, 'match', 'matches')}` },
-            { title: 'Best Venue', value: venueLabel },
-            { title: 'Best vs', value: oppLabel },
-            { title: 'Season Record', value: `${data.tally.W}W · ${data.tally.L}L · ${data.tally.N}NR` }
-        ];
-
-        const html = cards.map(c => `
-            <article class="insight-card">
-                <p class="tag">${c.title}</p>
-                <div class="insight-value">${c.isRich ? c.value : `<strong>${c.value}</strong>`}</div>
-                ${c.hint ? `<p class="insight-hint">${c.hint}</p>` : ''}
-            </article>
-        `).join('');
-
-        if (hub) hub.innerHTML = html;
-        if (fan) fan.innerHTML = html;
     }
 
     /** Renders squad grid + staff list into #squad-content */
@@ -1116,6 +911,6 @@ const Render = (() => {
 
     /** Public API */
     return { fixtures, fixturesLoading, fixturesError, squad, standings, iplSchedule,
-             lastResult, venueInfo, updateHubRecord, legacy, management, renderInsights };
+             lastResult, venueInfo, legacy, management };
 
 })();

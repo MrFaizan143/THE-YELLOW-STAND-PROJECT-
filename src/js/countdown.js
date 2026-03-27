@@ -19,8 +19,11 @@ const Countdown = (() => {
      * @returns {string|null} ISO date string or null when season is complete.
      */
     function getNextISO() {
-        const idx = Results.nextFixtureIndex();
-        if (idx >= 0 && idx < DATA.fixtures.length) {
+        const now = Date.now();
+        const idx = (typeof DATA !== 'undefined' && Array.isArray(DATA.fixtures))
+            ? DATA.fixtures.findIndex(f => f.iso && new Date(f.iso).getTime() > now)
+            : -1;
+        if (idx >= 0) {
             return DATA.fixtures[idx].iso;
         }
         return null; // All fixtures in the past — season complete
@@ -32,7 +35,10 @@ const Countdown = (() => {
     function updateLabel() {
         const label = document.querySelector('.countdown-card .tag');
         if (!label) return;
-        const idx = Results.nextFixtureIndex();
+        const now = Date.now();
+        const idx = (typeof DATA !== 'undefined' && Array.isArray(DATA.fixtures))
+            ? DATA.fixtures.findIndex(f => f.iso && new Date(f.iso).getTime() > now)
+            : -1;
         if (idx >= 0) {
             const f = DATA.fixtures[idx];
             const short = (window.TEAM_SHORT && window.TEAM_SHORT[f.o]) || f.o;

@@ -475,30 +475,8 @@ h1 {
 
 
 /* --------------------------------------------------------------------------
-   Hub Record
-   Season W-L summary shown below the countdown card.
--------------------------------------------------------------------------- */
-.hub-record-wrap {
-    margin-top: var(--space-6);
-    background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-mid) 100%);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-5);
-    box-shadow: var(--shadow-sm);
-}
-
-.hub-record {
-    font-size: 1.6rem;
-    font-weight: var(--font-weight-bold);
-    font-family: var(--font-mono);
-    color: var(--color-text);
-    letter-spacing: 1px;
-}
-
-
-/* --------------------------------------------------------------------------
    Fixture Item
-   Single match row on the Map page, extended for result tracking.
+   Single match row on the Map page.
 -------------------------------------------------------------------------- */
 .fixture-item {
     background: var(--color-surface);
@@ -589,75 +567,6 @@ h1 {
     box-shadow: var(--shadow-glow-sm);
     background: linear-gradient(135deg, var(--color-surface-mid) 0%, var(--color-surface) 100%);
 }
-
-/* Result state — dim played matches slightly */
-.fixture-item.result-win,
-.fixture-item.result-loss,
-.fixture-item.result-nr {
-    opacity: 0.85;
-}
-
-/* Left edge accent for results */
-.fixture-item.result-win  { border-left: 3px solid #4ade80; }
-.fixture-item.result-loss { border-left: 3px solid #f87171; }
-.fixture-item.result-nr   { border-left: 3px solid var(--color-text-muted); }
-
-
-/* --------------------------------------------------------------------------
-   Result Button
-   Circular tap target on each fixture row.
--------------------------------------------------------------------------- */
-.result-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-full);
-    border: 1.5px solid var(--color-border-lt);
-    background: transparent;
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    font-weight: var(--font-weight-bold);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: background var(--transition-fast), color var(--transition-fast),
-                border-color var(--transition-fast);
-    letter-spacing: 0;
-}
-
-.result-btn:hover {
-    border-color: var(--color-yellow);
-    color: var(--color-yellow);
-}
-
-.result-btn:focus-visible {
-    outline: 2px solid var(--color-yellow);
-    outline-offset: 2px;
-}
-
-/* Win */
-.fixture-item.result-win .result-btn.has-result {
-    background: #4ade80;
-    border-color: #4ade80;
-    color: #000;
-}
-
-/* Loss */
-.fixture-item.result-loss .result-btn.has-result {
-    background: #f87171;
-    border-color: #f87171;
-    color: #000;
-}
-
-/* No result */
-.fixture-item.result-nr .result-btn.has-result {
-    background: var(--color-text-muted);
-    border-color: var(--color-text-muted);
-    color: #000;
-}
-
 
 /* --------------------------------------------------------------------------
    Fixture Status
@@ -1141,49 +1050,6 @@ h1 {
 
 
 /* --------------------------------------------------------------------------
-   Fixture Record Bar
-   W / L / NR summary shown above the filter bar once any result is logged.
--------------------------------------------------------------------------- */
-.fixture-record-bar {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    margin-bottom: var(--space-3);
-    padding: var(--space-2) var(--space-3);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-}
-
-.fixture-record-label {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    font-weight: var(--font-weight-bold);
-    letter-spacing: 1.5px;
-    color: var(--color-text-subtle);
-    text-transform: uppercase;
-    margin-right: var(--space-1);
-}
-
-.fixture-record-sep {
-    color: var(--color-text-subtle);
-    font-family: var(--font-mono);
-    font-size: var(--text-xxs);
-}
-
-.fixture-record-stat {
-    font-family: var(--font-mono);
-    font-size: var(--text-xxs);
-    font-weight: var(--font-weight-bold);
-    letter-spacing: 0.5px;
-}
-
-.fixture-record-w { color: var(--color-positive); }
-.fixture-record-l { color: var(--color-negative); }
-.fixture-record-n { color: var(--color-text-muted); }
-
-
-/* --------------------------------------------------------------------------
    Fixture "CSK vs" prefix label
    Small muted label prefixed to the opponent name inside each fixture card.
 -------------------------------------------------------------------------- */
@@ -1261,64 +1127,6 @@ h1 {
     border-bottom: none;
 }
 
-
-/* --------------------------------------------------------------------------
-   Insights & Badges
-   Lightweight cards for stats + schedule alerts.
--------------------------------------------------------------------------- */
-.insights-grid {
-    --insight-card-min-width: 180px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(var(--insight-card-min-width), 1fr));
-    gap: var(--space-4);
-    margin: var(--space-6) 0;
-}
-
-.insight-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
-    box-shadow: var(--shadow-sm);
-}
-
-.insight-value {
-    font-size: var(--text-lg);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text);
-    margin: var(--space-2) 0;
-}
-
-.insight-value strong {
-    color: var(--color-yellow);
-}
-
-.insight-hint,
-.insight-muted {
-    color: var(--color-text-muted);
-    font-size: var(--text-xs);
-}
-
-.form-dot {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 26px;
-    height: 26px;
-    margin-right: var(--space-1);
-    padding: 0 var(--space-2);
-    border-radius: var(--radius-pill);
-    font-weight: 800;
-    font-size: var(--text-xs);
-    letter-spacing: 0.5px;
-    border: 1px solid var(--color-border);
-}
-
-.form-dot--w { background: rgba(49, 210, 113, 0.12); border-color: rgba(49,210,113,0.4); color: #57e391; }
-.form-dot--l { background: rgba(255, 86, 86, 0.12); border-color: rgba(255,86,86,0.4); color: #ff8c8c; }
-.form-dot--n,
-.form-dot--nr { background: rgba(180, 180, 180, 0.12); border-color: rgba(180,180,180,0.4); color: var(--color-text-muted); }
-.form-dot--na { background: var(--color-surface); border-color: var(--color-border); color: var(--color-text-muted); }
 
 .field-hint {
     color: var(--color-text-muted);
@@ -1589,10 +1397,6 @@ h1 {
     line-height: 1.2;
     margin-bottom: var(--space-1);
 }
-
-.hub-info-result--w { color: #4ade80; }
-.hub-info-result--l { color: #f87171; }
-.hub-info-result--n { color: var(--color-text-muted); }
 
 .hub-info-meta {
     font-size: var(--text-xxs);
@@ -2334,15 +2138,6 @@ h1 {
     margin-bottom: var(--space-4);
 }
 
-.prediction-score {
-    font-family: var(--font-mono);
-    font-size: var(--text-xxs);
-    color: var(--color-yellow);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: var(--space-4);
-}
-
 .prediction-list {
     display: flex;
     flex-direction: column;
@@ -2360,16 +2155,6 @@ h1 {
     gap: var(--space-4);
     flex-wrap: wrap;
     transition: border-color var(--transition-fast);
-}
-
-.prediction-item--correct {
-    border-color: #4ade80;
-    background: rgba(74, 222, 128, 0.05);
-}
-
-.prediction-item--wrong {
-    border-color: #f87171;
-    background: rgba(248, 113, 113, 0.05);
 }
 
 .prediction-match {
@@ -2436,27 +2221,6 @@ h1 {
 .prediction-btn:focus-visible {
     outline: 2px solid var(--color-yellow);
     outline-offset: 2px;
-}
-
-.prediction-outcome {
-    font-family: var(--font-mono);
-    font-size: var(--text-xxs);
-    font-weight: var(--font-weight-bold);
-    letter-spacing: 0.5px;
-    padding: 2px 8px;
-    border-radius: var(--radius-pill);
-}
-
-.prediction-outcome--correct {
-    background: rgba(74, 222, 128, 0.15);
-    color: #4ade80;
-    border: 1px solid rgba(74, 222, 128, 0.3);
-}
-
-.prediction-outcome--wrong {
-    background: rgba(248, 113, 113, 0.15);
-    color: #f87171;
-    border: 1px solid rgba(248, 113, 113, 0.3);
 }
 
 .prediction-empty {
@@ -4606,27 +4370,6 @@ h1 {
 
 
 /* --------------------------------------------------------------------------
-   Hub Record — Color-coded W / L / NR spans
--------------------------------------------------------------------------- */
-.hub-record-w   { color: var(--color-positive); }
-.hub-record-l   { color: var(--color-negative); }
-.hub-record-n   { color: var(--color-text-muted); }
-.hub-record-sep { color: var(--color-text-muted); opacity: 0.6; }
-
-
-/* --------------------------------------------------------------------------
-   Hub Info Card — Result-aware left border accent
--------------------------------------------------------------------------- */
-#hub-last-result:has(.hub-info-result--w) {
-    border-left: 3px solid var(--color-positive);
-}
-
-#hub-last-result:has(.hub-info-result--l) {
-    border-left: 3px solid var(--color-negative);
-}
-
-
-/* --------------------------------------------------------------------------
    Fixture "NEXT" Badge — Subtle pulse animation
 -------------------------------------------------------------------------- */
 .fixture-next .next-badge {
@@ -5167,18 +4910,6 @@ h1 {
     z-index: 3;
 }
 
-.highlight-card__result--win {
-    background: rgba(74, 222, 128, 0.2);
-    color: #4ade80;
-    border: 1px solid rgba(74, 222, 128, 0.4);
-}
-
-.highlight-card__result--loss {
-    background: rgba(248, 113, 113, 0.2);
-    color: #f87171;
-    border: 1px solid rgba(248, 113, 113, 0.4);
-}
-
 .highlight-card__result--upcoming {
     background: rgba(245, 184, 0, 0.15);
     color: var(--color-yellow);
@@ -5319,19 +5050,6 @@ h1 {
     border-color: rgba(245,184,0,0.3);
     box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(245,184,0,0.15);
 }
-
-/* Hub record card — upgraded */
-.hub-record-wrap {
-    border: 1px solid #1A1A1E;
-    background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-mid) 100%);
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.hub-record-wrap:hover {
-    border-color: rgba(245,184,0,0.25);
-    box-shadow: 0 0 0 1px rgba(245,184,0,0.1), var(--shadow-sm);
-}
-
 
 /* ==========================================================================
    Navigation — enhanced active-state glow

@@ -450,11 +450,10 @@ const FanPredictions = (() => {
         const container = document.getElementById('predictions-content');
         if (!container) return;
 
-        const preds       = load();
-        const savedResults = Results.load();
-        const now          = Date.now();
+        const preds = load();
+        const now   = Date.now();
 
-        // Show all fixtures — upcoming for predicting, past for checking accuracy
+        // Show all fixtures — upcoming for predicting, past for viewing prediction
         const allFixtures = DATA.fixtures.map((f, i) => ({ f, i }));
 
         if (allFixtures.length === 0) {
@@ -463,37 +462,22 @@ const FanPredictions = (() => {
         }
 
         const rows = allFixtures.map(({ f, i }) => {
-            const iso       = f.iso || '';
-            const isPast    = iso && new Date(iso).getTime() <= now;
-            const pred      = preds[iso] || null;
-            const actual    = savedResults[i] || null;
-            const short     = (window.TEAM_SHORT && window.TEAM_SHORT[f.o]) || (f.o ? f.o.substring(0, 3).toUpperCase() : '???');
-
-            // Outcome: correct / wrong / pending
-            let outcomeClass = '';
-            let outcomeBadge = '';
-            if (isPast && actual && pred) {
-                if (pred === actual) {
-                    outcomeClass = 'prediction-item--correct';
-                    outcomeBadge = '<span class="prediction-outcome prediction-outcome--correct">✓ Correct</span>';
-                } else {
-                    outcomeClass = 'prediction-item--wrong';
-                    outcomeBadge = '<span class="prediction-outcome prediction-outcome--wrong">✗ Wrong</span>';
-                }
-            }
+            const iso      = f.iso || '';
+            const isPast   = iso && new Date(iso).getTime() <= now;
+            const pred     = preds[iso] || null;
+            const short    = (window.TEAM_SHORT && window.TEAM_SHORT[f.o]) || (f.o ? f.o.substring(0, 3).toUpperCase() : '???');
 
             const winActive  = pred === 'W' ? ' prediction-btn--win-active'  : '';
             const lossActive = pred === 'L' ? ' prediction-btn--loss-active' : '';
             const disabled   = isPast ? 'disabled' : '';
 
             return `
-            <div class="prediction-item ${outcomeClass}" data-iso="${iso}">
+            <div class="prediction-item" data-iso="${iso}">
                 <div class="prediction-match">
                     <p class="prediction-opponent">vs ${short}</p>
-                    <p class="prediction-date">${f.d}${isPast ? ' · ' + (actual ? actual : 'Result TBA') : ''}</p>
+                    <p class="prediction-date">${f.d}</p>
                 </div>
                 <div class="prediction-controls">
-                    ${outcomeBadge}
                     <button class="prediction-btn prediction-btn--win${winActive}"
                             data-iso="${iso}" data-pick="W" ${disabled}
                             aria-label="Predict win vs ${short}" aria-pressed="${pred === 'W'}">WIN</button>
@@ -504,28 +488,10 @@ const FanPredictions = (() => {
             </div>`;
         }).join('');
 
-        // Score summary
-        const allPreds   = Object.entries(preds);
-        const scored     = allPreds.filter(([iso, pick]) => {
-            const idx  = DATA.fixtures.findIndex(f => f.iso === iso);
-            const actual = idx >= 0 ? savedResults[idx] : null;
-            return actual && pick === actual;
-        }).length;
-        const attempted  = allPreds.filter(([iso]) => {
-            const idx  = DATA.fixtures.findIndex(f => f.iso === iso);
-            const actual = idx >= 0 ? savedResults[idx] : null;
-            return !!actual;
-        }).length;
-
-        const scoreHtml = attempted > 0
-            ? `<p class="prediction-score">${scored}/${attempted} correct predictions</p>`
-            : '';
-
         container.innerHTML = `
             <div class="prediction-card" aria-label="Match predictions">
                 <p class="tag">Match Predictions</p>
                 <p class="prediction-desc">Predict each match outcome before it starts. Locked once the match begins.</p>
-                ${scoreHtml}
                 <div class="prediction-list">${rows}</div>
             </div>`;
 

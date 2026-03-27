@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     Router.init();       // Bind nav button click handlers
     Countdown.start();   // Start the Hub countdown timer (auto-detects next fixture)
     FanProfile.init();   // Pre-load saved fan profile from localStorage
-    Render.updateHubRecord(); // Show season record on Hub
 
     // -------------------------------------------------------------------------
     // Navbar — auto-hide on scroll-down, reveal on scroll-up
@@ -45,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render Hub info cards (last result + next venue — both auto-detected)
     Render.lastResult();
     Render.venueInfo();
-    Render.renderInsights();
 
     // -------------------------------------------------------------------------
     // Live score polling — shown on Hub when a CSK match is in progress
@@ -161,7 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const fixtures     = (typeof DATA !== 'undefined' && Array.isArray(DATA.fixtures))
             ? DATA.fixtures : [];
-        const savedResults = (typeof Results !== 'undefined') ? Results.load() : {};
         const now          = Date.now();
 
         if (fixtures.length === 0) {
@@ -191,22 +188,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const resultMap = { W: 'win', L: 'loss', N: 'nr' };
-
         const html = cards.map(({ f, i }) => {
             const matchMs = new Date(f.d).getTime() + 5.5 * 3600 * 1000;
             const isPast  = matchMs < now;
-            const result  = savedResults[i];
 
-            let resultLabel = 'UPCOMING';
-            let resultClass = 'upcoming';
-            if (isPast && result) {
-                resultLabel = result === 'W' ? 'WIN' : result === 'L' ? 'LOSS' : 'N/R';
-                resultClass = resultMap[result] || 'nr';
-            } else if (isPast) {
-                resultLabel = 'PLAYED';
-                resultClass = 'nr';
-            }
+            const resultLabel = isPast ? 'PLAYED' : 'UPCOMING';
+            const resultClass = isPast ? 'nr'      : 'upcoming';
 
             const matchDate = new Date(f.d);
             const dateStr   = matchDate.toLocaleDateString('en-IN', {
@@ -257,7 +244,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const shareBtn = document.getElementById('share-btn');
     if (shareBtn) {
         shareBtn.addEventListener('click', async () => {
-            const nextIdx = Results.nextFixtureIndex();
+            const now = Date.now();
+            const nextIdx = (typeof DATA !== 'undefined' && Array.isArray(DATA.fixtures))
+                ? DATA.fixtures.findIndex(f => f.iso && new Date(f.iso).getTime() > now)
+                : -1;
             const matchText = nextIdx >= 0
                 ? `Next CSK match: ${DATA.fixtures[nextIdx].d} vs ${DATA.fixtures[nextIdx].o}. Whistle Podu! 🦁`
                 : 'Follow CSK this IPL 2026 season! Whistle Podu! 🦁';
