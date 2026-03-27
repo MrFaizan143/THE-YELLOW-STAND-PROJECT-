@@ -1128,60 +1128,6 @@ h1 {
 }
 
 
-/* --------------------------------------------------------------------------
-   Insights & Badges
-   Lightweight cards for stats + schedule alerts.
--------------------------------------------------------------------------- */
-.insights-grid {
-    --insight-card-min-width: 180px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(var(--insight-card-min-width), 1fr));
-    gap: var(--space-4);
-    margin: var(--space-6) 0;
-}
-
-.insight-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
-    box-shadow: var(--shadow-sm);
-}
-
-.insight-value {
-    font-size: var(--text-lg);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text);
-    margin: var(--space-2) 0;
-}
-
-.insight-value strong {
-    color: var(--color-yellow);
-}
-
-.insight-hint,
-.insight-muted {
-    color: var(--color-text-muted);
-    font-size: var(--text-xs);
-}
-
-.form-dot {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 26px;
-    height: 26px;
-    margin-right: var(--space-1);
-    padding: 0 var(--space-2);
-    border-radius: var(--radius-pill);
-    font-weight: 800;
-    font-size: var(--text-xs);
-    letter-spacing: 0.5px;
-    border: 1px solid var(--color-border);
-}
-
-.form-dot--na { background: var(--color-surface); border-color: var(--color-border); color: var(--color-text-muted); }
-
 .field-hint {
     color: var(--color-text-muted);
     font-size: var(--text-xs);
@@ -2189,15 +2135,6 @@ h1 {
     font-size: var(--text-base);
     color: var(--color-text-muted);
     line-height: 1.5;
-    margin-bottom: var(--space-4);
-}
-
-.prediction-score {
-    font-family: var(--font-mono);
-    font-size: var(--text-xxs);
-    color: var(--color-yellow);
-    letter-spacing: 1px;
-    text-transform: uppercase;
     margin-bottom: var(--space-4);
 }
 
