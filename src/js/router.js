@@ -45,10 +45,11 @@ const Router = (() => {
         if (!visited.has(pageId)) {
             visited.add(pageId);
             if (pageId === 'p') { Render.legacy(); Render.management(); Render.squad(); }
-            if (pageId === 'n') News.fetchAndRender();
+            if (pageId === 'n') { News.fetchAndRender(); Render.postMatchReports(); }
             if (pageId === 's') {
                 Render.iplSchedule();
                 Render.standings();
+                Render.h2hSection();
             }
             if (pageId === 'f') {
                 CricketQuiz.render();
