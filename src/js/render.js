@@ -779,7 +779,8 @@ const Render = (() => {
             </div>`;
         });
 
-        container.innerHTML = controlsHtml + `<div class="ipl-schedule-rows" role="list">${html}</div>`;
+        container.innerHTML = controlsHtml + `<div class="ipl-schedule-rows" role="list">${html}</div>` +
+            `<p id="schedule-empty" class="schedule-empty" style="display:none" aria-live="polite">No matches found for this filter.</p>`;
 
         // Re-apply favourite team highlighting and wire schedule controls
         if (typeof Schedule !== 'undefined') {
