@@ -170,8 +170,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const played   = [];
         const upcoming = [];
         fixtures.forEach((f, i) => {
-            const matchMs = new Date(f.d).getTime() + 5.5 * 3600 * 1000; // IST offset
-            if (matchMs < now) {
+            const matchMs = f.iso ? new Date(f.iso).getTime() : NaN;
+            if (!isNaN(matchMs) && matchMs < now) {
                 played.push({ f, i });
             } else {
                 upcoming.push({ f, i });
@@ -189,16 +189,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const html = cards.map(({ f, i }) => {
-            const matchMs = new Date(f.d).getTime() + 5.5 * 3600 * 1000;
-            const isPast  = matchMs < now;
+            const matchMs = f.iso ? new Date(f.iso).getTime() : NaN;
+            const isPast  = !isNaN(matchMs) && matchMs < now;
 
             const resultLabel = isPast ? 'PLAYED' : 'UPCOMING';
             const resultClass = isPast ? 'nr'      : 'upcoming';
 
-            const matchDate = new Date(f.d);
-            const dateStr   = matchDate.toLocaleDateString('en-IN', {
-                day: 'numeric', month: 'short'
-            });
+            const dateStr   = f.d || '';
             const opponent  = (f.o || 'TBD').replace('vs ', '').trim();
             const venue     = f.v ? f.v.split(',')[0].trim() : '';
 
