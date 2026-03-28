@@ -784,6 +784,8 @@ const Render = (() => {
                         <span class="venue-pitch-avg">Avg 1st inn: ${vp.avgFirst}</span>
                         <span class="venue-pitch-note">${vp.notes}</span>
                     </div>`;
+                } else if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+                    console.warn(`[TYS] No venuePitchData entry for venue: "${m.v}"`);
                 }
             }
 
