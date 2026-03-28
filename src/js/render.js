@@ -883,7 +883,6 @@ const Render = (() => {
     }
 
     /** Public API */
-    return { fixtures, fixturesLoading, fixturesError, squad, standings, iplSchedule,
-             lastResult, venueInfo, legacy, management };
+    return { squad, standings, iplSchedule, lastResult, venueInfo, legacy, management };
 
 })();

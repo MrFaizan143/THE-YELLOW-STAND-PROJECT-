@@ -49,9 +49,6 @@ const Router = (() => {
             if (pageId === 's') {
                 Render.iplSchedule();
                 Render.standings();
-                if (typeof Schedule !== 'undefined' && Schedule.loadFixtures) {
-                    Schedule.loadFixtures();
-                }
             }
             if (pageId === 'f') {
                 CricketQuiz.render();
