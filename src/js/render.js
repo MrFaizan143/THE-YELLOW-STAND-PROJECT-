@@ -155,6 +155,7 @@ const Render = (() => {
             </div>
         </div>`;
 
+        const recordBar = '';
         if (filtered.length === 0) {
             container.innerHTML = progressBar + recordBar + filterBar + '<p class="fixtures-status">No fixtures match this filter.</p>';
             Icons.init(container);
@@ -778,7 +779,8 @@ const Render = (() => {
             </div>`;
         });
 
-        container.innerHTML = controlsHtml + `<div class="ipl-schedule-rows" role="list">${html}</div>`;
+        container.innerHTML = controlsHtml + `<div class="ipl-schedule-rows" role="list">${html}</div>` +
+            `<p id="schedule-empty" class="schedule-empty" style="display:none" aria-live="polite">No matches found for this filter.</p>`;
 
         // Re-apply favourite team highlighting and wire schedule controls
         if (typeof Schedule !== 'undefined') {
