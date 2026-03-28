@@ -155,6 +155,7 @@ const Render = (() => {
             </div>
         </div>`;
 
+        const recordBar = '';
         if (filtered.length === 0) {
             container.innerHTML = progressBar + recordBar + filterBar + '<p class="fixtures-status">No fixtures match this filter.</p>';
             Icons.init(container);

@@ -477,7 +477,7 @@ h1 {
 
 /* --------------------------------------------------------------------------
    Fixture Item
-   Single match row on the Map page.
+   Single match row on the Schedule page.
 -------------------------------------------------------------------------- */
 .fixture-item {
     background: var(--color-surface);
@@ -1104,7 +1104,7 @@ h1 {
 
 /* --------------------------------------------------------------------------
    Points Table (Standings)
-   Tabular IPL standings on the Map page.
+   Tabular IPL standings on the Schedule page.
 -------------------------------------------------------------------------- */
 .standings-table {
     border: 1px solid var(--color-border);
@@ -1799,7 +1799,7 @@ h1 {
 
 /* --------------------------------------------------------------------------
    Season Progress Bar
-   Shown above the fixture list on the Map page.
+   Shown above the fixture list on the Schedule page.
 -------------------------------------------------------------------------- */
 .season-progress {
     display: flex;
@@ -1955,7 +1955,7 @@ h1 {
 
 /* --------------------------------------------------------------------------
    IPL Full Schedule
-   All-teams match cards on the Map page.
+   All-teams match cards on the Schedule page.
    CSK matches get a yellow-left accent; live matches pulse.
 -------------------------------------------------------------------------- */
 .ipl-schedule-rows {
@@ -1996,26 +1996,6 @@ h1 {
 @keyframes liveGlow {
     0%, 100% { box-shadow: 0 0 0 2px rgba(245, 184, 0, 0.2); }
     50%       { box-shadow: 0 0 0 4px rgba(245, 184, 0, 0.45); }
-}
-
-/* Teams row */
-.ipl-match-teams {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-}
-
-.ipl-match-team {
-    font-family: var(--font-mono);
-    font-size: 1rem;
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text);
-    letter-spacing: 0.5px;
-}
-
-/* CSK team name in brand yellow */
-.ipl-match-team.ipl-match-team--csk {
-    color: var(--color-yellow);
 }
 
 .ipl-match-vs {
@@ -2590,10 +2570,6 @@ h1 {
 .ipl-match--fav {
     border-color: var(--color-yellow) !important;
     background: rgba(245, 184, 0, 0.06) !important;
-}
-
-.ipl-match--fav .ipl-match-team {
-    color: var(--color-yellow);
 }
 
 /* Section divider for pinned favourite-team matches */
@@ -5294,6 +5270,18 @@ h1 {
 -------------------------------------------------------------------------- */
 .ipl-match--hidden {
     display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Schedule Empty State — shown when all matches are filtered out
+-------------------------------------------------------------------------- */
+.schedule-empty {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    padding: var(--space-8) var(--space-4);
+    letter-spacing: 0.5px;
 }
 
 /* --------------------------------------------------------------------------
