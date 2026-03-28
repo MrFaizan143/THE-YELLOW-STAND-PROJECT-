@@ -2,6 +2,37 @@
  * render.js — TYS 2026 Rendering Engine
  * Responsible for all DOM construction from DATA.
  * No app logic or routing here — pure view layer.
+ *
+ * ── Sections ────────────────────────────────────────────────────────────────
+ *  Helpers
+ *    _teamBadge(short)            Coloured team badge pill
+ *    _localTime(iso)              User's local time string (empty if already IST)
+ *    getFixtureBadge(live, soon)  Returns LIVE / STARTS SOON badge HTML
+ *
+ *  Hub cards (rendered on page load — no lazy render)
+ *    lastResult()                 #hub-last-result — most recent match outcome
+ *    venueInfo()                  #hub-venue — next match venue + pitch note
+ *
+ *  CSK Fixtures (used by the old fixture-list on Hub — now supplemental)
+ *    fixturesLoading()            Loading placeholder in #fixture-list
+ *    fixturesError(msg)           Error notice in #fixture-list
+ *    fixtures(liveData?)          Renders CSK fixture rows with time-slot filter
+ *    buildICS(f)                  Returns a data: URI for .ics calendar download
+ *    buildGoogleCalendarLink(f)   Returns a Google Calendar add-event URL
+ *
+ *  Pride page (lazy-rendered on first visit)
+ *    legacy()                     #legacy-content — title history + records
+ *    management()                 #management-content — ownership + coaching panel
+ *    squad()                      #squad-content — player grid + staff list
+ *
+ *  Schedule page (lazy-rendered on first visit)
+ *    iplSchedule(liveData?)       #ipl-schedule-list — full 74-match IPL schedule
+ *    standings()                  #standings-list — IPL points table
+ *    h2hSection()                 #h2h-records — CSK head-to-head cards
+ *
+ *  News page (lazy-rendered on first visit)
+ *    postMatchReports()           #match-reports-list — post-match report cards
+ * ────────────────────────────────────────────────────────────────────────────
  */
 
 const Render = (() => {

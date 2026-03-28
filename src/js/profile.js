@@ -3,6 +3,31 @@
  * Handles fan profile: favourite player, squad role, win streak,
  * jersey customisation (name + number), and match predictions.
  * All preferences are persisted in localStorage.
+ *
+ * ── Modules in this file ────────────────────────────────────────────────────
+ *  FanProfile      (line ~8)    Jersey preview, favourite player, win streak,
+ *                               notification lead, timezone, favourite venue.
+ *                               localStorage key: tys_fan_profile
+ *
+ *  FanPoll         (line ~294)  Weekly fan poll with percentage-bar results.
+ *                               localStorage key: tys_poll_<poll.id>
+ *
+ *  FanPredictions  (line ~419)  Per-fixture W/L predictions (locked once live).
+ *                               localStorage key: tys_predictions_2026
+ *
+ *  CricketQuiz     (line ~520)  10-question cricket trivia quiz, shuffled each
+ *                               session, with instant feedback and medal screen.
+ *
+ *  TossTracker     (line ~684)  Per-match toss won/lost + bat/field choice.
+ *                               localStorage key: tys_toss_2026
+ *
+ *  MatchJournal    (line ~839)  280-char notes per fixture, debounced auto-save.
+ *                               localStorage key: tys_journal_2026
+ *
+ *  FantasyTips     (line ~938)  Per-fixture fantasy pick guide (captain, VC,
+ *                               must-picks, differentials, avoid list, summary).
+ *                               Data source: DATA.fantasyTips keyed by ISO date.
+ * ────────────────────────────────────────────────────────────────────────────
  */
 
 const FanProfile = (() => {
