@@ -182,5 +182,5 @@ const Schedule = (() => {
         }
     }
 
-    return { init, initScheduleControls, applyFavTeamHighlight, updateLiveInSchedule, loadFixtures };
+    return { init, initScheduleControls, applyFavTeamHighlight, updateLiveInSchedule };
 })();
