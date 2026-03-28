@@ -222,16 +222,16 @@ const DATA = {
      * CSK is listed first so it is always visible at the top of the card.
      */
     standings: [
-        { team: "CSK",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
-        { team: "MI",   played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
-        { team: "RCB",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
-        { team: "KKR",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
-        { team: "DC",   played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
-        { team: "RR",   played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
-        { team: "PBKS", played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
-        { team: "SRH",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
-        { team: "GT",   played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" },
-        { team: "LSG",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—" }
+        { team: "CSK",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—", form: [] },
+        { team: "MI",   played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—", form: [] },
+        { team: "RCB",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—", form: [] },
+        { team: "KKR",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—", form: [] },
+        { team: "DC",   played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—", form: [] },
+        { team: "RR",   played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—", form: [] },
+        { team: "PBKS", played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—", form: [] },
+        { team: "SRH",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—", form: [] },
+        { team: "GT",   played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—", form: [] },
+        { team: "LSG",  played: 0, won: 0, lost: 0, nr: 0, pts: 0, nrr: "—", form: [] }
     ],
 
     /**
@@ -264,6 +264,67 @@ const DATA = {
         "Rajiv Gandhi, Hyderabad":   { lat: 17.4055, lng: 78.5500, city: "Hyderabad",  stadium: "Rajiv Gandhi International Cricket Stadium" },
         "Eden Gardens, Kolkata":     { lat: 22.5646, lng: 88.3433, city: "Kolkata",    stadium: "Eden Gardens"                               }
     },
+
+    /**
+     * Venue pitch & conditions data — used on CSK schedule fixture cards.
+     * Key is the short city/venue name as used in DATA.iplSchedule[].v.
+     * pitch: surface description   avgFirst: avg 1st-innings score   notes: key conditions note
+     */
+    venuePitchData: {
+        "Guwahati":           { pitch: "Batting-friendly",  avgFirst: 172, notes: "Dew factor in evening games" },
+        "Chennai":            { pitch: "Spin-friendly",     avgFirst: 155, notes: "Slow, low, turns from ball 1" },
+        "Bengaluru":          { pitch: "High-scoring",      avgFirst: 183, notes: "Short straight boundaries — bat first" },
+        "Ahmedabad":          { pitch: "Balanced",          avgFirst: 164, notes: "Big ground; spinners get purchase" },
+        "Mumbai":             { pitch: "Batting-friendly",  avgFirst: 174, notes: "True bounce; pacers effective in PP" },
+        "Lucknow":            { pitch: "Two-paced",         avgFirst: 160, notes: "Variable bounce; swing early doors" },
+        "Mullanpur / New Chandigarh": { pitch: "Batting-friendly", avgFirst: 168, notes: "New venue; expected flat deck" },
+        "Delhi":              { pitch: "Batting-friendly",  avgFirst: 168, notes: "Slow outfield; dew in night matches" },
+        "Hyderabad":          { pitch: "Batting-friendly",  avgFirst: 177, notes: "True surface; pace and spin both work" },
+        "Kolkata":            { pitch: "Balanced",          avgFirst: 163, notes: "Good test for batting; pace gets seam" },
+        "Jaipur":             { pitch: "Batting-friendly",  avgFirst: 170, notes: "Good bounce; spinners less effective" },
+        "Dharamsala":         { pitch: "High-scoring",      avgFirst: 185, notes: "Altitude outfield; expect big totals" },
+        "Raipur":             { pitch: "Batting-friendly",  avgFirst: 165, notes: "Neutral venue; conditions suit batsmen" }
+    },
+
+    /**
+     * CSK head-to-head records vs each IPL 2026 opponent (all-time IPL).
+     * lastFive: results of the 5 most recent meetings — 'W'|'L'|'N', most recent first.
+     * Update after each match.
+     */
+    h2h: {
+        "RR":   { played: 34, cskWon: 21, oppWon: 12, nr: 1, lastFive: [] },
+        "PBKS": { played: 32, cskWon: 20, oppWon: 12, nr: 0, lastFive: [] },
+        "RCB":  { played: 30, cskWon: 20, oppWon: 10, nr: 0, lastFive: [] },
+        "DC":   { played: 31, cskWon: 23, oppWon:  8, nr: 0, lastFive: [] },
+        "KKR":  { played: 34, cskWon: 22, oppWon: 12, nr: 0, lastFive: [] },
+        "SRH":  { played: 23, cskWon: 12, oppWon: 11, nr: 0, lastFive: [] },
+        "MI":   { played: 36, cskWon: 17, oppWon: 19, nr: 0, lastFive: [] },
+        "GT":   { played:  7, cskWon:  3, oppWon:  4, nr: 0, lastFive: [] },
+        "LSG":  { played:  8, cskWon:  4, oppWon:  4, nr: 0, lastFive: [] }
+    },
+
+    /**
+     * Post-match reports — add an entry after each CSK game.
+     * result: 'W' | 'L' | 'N'   highlights: short stat lines shown as pills.
+     * Update this array after each CSK fixture.
+     */
+    postMatchReports: [
+        /* Example (uncomment and fill after Match 1):
+        {
+            matchNo: 1,
+            date: "30 MAR",
+            opponent: "RR",
+            venue: "Barsapara, Guwahati",
+            result: "W",
+            cskScore: "196/4 (20)",
+            oppScore: "180/8 (20)",
+            headline: "Gaikwad's fifty fires CSK to victory in opener",
+            body: "A dominant batting display powered by Ruturaj Gaikwad set the tone for CSK's IPL 2026 campaign.",
+            manOfMatch: "Ruturaj Gaikwad",
+            highlights: ["Gaikwad: 68(41)", "Noor Ahmad: 2/22", "Dube: 38(20)"]
+        }
+        */
+    ],
 
     /**
      * CSK Legacy — IPL title history and all-time records.

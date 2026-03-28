@@ -539,6 +539,8 @@ const Render = (() => {
                     ? `<div class="player-expand">${expandLines.join('')}</div>${careerHtml}`
                     : '';
 
+                const hasStats = expandLines.length > 0 || !!careerHtml;
+
                 return `
                 <div class="${cardClasses}" role="button" tabindex="0"
                      aria-expanded="false" aria-label="View profile of ${player}"
@@ -550,6 +552,7 @@ const Render = (() => {
                     <div class="card-badges">
                         ${flagBadge}${natBadge}${roleBadge}
                     </div>
+                    ${hasStats ? '<span class="player-expand-hint" aria-hidden="true">Stats ▾</span>' : ''}
                     ${expandSection}
                 </div>`;
             }).join('');
@@ -618,12 +621,24 @@ const Render = (() => {
             <span class="standing-num">L</span>
             <span class="standing-num">Pts</span>
             <span class="standing-nrr">NRR</span>
+            <span class="standing-form">Form</span>
         </div>`;
 
         const rows = DATA.standings.map((s, i) => {
             const isCsk = s.team === 'CSK';
             // Top 4 teams qualify for playoffs
             const isPlayoff = i < 4;
+
+            const form = Array.isArray(s.form) ? s.form : [];
+            const formHtml = form.length > 0
+                ? `<span class="standing-form" aria-label="Recent form">${
+                    form.slice(0, 5).map(r => {
+                        const cls = r === 'W' ? 'form-chip--w' : r === 'L' ? 'form-chip--l' : 'form-chip--nr';
+                        return `<span class="form-chip ${cls}" aria-label="${r === 'W' ? 'Win' : r === 'L' ? 'Loss' : 'No result'}">${r}</span>`;
+                    }).join('')
+                  }</span>`
+                : `<span class="standing-form standing-form--empty" aria-label="No results yet">—</span>`;
+
             return `
             <div class="standing-row${isCsk ? ' standing-row--csk' : ''}${isPlayoff ? ' standing-row--playoff' : ''}" role="row"
                  aria-label="${s.team}: ${s.pts} points${isPlayoff ? ', playoff position' : ''}">
@@ -634,11 +649,12 @@ const Render = (() => {
                 <span class="standing-num">${s.lost}</span>
                 <span class="standing-num standing-pts">${s.pts}</span>
                 <span class="standing-nrr">${s.nrr}</span>
+                ${formHtml}
             </div>`;
         }).join('');
 
         // Playoff qualification note
-        const note = `<p class="standings-note">Top 4 qualify for playoffs</p>`;
+        const note = `<p class="standings-note">Top 4 qualify for playoffs · Form = last 5 results</p>`;
 
         container.innerHTML = header + rows + note;
     }
@@ -757,6 +773,20 @@ const Render = (() => {
 
             const localTimeHtml = _localTime(m.iso);
 
+            // Venue pitch info — shown only on CSK match cards for upcoming fixtures
+            let venuePitchHtml = '';
+            if (m.isCSK && !isPast && !isLive && DATA.venuePitchData) {
+                const vp = DATA.venuePitchData[m.v];
+                if (vp) {
+                    venuePitchHtml = `
+                    <div class="venue-pitch-strip" aria-label="Venue conditions">
+                        <span class="venue-pitch-type">${vp.pitch}</span>
+                        <span class="venue-pitch-avg">Avg 1st inn: ${vp.avgFirst}</span>
+                        <span class="venue-pitch-note">${vp.notes}</span>
+                    </div>`;
+                }
+            }
+
             html += `
             <div class="ipl-match-card${cskClass}${liveClass}${pastClass}${playoffClass}" role="listitem"
                   aria-label="${m.team1Short} vs ${m.team2Short}, ${m.d}"
@@ -773,6 +803,7 @@ const Render = (() => {
                     ${localTimeHtml}
                     <span class="ipl-match-venue">${Icons.i('map-pin', 11)} ${m.v}</span>
                 </div>
+                ${venuePitchHtml}
                 <div class="ipl-match-footer">
                     ${scoreHtml}${statusLabel}${statusCta}
                 </div>
@@ -884,7 +915,99 @@ const Render = (() => {
         container.innerHTML = html;
     }
 
+    /**
+     * Renders head-to-head records (CSK vs each IPL 2026 opponent) into #h2h-records.
+     * Uses DATA.h2h and TEAM_COLORS for badge styling.
+     */
+    function h2hSection() {
+        const container = document.getElementById('h2h-records');
+        if (!container || !DATA.h2h) return;
+
+        const cards = Object.entries(DATA.h2h).map(([opp, rec]) => {
+            const c = TEAM_COLORS[opp] || { bg: '#444', fg: '#fff' };
+            const cskLeads = rec.cskWon > rec.oppWon;
+            const tied     = rec.cskWon === rec.oppWon;
+            const leadLabel = cskLeads ? 'CSK lead' : (tied ? 'Tied' : `${opp} lead`);
+            const leadClass = cskLeads ? 'h2h-lead--csk' : (tied ? 'h2h-lead--tied' : 'h2h-lead--opp');
+
+            const lastFiveHtml = Array.isArray(rec.lastFive) && rec.lastFive.length > 0
+                ? `<div class="h2h-last-five" aria-label="Last 5 results">${
+                    rec.lastFive.slice(0, 5).map(r => {
+                        const cls = r === 'W' ? 'form-chip--w' : r === 'L' ? 'form-chip--l' : 'form-chip--nr';
+                        return `<span class="form-chip ${cls}">${r}</span>`;
+                    }).join('')
+                  }</div>`
+                : '';
+
+            return `
+            <div class="h2h-card" aria-label="CSK vs ${opp}: ${rec.cskWon}-${rec.oppWon}">
+                <div class="h2h-opp-badge" style="--tbg:${c.bg};--tfg:${c.fg}" aria-label="${opp}">${opp}</div>
+                <p class="h2h-record">${rec.cskWon} – ${rec.oppWon}${rec.nr > 0 ? ` (${rec.nr}NR)` : ''}</p>
+                <p class="h2h-played">${rec.played} played</p>
+                <p class="h2h-lead ${leadClass}">${leadLabel}</p>
+                ${lastFiveHtml}
+            </div>`;
+        }).join('');
+
+        container.innerHTML = cards ||
+            '<p class="fixtures-status">Head-to-head data unavailable.</p>';
+    }
+
+    /**
+     * Renders post-match reports into #match-reports-list on the News page.
+     * Uses DATA.postMatchReports — add entries there after each CSK game.
+     */
+    function postMatchReports() {
+        const container = document.getElementById('match-reports-list');
+        if (!container) return;
+
+        const reports = Array.isArray(DATA.postMatchReports) ? DATA.postMatchReports : [];
+
+        if (reports.length === 0) {
+            container.innerHTML = `
+            <div class="match-report-placeholder">
+                <p class="match-report-placeholder-text">Match reports will appear here after each CSK game. Whistle Podu! 🦁</p>
+            </div>`;
+            return;
+        }
+
+        const html = reports.map(r => {
+            const resultClass = r.result === 'W' ? 'match-report--win'
+                              : r.result === 'L' ? 'match-report--loss'
+                              : 'match-report--nr';
+            const resultLabel = r.result === 'W' ? 'WIN' : r.result === 'L' ? 'LOSS' : 'NR';
+
+            const highlightPills = Array.isArray(r.highlights) && r.highlights.length > 0
+                ? `<div class="match-report-highlights">${
+                    r.highlights.map(h => `<span class="match-report-pill">${h}</span>`).join('')
+                  }</div>`
+                : '';
+
+            return `
+            <div class="match-report ${resultClass}" role="article"
+                 aria-label="Match report: CSK vs ${r.opponent}, ${r.date}">
+                <div class="match-report-header">
+                    <span class="match-report-tag">MATCH REPORT · M${r.matchNo}</span>
+                    <span class="match-report-result-badge match-report-result-badge--${r.result.toLowerCase()}">${resultLabel}</span>
+                </div>
+                <p class="match-report-title">${r.headline}</p>
+                <p class="match-report-meta">CSK vs ${r.opponent} · ${r.date} · ${r.venue}</p>
+                <div class="match-report-scores">
+                    <span class="match-report-score">CSK ${r.cskScore}</span>
+                    <span class="match-report-vs">vs</span>
+                    <span class="match-report-score">${r.opponent} ${r.oppScore}</span>
+                </div>
+                <p class="match-report-body">${r.body}</p>
+                ${r.manOfMatch ? `<p class="match-report-mom">${Icons.i('award', 13)} Player of the Match: <strong>${r.manOfMatch}</strong></p>` : ''}
+                ${highlightPills}
+            </div>`;
+        }).join('');
+
+        container.innerHTML = html;
+        Icons.init(container);
+    }
+
     /** Public API */
-    return { squad, standings, iplSchedule, lastResult, venueInfo, legacy, management };
+    return { squad, standings, iplSchedule, lastResult, venueInfo, legacy, management, h2hSection, postMatchReports };
 
 })();
