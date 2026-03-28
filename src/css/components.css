@@ -11,7 +11,7 @@
 -------------------------------------------------------------------------- */
 nav {
     position: fixed;
-    bottom: 20px;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
@@ -22,6 +22,7 @@ nav {
     border: 1px solid var(--color-overlay-nav-border);
     border-radius: var(--radius-full);
     padding: 6px;
+    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
     display: flex;
     z-index: var(--z-nav);
     box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.04);
@@ -203,7 +204,7 @@ svg[aria-hidden="true"] {
 -------------------------------------------------------------------------- */
 .page {
     display: none;
-    padding: var(--space-8) 5% calc(var(--space-8) * 1.5);
+    padding: var(--space-8) 5% calc(var(--space-8) * 1.5 + 88px + env(safe-area-inset-bottom, 0px));
     max-width: 1100px;
     margin: 0 auto;
 }
@@ -4774,7 +4775,7 @@ h1 {
 
 /* Highlight media card — 16:9 aspect ratio */
 .highlight-card {
-    flex: 0 0 260px;
+    flex: 0 0 clamp(220px, 72vw, 260px);
     scroll-snap-align: start;
     border-radius: var(--radius-lg);
     overflow: hidden;
@@ -5027,13 +5028,46 @@ h1 {
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
+   Compact phones / small tablets (≤ 600px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 600px) {
+
+    /* Hub hero — remove horizontal bleed and trim height */
+    .hub-hero {
+        width: 100%;
+        margin-left: 0;
+        border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+        height: 180px;
+    }
+
+    /* Countdown — tighten padding and center blocks */
+    .countdown-card {
+        padding: var(--space-6);
+    }
+
+    .cd-blocks {
+        justify-content: center;
+    }
+
+    /* Highlights header — allow controls to wrap */
+    .highlights-header {
+        flex-wrap: wrap;
+        gap: var(--space-2);
+    }
+
+    .highlights-nav {
+        margin-left: auto;
+    }
+}
+
+/* --------------------------------------------------------------------------
    Small screens (≤ 480px)
--------------------------------------------------------------------------- */
+   -------------------------------------------------------------------------- */
 @media (max-width: 480px) {
 
     /* Page — increase bottom padding to clear the fixed nav bar */
     .page {
-        padding-bottom: 100px;
+        padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
     }
 
     /* h1 — reduce letter-spacing so the heading fits on narrow viewports */
