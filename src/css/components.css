@@ -309,7 +309,7 @@ h1 {
    Hub-page countdown display.
 -------------------------------------------------------------------------- */
 .countdown-card {
-    background: linear-gradient(145deg, var(--color-surface-mid) 0%, var(--color-surface) 100%);
+    background: var(--color-surface);
     padding: var(--space-8);
     border-radius: var(--radius-xl);
     border: 1px solid var(--color-border-lt);
@@ -418,7 +418,7 @@ h1 {
    Shown during a CSK match in progress (requires cricapi.com key).
 -------------------------------------------------------------------------- */
 .hub-live-score-card {
-    background: linear-gradient(135deg, var(--color-surface-mid) 0%, var(--color-surface) 100%);
+    background: var(--color-surface);
     border: 1px solid var(--color-border-lt);
     border-left: 3px solid #ef4444;
     border-radius: var(--radius-xl);
@@ -550,7 +550,7 @@ h1 {
 .fixture-item.fixture-next {
     border-color: var(--color-yellow);
     box-shadow: var(--shadow-glow-sm);
-    background: linear-gradient(135deg, var(--color-surface-mid) 0%, var(--color-surface) 100%);
+    background: var(--color-surface);
 }
 
 /* --------------------------------------------------------------------------
@@ -2106,7 +2106,7 @@ h1 {
 
 .ipl-match-card.ipl-match--playoff {
     border-color: rgba(245, 184, 0, 0.3);
-    background: linear-gradient(135deg, var(--color-surface) 0%, rgba(245, 184, 0, 0.04) 100%);
+    background: var(--color-surface);
     opacity: 0.85;
 }
 
@@ -2526,7 +2526,7 @@ h1 {
    Two-column layout showing both team XIs before match day.
 -------------------------------------------------------------------------- */
 .probable-xi-card {
-    background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-surface-mid) 100%);
+    background: var(--color-surface);
     border: 1px solid var(--color-border-lt);
     border-radius: var(--radius-xl);
     padding: var(--space-5) var(--space-6);
@@ -2648,8 +2648,8 @@ h1 {
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    background: linear-gradient(135deg, rgba(245, 184, 0, 0.1), rgba(245, 184, 0, 0.03));
-    border: 1px solid rgba(245, 184, 0, 0.3);
+    background: rgba(245, 184, 0, 0.06);
+    border: 1px solid rgba(245, 184, 0, 0.2);
     border-radius: var(--radius-lg);
     padding: var(--space-5) var(--space-6);
     margin-bottom: var(--space-6);
@@ -2686,7 +2686,7 @@ h1 {
 }
 
 .legacy-trophy-card {
-    background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-surface-mid) 100%);
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--space-5);
@@ -2783,7 +2783,7 @@ h1 {
    ========================================================================== */
 
 .quiz-card {
-    background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-surface-mid) 100%);
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: var(--space-6);
@@ -3021,7 +3021,7 @@ h1 {
    ========================================================================== */
 
 .toss-card {
-    background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-surface-mid) 100%);
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: var(--space-6);
@@ -3170,7 +3170,7 @@ h1 {
    ========================================================================== */
 
 .journal-card {
-    background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-surface-mid) 100%);
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: var(--space-6);
@@ -3422,7 +3422,7 @@ h1 {
    ============================================================================= */
 
 .live-match-card {
-    background: linear-gradient(145deg, var(--color-surface-mid) 0%, var(--color-surface) 100%);
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: var(--space-4);
@@ -4299,53 +4299,19 @@ h1 {
 
 
 /* --------------------------------------------------------------------------
-   Fixture List — Stagger entrance animation
+   Fixture List, News Page, Squad Grid — entrance animation
 -------------------------------------------------------------------------- */
 .fixture-rows > * {
     animation: fadeUp var(--transition-slow) ease both;
 }
 
-.fixture-rows > *:nth-child(2)  { animation-delay: 35ms; }
-.fixture-rows > *:nth-child(3)  { animation-delay: 70ms; }
-.fixture-rows > *:nth-child(4)  { animation-delay: 105ms; }
-.fixture-rows > *:nth-child(5)  { animation-delay: 140ms; }
-.fixture-rows > *:nth-child(6)  { animation-delay: 175ms; }
-.fixture-rows > *:nth-child(7)  { animation-delay: 210ms; }
-.fixture-rows > *:nth-child(8)  { animation-delay: 245ms; }
-.fixture-rows > *:nth-child(9)  { animation-delay: 280ms; }
-.fixture-rows > *:nth-child(10) { animation-delay: 315ms; }
-.fixture-rows > *:nth-child(n+11) { animation-delay: 350ms; }
-
-
-/* --------------------------------------------------------------------------
-   News Page — Stagger entrance animation
--------------------------------------------------------------------------- */
 #news-list .news-item {
     animation: fadeUp var(--transition-slow) ease both;
 }
 
-#news-list .news-item:nth-child(2)  { animation-delay: 50ms; }
-#news-list .news-item:nth-child(3)  { animation-delay: 100ms; }
-#news-list .news-item:nth-child(4)  { animation-delay: 150ms; }
-#news-list .news-item:nth-child(5)  { animation-delay: 200ms; }
-#news-list .news-item:nth-child(n+6) { animation-delay: 250ms; }
-
-
-/* --------------------------------------------------------------------------
-   Squad Grid — Stagger entrance animation
--------------------------------------------------------------------------- */
 .squad-group > .card {
     animation: fadeUp var(--transition-slow) ease both;
 }
-
-.squad-group > .card:nth-child(2)  { animation-delay: 30ms; }
-.squad-group > .card:nth-child(3)  { animation-delay: 60ms; }
-.squad-group > .card:nth-child(4)  { animation-delay: 90ms; }
-.squad-group > .card:nth-child(5)  { animation-delay: 120ms; }
-.squad-group > .card:nth-child(6)  { animation-delay: 150ms; }
-.squad-group > .card:nth-child(7)  { animation-delay: 180ms; }
-.squad-group > .card:nth-child(8)  { animation-delay: 210ms; }
-.squad-group > .card:nth-child(n+9) { animation-delay: 240ms; }
 
 
 /* --------------------------------------------------------------------------
