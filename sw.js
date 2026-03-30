@@ -7,7 +7,7 @@
  *   • Navigation requests   → network-first with cached index.html fallback
  */
 
-const CACHE_VERSION = 'tys-v13';
+const CACHE_VERSION = 'tys-v14';
 const FONT_CACHE    = 'tys-fonts-v1';
 
 /** All local assets that make up the app shell */

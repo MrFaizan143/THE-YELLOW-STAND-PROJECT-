@@ -102,6 +102,47 @@ const FanProfile = (() => {
         return `<div class="fav-player-info">${items.join('')}</div>`;
     }
 
+    /**
+     * Derives the suggested win streak from DATA.lastResult.
+     * Returns null when no result data is available.
+     * Returns 0 when the last result was a loss.
+     * Returns the current stored streak + 1 when there's a win that hasn't
+     * been counted yet (detected by comparing with the ISO of the last past fixture).
+     */
+    function suggestedStreak(currentStreak) {
+        if (!DATA.lastResult || !DATA.lastResult.result) return null;
+        const result = DATA.lastResult.result; // 'W' | 'L' | 'N'
+        if (result === 'L') return 0;
+        if (result === 'W') {
+            // Check the last-stored counted ISO to avoid double-counting
+            const lastCountedISO = localStorage.getItem('tys_streak_last_iso') || '';
+            const now = Date.now();
+            let latestISO = null, latestMs = 0;
+            (DATA.fixtures || []).forEach(f => {
+                if (!f.iso) return;
+                const ms = new Date(f.iso).getTime();
+                if (ms < now && ms > latestMs) { latestMs = ms; latestISO = f.iso; }
+            });
+            if (latestISO && latestISO !== lastCountedISO) return currentStreak + 1;
+        }
+        return null; // No change needed
+    }
+
+    /**
+     * Builds an inline hint element when the data suggests the streak
+     * should be updated.  Returns an empty string when no hint is needed.
+     */
+    function buildStreakHint(currentStreak) {
+        const suggested = suggestedStreak(currentStreak);
+        if (suggested === null) return '';
+        if (suggested === currentStreak) return ''; // already in sync
+        const label = suggested === 0
+            ? '🔴 CSK lost — reset streak to 0?'
+            : `🟡 CSK won! Update streak to ${suggested}?`;
+        return `<button class="streak-hint-btn" id="streak-hint" data-suggested="${suggested}"
+                        aria-label="Sync win streak with last result">${label}</button>`;
+    }
+
     /** Build and inject the Fan page HTML, then bind live events */
     function render() {
         load();
@@ -175,6 +216,7 @@ const FanProfile = (() => {
                         <span id="streak-val" class="streak-value">${state.winStreak}</span>
                         <button class="streak-btn" id="streak-up" aria-label="Increase win streak">+</button>
                     </div>
+                    ${buildStreakHint(state.winStreak)}
                 </div>
 
                 <div class="profile-field">
@@ -184,7 +226,7 @@ const FanProfile = (() => {
                             `<option value="${min}" ${state.notifLeadMinutes === min ? 'selected' : ''}>${min} minutes before</option>`
                         ).join('')}
                     </select>
-                    <p class="field-hint">Controls the notification lead time on the Schedule page.</p>
+                    <p class="field-hint">How far in advance the 🔔 bell reminds you before each CSK match.</p>
                 </div>
 
                 <div class="profile-field">
@@ -263,19 +305,54 @@ const FanProfile = (() => {
             state.winStreak++;
             streakVal.textContent = state.winStreak;
             save();
+            // Remove hint if user manually synced
+            const hint = document.getElementById('streak-hint');
+            if (hint) hint.remove();
         });
 
         streakDown.addEventListener('click', () => {
             if (state.winStreak > 0) state.winStreak--;
             streakVal.textContent = state.winStreak;
             save();
+            // Remove hint if user manually reached 0
+            const hint = document.getElementById('streak-hint');
+            if (hint) hint.remove();
         });
+
+        // Streak sync hint button — auto-applies the suggested value from DATA.lastResult
+        const streakHint = document.getElementById('streak-hint');
+        if (streakHint) {
+            streakHint.addEventListener('click', () => {
+                const suggested = parseInt(streakHint.dataset.suggested, 10);
+                if (!isNaN(suggested)) {
+                    state.winStreak = suggested;
+                    streakVal.textContent = suggested;
+                    // Remember which fixture we just counted so we don't prompt again
+                    const now = Date.now();
+                    let latestISO = null, latestMs = 0;
+                    (DATA.fixtures || []).forEach(f => {
+                        if (!f.iso) return;
+                        const ms = new Date(f.iso).getTime();
+                        if (ms < now && ms > latestMs) { latestMs = ms; latestISO = f.iso; }
+                    });
+                    if (latestISO) localStorage.setItem('tys_streak_last_iso', latestISO);
+                    save();
+                    streakHint.remove();
+                }
+            });
+        }
 
         notifLead.addEventListener('change', () => {
             const val = parseInt(notifLead.value, 10);
             if (!isNaN(val) && ALLOWED_LEADS.includes(val)) {
                 state.notifLeadMinutes = val;
                 save();
+                // Update notification bell lead time if active
+                if (typeof MatchNotifications !== 'undefined' && MatchNotifications.isActive) {
+                    if (typeof Toast !== 'undefined') {
+                        Toast.show(`Match reminders updated — ${val} min before kick-off.`, 'info', 3000);
+                    }
+                }
             } else {
                 notifLead.value = state.notifLeadMinutes || defaults.notifLeadMinutes;
             }
@@ -471,6 +548,39 @@ const FanPredictions = (() => {
         save(preds);
     }
 
+    /**
+     * Returns the actual match result ('W', 'L', or null) for a given ISO
+     * by cross-referencing DATA.postMatchReports (keyed entries) and then
+     * falling back to DATA.lastResult for the most recently-past fixture.
+     */
+    function getActualResult(iso) {
+        // 1. Check postMatchReports array for a matching opponent+date entry
+        if (Array.isArray(DATA.postMatchReports) && DATA.postMatchReports.length > 0) {
+            const fixture = (DATA.fixtures || []).find(f => f.iso === iso);
+            if (fixture) {
+                const short = (window.TEAM_SHORT && window.TEAM_SHORT[fixture.o]) || '';
+                const report = DATA.postMatchReports.find(r => {
+                    const rOpp = (r.opponent || '').toUpperCase();
+                    return rOpp === short || r.date === fixture.d;
+                });
+                if (report && report.result) return report.result; // 'W' or 'L'
+            }
+        }
+
+        // 2. Fall back to DATA.lastResult for the most recently played fixture
+        if (!DATA.lastResult || !DATA.lastResult.result) return null;
+        const now = Date.now();
+        // Find the most recently-past fixture ISO
+        let latestISO = null;
+        let latestMs  = 0;
+        (DATA.fixtures || []).forEach(f => {
+            if (!f.iso) return;
+            const ms = new Date(f.iso).getTime();
+            if (ms < now && ms > latestMs) { latestMs = ms; latestISO = f.iso; }
+        });
+        return latestISO === iso ? DATA.lastResult.result : null;
+    }
+
     function render() {
         const container = document.getElementById('predictions-content');
         if (!container) return;
@@ -486,6 +596,9 @@ const FanPredictions = (() => {
             return;
         }
 
+        // Tally scored predictions for the accuracy header
+        let scored = 0, correct = 0;
+
         const rows = allFixtures.map(({ f, i }) => {
             const iso      = f.iso || '';
             const isPast   = iso && new Date(iso).getTime() <= now;
@@ -495,6 +608,25 @@ const FanPredictions = (() => {
             const winActive  = pred === 'W' ? ' prediction-btn--win-active'  : '';
             const lossActive = pred === 'L' ? ' prediction-btn--loss-active' : '';
             const disabled   = isPast ? 'disabled' : '';
+
+            // Result indicator for past matches
+            let resultBadge = '';
+            if (isPast) {
+                const actual = getActualResult(iso);
+                if (actual) {
+                    scored++;
+                    if (pred === actual) {
+                        correct++;
+                        resultBadge = `<span class="prediction-result prediction-result--correct" aria-label="Correct prediction">✓ Correct</span>`;
+                    } else if (pred) {
+                        resultBadge = `<span class="prediction-result prediction-result--wrong" aria-label="Wrong prediction">✗ Wrong</span>`;
+                    } else {
+                        resultBadge = `<span class="prediction-result prediction-result--missed" aria-label="No prediction made">Missed</span>`;
+                    }
+                } else if (pred) {
+                    resultBadge = `<span class="prediction-result prediction-result--pending" aria-label="Result pending">Result TBD</span>`;
+                }
+            }
 
             return `
             <div class="prediction-item" data-iso="${iso}">
@@ -509,14 +641,23 @@ const FanPredictions = (() => {
                     <button class="prediction-btn prediction-btn--loss${lossActive}"
                             data-iso="${iso}" data-pick="L" ${disabled}
                             aria-label="Predict loss vs ${short}" aria-pressed="${pred === 'L'}">LOSS</button>
+                    ${resultBadge}
                 </div>
             </div>`;
         }).join('');
+
+        const accuracyHtml = scored > 0
+            ? `<p class="prediction-accuracy" aria-label="Prediction accuracy">
+                   Accuracy: <strong>${correct}/${scored}</strong>
+                   (${Math.round((correct / scored) * 100)}%)
+               </p>`
+            : '';
 
         container.innerHTML = `
             <div class="prediction-card" aria-label="Match predictions">
                 <p class="tag">Match Predictions</p>
                 <p class="prediction-desc">Predict each match outcome before it starts. Locked once the match begins.</p>
+                ${accuracyHtml}
                 <div class="prediction-list">${rows}</div>
             </div>`;
 
