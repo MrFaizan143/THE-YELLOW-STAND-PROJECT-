@@ -5,9 +5,14 @@ const Schedule = (() => {
 
     const FAVORITE_TEAM_DEFAULT = 'CSK';
 
+    /** Delay (ms) before auto-scrolling to the next upcoming match.
+     *  Must be long enough to run after the router's synchronous scrollTo(0,0). */
+    const NEXT_MATCH_SCROLL_DELAY = 150;
+
     let _activeDateFilter = 'all';
     let _activeTeamFilter = 'all';
     let _activeViewMode   = 'list';
+    let _showUpcomingOnly = false;
     let _scheduleControlsBound = false;
     let _fixturesLoaded = false;
     let _fixturesLoading = false;
@@ -60,6 +65,16 @@ const Schedule = (() => {
         });
     }
 
+    /**
+     * Scrolls to the first upcoming match card.
+     * Called automatically on first page load (after the router's scrollTo reset).
+     */
+    function scrollToNextMatch() {
+        const firstUpcoming = document.querySelector('[data-upcoming="true"]');
+        if (!firstUpcoming) return;
+        firstUpcoming.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
     function initScheduleControls() {
         if (_scheduleControlsBound) return;
         const container = document.getElementById('ipl-schedule-list');
@@ -68,6 +83,7 @@ const Schedule = (() => {
         const dateChips = container.querySelectorAll('.date-chip');
         const teamChips = container.querySelectorAll('.team-filter-chip');
         const viewBtns  = container.querySelectorAll('.view-btn');
+        const upcomingToggle = container.querySelector('#schedule-upcoming-toggle');
 
         dateChips.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -91,7 +107,19 @@ const Schedule = (() => {
             });
         });
 
+        if (upcomingToggle) {
+            upcomingToggle.addEventListener('click', () => {
+                _showUpcomingOnly = !_showUpcomingOnly;
+                upcomingToggle.classList.toggle('upcoming-toggle-btn--active', _showUpcomingOnly);
+                upcomingToggle.setAttribute('aria-pressed', String(_showUpcomingOnly));
+                applyFilters();
+            });
+        }
+
         _scheduleControlsBound = true;
+
+        // Auto-scroll to first upcoming match after the router's scrollTo(0,0) runs
+        setTimeout(scrollToNextMatch, NEXT_MATCH_SCROLL_DELAY);
     }
 
     function matchPassesFilters(card) {
@@ -99,10 +127,11 @@ const Schedule = (() => {
         const t1        = card.dataset.team1Short || '';
         const t2        = card.dataset.team2Short || '';
 
-        const dateOk = _activeDateFilter === 'all' || _activeDateFilter === cardDate;
-        const teamOk = _activeTeamFilter === 'all' ||
+        const dateOk     = _activeDateFilter === 'all' || _activeDateFilter === cardDate;
+        const teamOk     = _activeTeamFilter === 'all' ||
             _activeTeamFilter === t1 || _activeTeamFilter === t2;
-        return dateOk && teamOk;
+        const upcomingOk = !_showUpcomingOnly || !card.classList.contains('ipl-match--past');
+        return dateOk && teamOk && upcomingOk;
     }
 
     function applyFilters() {
@@ -182,5 +211,6 @@ const Schedule = (() => {
         }
     }
 
-    return { init, initScheduleControls, applyFavTeamHighlight, updateLiveInSchedule };
+    return { init, initScheduleControls, applyFavTeamHighlight, updateLiveInSchedule, scrollToNextMatch };
 })();
+

@@ -40,6 +40,9 @@ const Render = (() => {
     /** IST is UTC+5:30 — offset in minutes (negative = ahead of UTC) */
     const IST_OFFSET_MIN = -330;
 
+    /** Uppercase 3-letter month abbreviations (matches m.d format, e.g. "30 MAR") */
+    const MONTHS_SHORT = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
     /** Short-name lookup for IPL teams */
     const TEAM_SHORT = {
         'Rajasthan Royals':           'RR',
@@ -712,7 +715,12 @@ const Render = (() => {
 
         const now = Date.now();
         let lastSectionLabel = null;
+        let firstUpcomingMarked = false;
         let html = '';
+
+        // ── Today's date key (matches m.d format: "30 MAR") ──────────────────
+        const _today = new Date();
+        const todayKey = `${_today.getDate()} ${MONTHS_SHORT[_today.getMonth()]}`;
 
         // ── Date picker (unique match dates in schedule order) ────────────────
         const seenDates = new Set();
@@ -722,7 +730,12 @@ const Render = (() => {
         const datePickerHtml = `
         <div class="schedule-date-picker" role="group" aria-label="Filter by match date">
             <button class="date-chip date-chip--active" data-date="all" aria-pressed="true">All</button>
-            ${uniqueDates.map(d => `<button class="date-chip" data-date="${d}" aria-pressed="false">${d}</button>`).join('')}
+            ${uniqueDates.map(d => {
+                const isToday = d === todayKey;
+                const todayClass = isToday ? ' date-chip--today' : '';
+                const label = isToday ? `${d} · TODAY` : d;
+                return `<button class="date-chip${todayClass}" data-date="${d}" aria-pressed="false">${label}</button>`;
+            }).join('')}
         </div>`;
 
         // ── Team filter chips (all teams present in this schedule) ────────────
@@ -749,12 +762,20 @@ const Render = (() => {
                     aria-label="Grid view">${Icons.i('grid', 13)} Grid</button>
         </div>`;
 
+        // ── Upcoming-only toggle ──────────────────────────────────────────────
+        const upcomingToggleHtml = `
+        <button class="upcoming-toggle-btn" id="schedule-upcoming-toggle"
+                aria-pressed="false" title="Show only upcoming matches">${Icons.i('calendar', 12)} UPCOMING</button>`;
+
         const controlsHtml = `
-        <div class="schedule-controls-bar">
-            ${viewToggleHtml}
-            ${teamFilterHtml}
-        </div>
-        ${datePickerHtml}`;
+        <div class="schedule-controls-sticky">
+            <div class="schedule-controls-bar">
+                ${viewToggleHtml}
+                ${upcomingToggleHtml}
+                ${teamFilterHtml}
+            </div>
+            ${datePickerHtml}
+        </div>`;
 
         // ── Match cards ───────────────────────────────────────────────────────
         const PLAYOFF_RE = /Qualifier|Eliminator|Final/i;
@@ -772,10 +793,15 @@ const Render = (() => {
 
             const isLive      = m.status && /live|progress/i.test(m.status);
             const isPast      = !isPlayoff && m.iso && new Date(m.iso).getTime() <= now;
+            const isUpcoming  = !isPlayoff && !isPast && !isLive;
             const cskClass    = m.isCSK ? ' ipl-match--csk' : '';
             const liveClass   = isLive  ? ' ipl-match--live' : '';
             const pastClass   = isPast && !isLive ? ' ipl-match--past' : '';
             const playoffClass = isPlayoff ? ' ipl-match--playoff' : '';
+
+            // Mark the very first upcoming match so JS can auto-scroll to it
+            const upcomingAttr = (isUpcoming && !firstUpcomingMarked) ? ' data-upcoming="true"' : '';
+            if (isUpcoming && !firstUpcomingMarked) firstUpcomingMarked = true;
 
             const scoreHtml   = m.score
                 ? `<p class="ipl-match-score">${m.score}</p>`
@@ -824,7 +850,7 @@ const Render = (() => {
             <div class="ipl-match-card${cskClass}${liveClass}${pastClass}${playoffClass}" role="listitem"
                   aria-label="${m.team1Short} vs ${m.team2Short}, ${m.d}"
                   data-team1-short="${m.team1Short}" data-team2-short="${m.team2Short}"
-                  data-date="${m.d}" data-iso="${m.iso || ''}">
+                  data-date="${m.d}" data-iso="${m.iso || ''}"${upcomingAttr}>
                 ${liveTag}
                 <div class="ipl-match-teams">
                     ${_teamBadge(m.team1Short)}

@@ -5354,7 +5354,32 @@ h1 {
 }
 
 /* --------------------------------------------------------------------------
-   Schedule Controls Bar — view toggle + team filter row
+   Schedule Controls Sticky Wrapper — pins controls + date picker to top
+-------------------------------------------------------------------------- */
+.schedule-controls-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--color-bg);
+    padding-top: var(--space-2);
+    padding-bottom: var(--space-1);
+    margin-top: calc(-1 * var(--space-2));
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--transition-fast);
+}
+
+/* Show a subtle separator line when actually stuck (JS-free: always visible but subtle) */
+.schedule-controls-sticky::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--color-border) 20%, var(--color-border) 80%, transparent);
+    margin-top: var(--space-1);
+    opacity: 0.5;
+}
+
+/* --------------------------------------------------------------------------
+   Schedule Controls Bar — view toggle + upcoming toggle + team filter row
 -------------------------------------------------------------------------- */
 .schedule-controls-bar {
     display: flex;
@@ -5402,6 +5427,40 @@ h1 {
 }
 
 .view-btn:hover:not(.view-btn--active) {
+    color: var(--color-text);
+}
+
+/* --------------------------------------------------------------------------
+   Upcoming Toggle Button — hides past matches with one tap
+-------------------------------------------------------------------------- */
+.upcoming-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    padding: 5px 10px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast),
+                border-color var(--transition-fast);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.upcoming-toggle-btn--active {
+    background: var(--color-yellow);
+    color: #000;
+    border-color: transparent;
+}
+
+.upcoming-toggle-btn:hover:not(.upcoming-toggle-btn--active) {
+    border-color: var(--color-border-hover);
     color: var(--color-text);
 }
 
@@ -5496,6 +5555,12 @@ h1 {
     background: var(--color-yellow);
     color: #000;
     border-color: transparent;
+}
+
+/* TODAY chip — yellow border to draw attention before it's selected */
+.date-chip--today:not(.date-chip--active) {
+    border-color: var(--color-yellow);
+    color: var(--color-text);
 }
 
 .date-chip:hover:not(.date-chip--active) {
