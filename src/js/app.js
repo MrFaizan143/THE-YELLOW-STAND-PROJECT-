@@ -334,6 +334,9 @@ document.addEventListener('DOMContentLoaded', () => {
             dismissBtn.addEventListener('click', () => { banner.hidden = true; }, { once: true });
         }
     }
+
+    // Initialise match reminder notifications (notification bell in top-right)
+    MatchNotifications.init();
 });
 
 // =============================================================================
@@ -389,4 +392,192 @@ const Toast = (() => {
     }
 
     return { show };
+})();
+
+// =============================================================================
+// MatchNotifications — browser push notification reminders for CSK fixtures.
+//
+// The notification bell button (#notif-bell) in the top-right corner allows
+// users to opt in.  When enabled, the app checks every 60 seconds whether any
+// upcoming CSK fixture is within the notification lead-time window (set in the
+// Fan page "Match Reminder" preference), and fires a browser Notification if so.
+//
+// Sent notifications are tracked in sessionStorage so they are never duplicated
+// within the same browser session.  The permission state is persisted across
+// sessions in localStorage.
+// =============================================================================
+const MatchNotifications = (() => {
+
+    /** localStorage key: '1' when user has opted in, '0' when opted out */
+    const PREF_KEY = 'tys_notif_enabled';
+
+    /** sessionStorage key: JSON array of ISO strings already notified this session */
+    const SENT_KEY = 'tys_notif_sent_v1';
+
+    /** How long after kick-off to still send a late notification (30 min in ms) */
+    const POST_MATCH_WINDOW_MS = 30 * 60_000;
+
+    /** setInterval handle for the 60-second polling loop */
+    let _interval = null;
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    function isSupported() {
+        return ('Notification' in window);
+    }
+
+    function isGranted() {
+        return isSupported() && Notification.permission === 'granted';
+    }
+
+    /** Returns true when the user has opted in AND permission is granted */
+    function isActive() {
+        return isGranted() && localStorage.getItem(PREF_KEY) === '1';
+    }
+
+    function getSentSet() {
+        try { return new Set(JSON.parse(sessionStorage.getItem(SENT_KEY) || '[]')); }
+        catch (_) { return new Set(); }
+    }
+
+    function markSent(iso) {
+        const s = getSentSet();
+        s.add(iso);
+        sessionStorage.setItem(SENT_KEY, JSON.stringify([...s]));
+    }
+
+    // -------------------------------------------------------------------------
+    // Bell button UI
+    // -------------------------------------------------------------------------
+
+    function updateBellUI() {
+        const bell = document.getElementById('notif-bell');
+        if (!bell) return;
+        const active = isActive();
+        bell.classList.toggle('notif-bell--active', active);
+        bell.setAttribute('aria-label', active ? 'Match reminders on — click to disable' : 'Enable match reminders');
+        bell.setAttribute('aria-pressed', String(active));
+        if (typeof Icons !== 'undefined') {
+            bell.innerHTML = active ? Icons.i('bell', 16) : Icons.i('bell-off', 16);
+            Icons.init(bell);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Notification dispatch
+    // -------------------------------------------------------------------------
+
+    function sendNotification(f) {
+        const short = (window.TEAM_SHORT && window.TEAM_SHORT[f.o]) || f.o;
+        try {
+            const n = new Notification('🦁 CSK Match Reminder', {
+                body:  `CSK vs ${short} starts soon at ${f.t} IST — Whistle Podu! 🏏`,
+                icon:  '/icons/icon-192.png',
+                badge: '/icons/icon-192.png',
+                tag:   `csk-${f.iso}`,
+            });
+            setTimeout(() => n.close(), 12000);
+        } catch (_) { /* Notification blocked or private browsing — fail silently */ }
+    }
+
+    function checkAndNotify() {
+        if (!isActive()) return;
+
+        const leadMs = (typeof FanProfile !== 'undefined' && FanProfile.getNotificationLeadMinutes)
+            ? FanProfile.getNotificationLeadMinutes() * 60_000
+            : 15 * 60_000;
+
+        const now    = Date.now();
+        const sent   = getSentSet();
+        const fixt   = (typeof DATA !== 'undefined' && Array.isArray(DATA.fixtures))
+            ? DATA.fixtures : [];
+
+        fixt.forEach(f => {
+            if (!f.iso) return;
+            const matchMs = new Date(f.iso).getTime();
+            // Fire once when we enter the lead-time window; stop 30 min after kick-off
+            if (now >= matchMs - leadMs && now <= matchMs + POST_MATCH_WINDOW_MS && !sent.has(f.iso)) {
+                sendNotification(f);
+                markSent(f.iso);
+            }
+        });
+    }
+
+    // -------------------------------------------------------------------------
+    // Start / stop polling
+    // -------------------------------------------------------------------------
+
+    function startPolling() {
+        checkAndNotify();
+        if (_interval) clearInterval(_interval);
+        _interval = setInterval(() => {
+            if (!document.hidden) checkAndNotify();
+        }, 60_000);
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) checkAndNotify();
+        }, { passive: true });
+    }
+
+    function stopPolling() {
+        if (_interval) { clearInterval(_interval); _interval = null; }
+    }
+
+    // -------------------------------------------------------------------------
+    // Toggle (called when the bell button is clicked)
+    // -------------------------------------------------------------------------
+
+    async function toggle() {
+        if (!isSupported()) {
+            Toast.show('Notifications are not supported in this browser.', 'warn', 4000);
+            return;
+        }
+
+        if (isActive()) {
+            // User is turning reminders OFF
+            localStorage.setItem(PREF_KEY, '0');
+            stopPolling();
+            updateBellUI();
+            Toast.show('Match reminders disabled.', 'info', 3000);
+            return;
+        }
+
+        // User wants to turn reminders ON
+        if (Notification.permission === 'denied') {
+            Toast.show('Notifications are blocked — please allow them in your browser settings.', 'warn', 5000);
+            return;
+        }
+
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') {
+            Toast.show('Notification permission not granted.', 'warn', 3000);
+            return;
+        }
+
+        localStorage.setItem(PREF_KEY, '1');
+        startPolling();
+        updateBellUI();
+
+        const leadMin = (typeof FanProfile !== 'undefined' && FanProfile.getNotificationLeadMinutes)
+            ? FanProfile.getNotificationLeadMinutes() : 15;
+        Toast.show(`Match reminders on — you'll be notified ${leadMin} min before each CSK game.`, 'info', 4000);
+    }
+
+    // -------------------------------------------------------------------------
+    // Init — called once on DOMContentLoaded
+    // -------------------------------------------------------------------------
+
+    function init() {
+        const bell = document.getElementById('notif-bell');
+        if (bell) {
+            updateBellUI();
+            bell.addEventListener('click', () => toggle());
+        }
+        // Resume polling if permission was already granted in a previous session
+        if (isActive()) startPolling();
+    }
+
+    return { init, toggle, updateBellUI, isActive };
 })();

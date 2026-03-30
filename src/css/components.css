@@ -2274,6 +2274,81 @@ h1 {
     text-transform: uppercase;
 }
 
+/* Result badges shown on past match prediction rows */
+.prediction-result {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.5px;
+    border-radius: var(--radius-pill);
+    padding: 2px 8px;
+    white-space: nowrap;
+}
+
+.prediction-result--correct {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.35);
+}
+
+.prediction-result--wrong {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.35);
+}
+
+.prediction-result--missed {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+}
+
+.prediction-result--pending {
+    background: rgba(245, 184, 0, 0.1);
+    color: var(--color-yellow);
+    border: 1px solid rgba(245, 184, 0, 0.3);
+}
+
+/* Accuracy headline shown above the predictions list */
+.prediction-accuracy {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-4);
+}
+
+.prediction-accuracy strong {
+    color: var(--color-text);
+}
+
+/* --------------------------------------------------------------------------
+   Streak Hint Button
+   Inline suggestion to auto-sync the win streak from the last result.
+-------------------------------------------------------------------------- */
+.streak-hint-btn {
+    display: inline-block;
+    margin-top: var(--space-3);
+    padding: var(--space-2) var(--space-4);
+    background: transparent;
+    border: 1px dashed var(--color-yellow);
+    border-radius: var(--radius-pill);
+    color: var(--color-yellow);
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.streak-hint-btn:hover {
+    background: rgba(245, 184, 0, 0.1);
+}
+
+.streak-hint-btn:focus-visible {
+    outline: 2px solid var(--color-yellow);
+    outline-offset: 2px;
+}
+
 
 
 /* ==========================================================================
