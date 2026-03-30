@@ -1923,6 +1923,20 @@ h1 {
     background: rgba(245, 184, 0, 0.04) !important;
 }
 
+.standings-playoff-cutoff {
+    font-family: var(--font-mono);
+    font-size: var(--text-xxs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    letter-spacing: 1.5px;
+    text-align: center;
+    padding: var(--space-1) var(--space-4);
+    border-top: 1px dashed var(--color-border);
+    border-bottom: 1px dashed var(--color-border);
+    background: var(--color-surface-deep);
+    text-transform: uppercase;
+}
+
 .standings-note {
     font-family: var(--font-mono);
     font-size: var(--text-xxs);
@@ -3349,6 +3363,15 @@ h1 {
     font-family: var(--font-mono);
     text-align: right;
     margin-top: var(--space-1);
+    transition: color var(--transition-fast);
+}
+
+.journal-char-count--warn {
+    color: var(--color-yellow);
+}
+
+.journal-char-count--limit {
+    color: var(--color-negative);
 }
 
 /* =============================================================================

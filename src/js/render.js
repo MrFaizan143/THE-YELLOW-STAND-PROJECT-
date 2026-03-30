@@ -421,13 +421,14 @@ const Render = (() => {
             }
             return -1;
         })();
-        let venue, city, pitch;
+        let venue, city, pitch, matchLabel;
 
         if (nextIdx >= 0) {
             const f   = DATA.fixtures[nextIdx];
             const vp  = f.v.split(',');
             venue     = vp[0].trim();
             city      = vp.length > 1 ? vp[1].trim() : vp[0].trim();
+            matchLabel = `Match ${nextIdx + 1} of ${DATA.fixtures.length}`;
             // Use static nextMatch pitch for first match, generic otherwise
             if (nextIdx === 0) {
                 pitch   = DATA.nextMatch.pitch;
@@ -439,12 +440,13 @@ const Render = (() => {
             venue   = DATA.nextMatch.venue;
             city    = DATA.nextMatch.city;
             pitch   = '—';
+            matchLabel = 'Season Complete';
         }
 
         container.innerHTML = `
             <span class="tag">Next Venue</span>
             <p class="hub-info-label">${venue}</p>
-            <p class="hub-info-meta">${city}</p>
+            <p class="hub-info-meta">${city} · <span class="hub-match-num">${matchLabel}</span></p>
             <p class="hub-info-score">${pitch}</p>`;
     }
 
@@ -673,7 +675,12 @@ const Render = (() => {
                   }</span>`
                 : `<span class="standing-form standing-form--empty" aria-label="No results yet">—</span>`;
 
-            return `
+            // Insert playoff cutoff separator after position 4 (before position 5)
+            const cutoff = i === 4
+                ? `<div class="standings-playoff-cutoff" aria-label="Playoff qualification cutoff">▼ PLAYOFF CUTOFF</div>`
+                : '';
+
+            return cutoff + `
             <div class="standing-row${isCsk ? ' standing-row--csk' : ''}${isPlayoff ? ' standing-row--playoff' : ''}" role="row"
                  aria-label="${s.team}: ${s.pts} points${isPlayoff ? ', playoff position' : ''}">
                 <span class="standing-pos">${i + 1}</span>

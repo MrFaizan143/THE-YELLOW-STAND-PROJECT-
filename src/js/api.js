@@ -105,8 +105,14 @@ const CricketAPI = (() => {
         function track() {
             n++;
             try { localStorage.setItem(KEY_N, String(n)); } catch (_) {}
-            if (n === 80) console.warn('[TYS] cricapi budget: 80 / 100 calls used today.');
-            if (n >= 95)  console.warn(`[TYS] cricapi budget: ${n} / 100 — approaching daily limit!`);
+            if (n === 80) {
+                console.warn('[TYS] cricapi budget: 80 / 100 calls used today.');
+                if (typeof Toast !== 'undefined') Toast.show('cricapi: 80 / 100 daily calls used.', 'warn', 5000);
+            }
+            if (n >= 95) {
+                console.warn(`[TYS] cricapi budget: ${n} / 100 — approaching daily limit!`);
+                if (typeof Toast !== 'undefined') Toast.show(`cricapi: ${n} / 100 calls — daily limit almost reached!`, 'warn', 6000);
+            }
         }
         return { track, count: () => n };
     })();
@@ -127,8 +133,14 @@ const CricketAPI = (() => {
         function track() {
             n++;
             try { localStorage.setItem(KEY_N, String(n)); } catch (_) {}
-            if (n === 400) console.warn('[TYS] RapidAPI budget: 400 / 500 calls used this month.');
-            if (n >= 475)  console.warn(`[TYS] RapidAPI budget: ${n} / 500 — approaching monthly limit!`);
+            if (n === 400) {
+                console.warn('[TYS] RapidAPI budget: 400 / 500 calls used this month.');
+                if (typeof Toast !== 'undefined') Toast.show('RapidAPI: 400 / 500 monthly calls used.', 'warn', 5000);
+            }
+            if (n >= 475) {
+                console.warn(`[TYS] RapidAPI budget: ${n} / 500 — approaching monthly limit!`);
+                if (typeof Toast !== 'undefined') Toast.show(`RapidAPI: ${n} / 500 calls — monthly limit almost reached!`, 'warn', 6000);
+            }
         }
         return { track, count: () => n };
     })();

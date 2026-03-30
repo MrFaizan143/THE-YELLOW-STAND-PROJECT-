@@ -36,13 +36,12 @@ const Countdown = (() => {
         const label = document.querySelector('.countdown-card .tag');
         if (!label) return;
         const now = Date.now();
-        const idx = (typeof DATA !== 'undefined' && Array.isArray(DATA.fixtures))
-            ? DATA.fixtures.findIndex(f => f.iso && new Date(f.iso).getTime() > now)
-            : -1;
+        const fixtures = (typeof DATA !== 'undefined' && Array.isArray(DATA.fixtures)) ? DATA.fixtures : [];
+        const idx = fixtures.findIndex(f => f.iso && new Date(f.iso).getTime() > now);
         if (idx >= 0) {
-            const f = DATA.fixtures[idx];
+            const f = fixtures[idx];
             const short = (window.TEAM_SHORT && window.TEAM_SHORT[f.o]) || f.o;
-            label.textContent = `${f.d} vs ${short}`;
+            label.textContent = `Match ${idx + 1} / ${fixtures.length} · ${f.d} vs ${short}`;
         } else {
             label.textContent = 'IPL 2026 Season';
         }

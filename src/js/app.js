@@ -256,6 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 if (navigator.share) {
                     await navigator.share(shareData);
+                    Toast.show('Shared! Whistle Podu! 🦁', 'info', 2500);
                 } else if (navigator.clipboard) {
                     await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
                     shareBtn.innerHTML = `${Icons.i('check', 14)} Copied!`;

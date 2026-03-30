@@ -1078,7 +1078,12 @@ const MatchJournal = (() => {
                 // Update char count immediately
                 const ccId = 'jcc-' + iso.replace(/[^a-z0-9]/gi, '');
                 const ccEl = document.getElementById(ccId);
-                if (ccEl) ccEl.textContent = `${ta.value.length}/${MAX_CHARS}`;
+                if (ccEl) {
+                    const len = ta.value.length;
+                    ccEl.textContent = `${len}/${MAX_CHARS}`;
+                    ccEl.classList.toggle('journal-char-count--warn', len > MAX_CHARS * 0.85);
+                    ccEl.classList.toggle('journal-char-count--limit', len >= MAX_CHARS);
+                }
 
                 // Debounce the localStorage write by 600 ms
                 clearTimeout(_debounceTimers[iso]);
